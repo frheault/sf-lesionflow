@@ -113,7 +113,7 @@ bids_data/
 
 ## 5. Hardware & System Requirements
 
-* **RAM**: Minimum 24 GB recommended. Heavy processes (`SAMSEG`, `WMH-SynthSeg`, `Emory Robust WMH`) require sufficient memory. Concurrency is throttled to `maxForks = 2` by default in `nextflow.config`.
+* **RAM**: Minimum 24 GB recommended; note that failed tasks are retried with doubled memory (see `conf/base.config`), so a single retried task can request up to 48 GB — size your executor accordingly if running on a constrained host. Heavy processes (`SAMSEG`, `WMH-SynthSeg`, `Emory Robust WMH`) are individually capped at `maxForks = 2` in `nextflow.config` to limit how many run concurrently (this is not a pipeline-wide default, just those three).
 * **Disk Space**: ~30 GB for container images (Emory Robust WMH image is ~25 GB).
 * **CPU / GPU**: Execution defaults to CPU.
 
