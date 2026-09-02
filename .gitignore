@@ -1,0 +1,11 @@
+work/
+.nextflow*
+results*/
+.nf-test/
+data/
+template/
+report-*.html
+timeline-*.html
+trace-*.txt
+report.html
+.agents/

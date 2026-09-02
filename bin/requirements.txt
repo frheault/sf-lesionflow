@@ -1,0 +1,12 @@
+# Python Requirements for sf-lesionflow CLI tools (bin/)
+#
+# Note: In standard pipeline execution with Docker/Singularity profiles,
+# all dependencies are pre-installed in the respective process containers.
+# This file is provided for local standalone development and unit testing.
+
+numpy>=1.20.0
+scipy>=1.7.0
+nibabel>=3.2.0
+pandas>=1.3.0
+scikit-image>=0.19.0
+SimpleITK>=2.1.0

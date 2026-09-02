@@ -1,0 +1,632 @@
+#!/usr/bin/env nextflow
+
+// -----------------------------------------------------------------------------
+// Phase 2: Independent Algorithm Modules
+// -----------------------------------------------------------------------------
+
+process SEGMENTATION_LST_AI {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'ms_chus/lst_ai:latest'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_lst_ai_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_lst_ai_binary.nii.gz
+    """
+
+    script:
+    """
+    export CUDA_VISIBLE_DEVICES=-1
+    export TF_FORCE_GPU_ALLOW_GROWTH=true
+    export TF_GPU_ALLOCATOR=cuda_malloc_async
+    export TF_CPP_MIN_LOG_LEVEL=2
+    export OMP_NUM_THREADS=${task.cpus}
+
+    mkdir -p tmp_out
+    lst --t1 ${t1_mni} --flair ${flair_mni} --output tmp_out --segment_only --stripped --threads ${task.cpus}
+
+    if [ -f "tmp_out/space-flair_seg-lst.nii.gz" ]; then
+        mv tmp_out/space-flair_seg-lst.nii.gz ${meta.id}_lst_ai_binary.nii.gz
+    else
+        echo "Error: LST-AI output missing" >&2
+        exit 1
+    fi
+    rm -rf tmp_out
+    """
+}
+
+process SEGMENTATION_SAMSEG {
+    tag "$meta.id"
+    label 'process_high_memory'
+    container 'freesurfer/freesurfer:7.4.1'
+
+    input:
+    tuple val(meta), path(t1_unstripped_mni), path(flair_unstripped_mni), path(fs_license)
+
+    output:
+    tuple val(meta), path("${meta.id}_samseg_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_samseg_binary.nii.gz
+    """
+
+    script:
+    """
+    set +u
+    export FREESURFER_HOME=/usr/local/freesurfer
+    export FS_LICENSE=${fs_license}
+    source /usr/local/freesurfer/SetUpFreeSurfer.sh
+    set -u
+
+    mkdir -p samseg_out
+    run_samseg -i ${t1_unstripped_mni} -i ${flair_unstripped_mni} \
+               --out samseg_out \
+               --lesion \
+               --lesion-mask-pattern 0 1 \
+               --pallidum-separate \
+               --threads ${task.cpus}
+
+    if [ -f "samseg_out/seg.mgz" ]; then
+        mri_binarize --i samseg_out/seg.mgz --match 77 99 --o ${meta.id}_samseg_binary.nii.gz
+    else
+        echo "Error: SAMSEG output seg.mgz missing" >&2
+        exit 1
+    fi
+    rm -rf samseg_out
+    """
+}
+
+process SEGMENTATION_WMH_SYNTHSEG {
+    tag "$meta.id"
+    label 'process_high_memory'
+    container 'ms_chus/wmh_synthseg:latest'
+
+    input:
+    tuple val(meta), path(flair_unstripped_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_wmh-synthseg_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_wmh-synthseg_binary.nii.gz
+    """
+
+    script:
+    def label_id = task.ext.label_id ?: 77
+    """
+    set +u
+    export FREESURFER_HOME=/usr/local/freesurfer
+    source /usr/local/freesurfer/SetUpFreeSurfer.sh
+    set -u
+
+    mri_WMHsynthseg --i ${flair_unstripped_mni} \
+                    --o multiclass.nii.gz \
+                    --save_lesion_probabilities \
+                    --device cpu \
+                    --threads 1
+
+    conform_synthseg.py --input multiclass.nii.gz --ref ${flair_unstripped_mni} --output ${meta.id}_wmh-synthseg_binary.nii.gz --label_id ${label_id}
+    rm -f multiclass.nii.gz *.lesion_probs.nii.gz
+    """
+}
+
+process SEGMENTATION_FAST_OUTLIER {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'ms_chus/fast_outlier:latest'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_fast-outlier_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_fast-outlier_binary.nii.gz
+    """
+
+    script:
+    def sigma = task.ext.sigma ?: 2.5
+    def pve_thresh = task.ext.pve_threshold ?: 0.95
+    def dwm_thresh = task.ext.dwm_threshold ?: 0.50
+    """
+    export FSLDIR=/usr/local/fsl
+    export PATH=\${FSLDIR}/bin:\$PATH
+    export FSLOUTPUTTYPE=NIFTI_GZ
+
+    mkdir -p fast_out
+    fast -t 1 -n 3 -H 0.1 -I 4 -l 20.0 -o fast_out/fast ${t1_mni}
+
+    fast_outlier.py --flair ${flair_mni} \
+                    --wm_pve fast_out/fast_pve_2.nii.gz \
+                    --output ${meta.id}_fast-outlier_binary.nii.gz \
+                    --sigma ${sigma} \
+                    --pve_threshold ${pve_thresh} \
+                    --dwm_threshold ${dwm_thresh}
+
+    rm -rf fast_out
+    """
+}
+
+process SEGMENTATION_FLAMES {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'ms_chus/flames:latest'
+
+    input:
+    tuple val(meta), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_flames_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_flames_binary.nii.gz
+    """
+
+    script:
+    """
+    export nnUNet_results=/opt/nnunet_results
+    export nnUNet_raw=/opt/nnunet_raw
+    export nnUNet_preprocessed=/opt/nnunet_preprocessed
+
+    mkdir -p in_dir out_dir
+    ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_0000.nii.gz
+
+    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device cpu
+
+    if [ -f "out_dir/${meta.id}.nii.gz" ]; then
+        mv out_dir/${meta.id}.nii.gz ${meta.id}_flames_binary.nii.gz
+    else
+        echo "Error: FLAMeS output missing" >&2
+        exit 1
+    fi
+    rm -rf in_dir out_dir
+    """
+}
+
+process SEGMENTATION_TRUENET {
+    tag "$meta.id"
+    label 'process_high_memory'
+    container 'ms_chus/truenet:latest'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_truenet_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_truenet_binary.nii.gz
+    """
+
+    script:
+    def threshold = task.ext.threshold ?: 0.5
+    """
+    export TRUENET_PRETRAINED_MODEL_PATH=/opt/truenet_models
+    mkdir -p in_dir out
+
+    ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_FLAIR.nii.gz
+    ln -s \$(realpath ${t1_mni}) in_dir/${meta.id}_T1.nii.gz
+
+    truenet evaluate -i in_dir -m mwsc -o out -cpu
+
+    threshold_probmap.py --input_glob 'out/Predicted_probmap_truenet_*.nii.gz' \
+                         --output ${meta.id}_truenet_binary.nii.gz \
+                         --threshold ${threshold}
+
+    rm -rf in_dir out
+    """
+}
+
+process SEGMENTATION_HYPERMAPP3R {
+    tag "$meta.id"
+    label 'process_high_memory'
+    container 'mgoubran/hypermapper:latest'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_hypermapp3r_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_hypermapp3r_binary.nii.gz
+    """
+
+    script:
+    def threshold = task.ext.threshold ?: 0.5
+    def mc_samples = task.ext.mc_samples ?: 1
+    """
+    export OMP_NUM_THREADS=2
+    export OPENBLAS_NUM_THREADS=2
+    export MKL_NUM_THREADS=2
+
+    create_nonzero_mask.py --input ${t1_mni} --output brain_mask.nii.gz
+
+    mkdir -p tmp_hyper
+    (
+        cd tmp_hyper
+        hypermapper seg_wmh -t1 \$(realpath ../${t1_mni}) -fl \$(realpath ../${flair_mni}) -m \$(realpath ../brain_mask.nii.gz) -o \$(realpath ../prob.nii.gz) -n ${mc_samples} -f
+    )
+
+    threshold_probmap.py --input prob.nii.gz \
+                         --output ${meta.id}_hypermapp3r_binary.nii.gz \
+                         --threshold ${threshold}
+
+    rm -rf tmp_hyper brain_mask.nii.gz prob.nii.gz
+    """
+}
+
+process SEGMENTATION_SEGCSVD {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'segcsvd_rc03:latest'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(meta), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_segcsvd_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_segcsvd_binary.nii.gz
+    """
+
+    script:
+    def threshold = task.ext.threshold ?: 0.5
+    def patch_size = task.ext.patch_size ?: "96,128"
+    """
+    export OMP_NUM_THREADS=${task.cpus}
+
+    create_nonzero_mask.py --input ${flair_mni} --output temp_mask.nii.gz
+
+    segment_wmh \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+
+    threshold_probmap.py --input prob.nii.gz \
+                         --output ${meta.id}_segcsvd_binary.nii.gz \
+                         --threshold ${threshold}
+
+    rm -f temp_mask.nii.gz prob.nii.gz
+    """
+}
+
+process SEGMENTATION_EMORY_ROBUST {
+    tag "$meta.id"
+    label 'process_high_memory'
+    container 'emorycn2l/emory_robust_wmh:v1.2'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_emory_robust_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_emory_robust_binary.nii.gz
+    """
+
+    script:
+    """
+    export OMP_NUM_THREADS=4
+    export PATH=/opt/conda/envs/nnunet/bin:/opt/conda/bin:\$PATH
+
+    rm -rf /app/inputs/* /app/outputs/* 2>/dev/null || true
+    bash /app/main.sh -t \$(realpath ${t1_mni}) -f \$(realpath ${flair_mni}) -o \$(realpath ${meta.id}_emory_robust_binary.nii.gz) --no-n4 --no-coreg
+    rm -rf /app/inputs/* /app/outputs/* 2>/dev/null || true
+    """
+}
+
+process SEGMENTATION_MARS_WMH {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'ghcr.io/miac-research/wmh-nnunet:latest'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_mars_wmh_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_mars_wmh_binary.nii.gz
+    """
+
+    script:
+    """
+    export OMP_NUM_THREADS=${task.cpus}
+
+    python /opt/scripts/pipeline_nnunet.py \
+        --flair \$(realpath ${flair_mni}) \
+        --t1 \$(realpath ${t1_mni}) \
+        --fnOut \$(realpath ${meta.id}_mars_wmh_binary.nii.gz) \
+        --skipRegistration \
+        --overwrite \
+        --omitQC
+    """
+}
+
+// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
+// Bawil approach, NOT the published Bawil model. No model weights are loaded; the mask
+// comes from logit coefficients on smoothed FLAIR z-score features.
+// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
+// independent validated classifier.
+process SEGMENTATION_BAWIL {
+    tag "$meta.id"
+    label 'process_medium'
+    label 'heuristic_proxy'
+    container 'ms_chus/lst_ai:latest'
+
+    input:
+    tuple val(meta), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_bawil_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_bawil_binary.nii.gz
+    """
+
+    script:
+    def sigma = task.ext.sigma ?: 2.0
+    def min_cluster = task.ext.min_cluster_size ?: 3
+    """
+    export CUDA_VISIBLE_DEVICES=-1
+    export OMP_NUM_THREADS=${task.cpus}
+
+    bawil_filter.py --flair ${flair_mni} \
+                    --output ${meta.id}_bawil_binary.nii.gz \
+                    --sigma ${sigma} \
+                    --min_cluster_size ${min_cluster}
+    """
+}
+
+// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
+// MIMoSA (Valcarcel et al.) approach, NOT a fitted/loaded MIMoSA model. The coefficients
+// are hardcoded feature regression weights, not trained models.
+// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
+// independent validated classifier.
+process SEGMENTATION_MIMOSA {
+    tag "$meta.id"
+    label 'process_medium'
+    label 'heuristic_proxy'
+    container 'ms_chus/lst_ai:latest'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_mimosa_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_mimosa_binary.nii.gz
+    """
+
+    script:
+    def prob_thresh = task.ext.prob_threshold ?: 0.30
+    def flair_thresh = task.ext.flair_cand_threshold ?: 1.5
+    def min_cluster = task.ext.min_cluster_size ?: 3
+    """
+    export CUDA_VISIBLE_DEVICES=-1
+    export OMP_NUM_THREADS=${task.cpus}
+
+    mimosa_filter.py --t1 ${t1_mni} \
+                     --flair ${flair_mni} \
+                     --output ${meta.id}_mimosa_binary.nii.gz \
+                     --prob_threshold ${prob_thresh} \
+                     --flair_cand_threshold ${flair_thresh} \
+                     --min_cluster_size ${min_cluster}
+    """
+}
+
+// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
+// SHiVAi (Boutinaud et al.) approach, NOT the published deep-learning model. No torch/
+// tensorflow model is loaded here — output comes from multi-scale FLAIR/T1 contrast features.
+// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
+// independent validated DL classifier.
+process SEGMENTATION_SHIVAI {
+    tag "$meta.id"
+    label 'process_medium'
+    label 'heuristic_proxy'
+    container 'ms_chus/lst_ai:latest'
+
+    input:
+    tuple val(meta), path(t1_mni), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_shivai_binary.nii.gz"), emit: binary_mask
+
+    stub:
+    """
+    touch ${meta.id}_shivai_binary.nii.gz
+    """
+
+    script:
+    def prob_thresh = task.ext.prob_threshold ?: 0.50
+    def min_cluster = task.ext.min_cluster_size ?: 3
+    """
+    export CUDA_VISIBLE_DEVICES=-1
+    export OMP_NUM_THREADS=${task.cpus}
+
+    shivai_filter.py --t1 ${t1_mni} \
+                     --flair ${flair_mni} \
+                     --output ${meta.id}_shivai_binary.nii.gz \
+                     --prob_threshold ${prob_thresh} \
+                     --min_cluster_size ${min_cluster}
+    """
+}
+
+// -----------------------------------------------------------------------------
+// Phase 3: STAPLE Consensus Fusion (thr90 >= 6mm3 + Watershed)
+// -----------------------------------------------------------------------------
+
+process CONSENSUS_STAPLE {
+    tag "$meta.id"
+    label 'process_medium'
+    container 'segcsvd_rc03:latest'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(meta), path(ref_image), path(binary_masks)
+
+    output:
+    tuple val(meta), path("${meta.id}_staple_probmap.nii.gz"), emit: staple_probmap
+    tuple val(meta), path("${meta.id}_staple_thr90_binary.nii.gz"), emit: staple_thr90_binary
+    tuple val(meta), path("${meta.id}_staple_thr90_labels_uint16.nii.gz"), emit: staple_thr90_labels
+
+    stub:
+    """
+    touch ${meta.id}_staple_probmap.nii.gz
+    touch ${meta.id}_staple_thr90_binary.nii.gz
+    touch ${meta.id}_staple_thr90_labels_uint16.nii.gz
+    """
+
+    script:
+    def threshold = task.ext.threshold ?: 0.90
+    def min_cluster = task.ext.min_cluster_size ?: 6
+    def min_dist = task.ext.min_distance ?: 3
+    def g_sigma = task.ext.gaussian_sigma ?: 0.8
+    """
+    staple_consensus.py --ref_image ${ref_image} \
+                        --masks ${binary_masks} \
+                        --out_probmap ${meta.id}_staple_probmap.nii.gz \
+                        --out_binary ${meta.id}_staple_thr90_binary.nii.gz \
+                        --out_labels ${meta.id}_staple_thr90_labels_uint16.nii.gz \
+                        --threshold ${threshold} \
+                        --min_cluster_size ${min_cluster} \
+                        --min_distance ${min_dist} \
+                        --gaussian_sigma ${g_sigma}
+    """
+}
+
+// -----------------------------------------------------------------------------
+// Phase 4: Longitudinal Harmonization & Tracking Audit Trail
+// -----------------------------------------------------------------------------
+
+process HARMONIZATION_STAPLE {
+    tag "$subject"
+    label 'process_medium'
+    container 'segcsvd_rc03:latest'
+    containerOptions '-u 0:0'
+
+    input:
+    tuple val(subject), val(metas), path(staple_masks)
+
+    output:
+    tuple val(subject), path("*_staple_thr90_harmonized_binary.nii.gz"), emit: harmonized_binary
+    tuple val(subject), path("*_staple_thr90_harmonized_labels_uint16.nii.gz"), emit: harmonized_labels
+    tuple val(subject), path("${subject}_staple_harmonized_lesion_tracking.csv"), emit: audit_csv
+
+    publishDir "${params.output}/final_outputs/${subject}", mode: 'copy', pattern: '*.csv'
+
+    stub:
+    """
+    for m in ${staple_masks}; do
+        fname=\$(basename \$m)
+        ses_name=\$(echo \$fname | grep -o 'ses-[0-9a-zA-Z]*')
+        touch ${subject}_\${ses_name}_staple_thr90_harmonized_binary.nii.gz
+        touch ${subject}_\${ses_name}_staple_thr90_harmonized_labels_uint16.nii.gz
+    done
+    touch ${subject}_staple_harmonized_lesion_tracking.csv
+    """
+
+    script:
+    def min_cluster = task.ext.min_cluster_size ?: 6
+    def min_dist = task.ext.min_distance ?: 3
+    def g_sigma = task.ext.gaussian_sigma ?: 0.8
+    def pct_thresh = task.ext.pct_change_threshold ?: 20.0
+    """
+    harmonize_staple.py --subject ${subject} \
+                        --masks ${staple_masks} \
+                        --out_csv ${subject}_staple_harmonized_lesion_tracking.csv \
+                        --min_cluster_size ${min_cluster} \
+                        --min_distance ${min_dist} \
+                        --gaussian_sigma ${g_sigma} \
+                        --pct_change_threshold ${pct_thresh}
+    """
+}
+
+// -----------------------------------------------------------------------------
+// Phase 5: Per-Session Standardized Export
+// -----------------------------------------------------------------------------
+
+process EXPORT_SESSION {
+    tag "$meta.id"
+    label 'process_single'
+    publishDir "${params.output}/final_outputs/${meta.subject}", mode: 'copy'
+
+    input:
+    tuple val(meta),
+          path(t1_stripped),
+          path(t1_unstripped),
+          path(flair_stripped),
+          path(flair_unstripped),
+          path(probmap),
+          path(consensus_binary),
+          path(consensus_labels),
+          path(harmonized_binary),
+          path(harmonized_labels)
+
+    output:
+    path "${meta.session}", type: 'dir'
+
+    stub:
+    """
+    mkdir -p ${meta.session}/staple_classical
+    touch ${meta.session}/t1_mni_stripped.nii.gz
+    touch ${meta.session}/t1_mni_unstripped.nii.gz
+    touch ${meta.session}/flair_mni_stripped.nii.gz
+    touch ${meta.session}/flair_mni_unstripped.nii.gz
+    touch ${meta.session}/staple_classical/t1_mni_stripped.nii.gz
+    touch ${meta.session}/staple_classical/t1_mni_unstripped.nii.gz
+    touch ${meta.session}/staple_classical/flair_mni_stripped.nii.gz
+    touch ${meta.session}/staple_classical/flair_mni_unstripped.nii.gz
+    touch ${meta.session}/staple_classical/staple_probmap.nii.gz
+    touch ${meta.session}/staple_classical/staple_thr90_binary.nii.gz
+    touch ${meta.session}/staple_classical/staple_thr90_labels_uint16.nii.gz
+    touch ${meta.session}/staple_classical/staple_thr90_harmonized_binary.nii.gz
+    touch ${meta.session}/staple_classical/staple_thr90_harmonized_labels_uint16.nii.gz
+    """
+
+    script:
+    """
+    mkdir -p ${meta.session}/staple_classical
+
+    # Root session anatomical volumes
+    cp -L ${t1_stripped} ${meta.session}/t1_mni_stripped.nii.gz
+    cp -L ${t1_unstripped} ${meta.session}/t1_mni_unstripped.nii.gz
+    cp -L ${flair_stripped} ${meta.session}/flair_mni_stripped.nii.gz
+    cp -L ${flair_unstripped} ${meta.session}/flair_mni_unstripped.nii.gz
+
+    # staple_classical structured folder
+    cp -L ${t1_stripped} ${meta.session}/staple_classical/t1_mni_stripped.nii.gz
+    cp -L ${t1_unstripped} ${meta.session}/staple_classical/t1_mni_unstripped.nii.gz
+    cp -L ${flair_stripped} ${meta.session}/staple_classical/flair_mni_stripped.nii.gz
+    cp -L ${flair_unstripped} ${meta.session}/staple_classical/flair_mni_unstripped.nii.gz
+    cp -L ${probmap} ${meta.session}/staple_classical/staple_probmap.nii.gz
+    cp -L ${consensus_binary} ${meta.session}/staple_classical/staple_thr90_binary.nii.gz
+    cp -L ${consensus_labels} ${meta.session}/staple_classical/staple_thr90_labels_uint16.nii.gz
+    cp -L ${harmonized_binary} ${meta.session}/staple_classical/staple_thr90_harmonized_binary.nii.gz
+    cp -L ${harmonized_labels} ${meta.session}/staple_classical/staple_thr90_harmonized_labels_uint16.nii.gz
+    """
+}

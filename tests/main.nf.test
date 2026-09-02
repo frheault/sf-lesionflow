@@ -1,0 +1,35 @@
+nextflow_pipeline {
+    name "Test MS Lesion WMH Pipeline"
+    script "main.nf"
+
+    test("Stub-run wires the full DAG without errors") {
+        options "-stub-run"
+        when {
+            params {
+                input        = "data"
+                mni_template = "template/mni_masked.nii.gz"
+                fs_license   = "/home/local/USHERBROOKE/rhef1902/Libraries/freesurfer/license.txt"
+                output       = "results_test"
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Full Pipeline Execution with Single Subject") {
+        tag "full_execution"
+        when {
+            params {
+                input        = "data"
+                mni_template = "template/mni_masked.nii.gz"
+                fs_license   = "/home/local/USHERBROOKE/rhef1902/Libraries/freesurfer/license.txt"
+                output       = "results_test"
+            }
+        }
+        then {
+            assert workflow.success
+            assert file("${params.output}/final_outputs/sub-003/sub-003_staple_harmonized_lesion_tracking.csv").exists()
+        }
+    }
+}
