@@ -21,7 +21,8 @@ When using `sf-lesionflow` in academic research, please cite the respective algo
 6. **TrueNet**:
    * Sundaresan V, Zamboni G, Rothwell PM, Jenkinson M, Griffanti L. *Triplanar ensemble U-Net model for white matter hyperintensities segmentation on MR images*. Medical Image Analysis, 73:102184, 2021.
 7. **HyperMapp3r**:
-   * Goubran M, et al. *Hippocampal segmentation for brains with extensive atrophy using three-dimensional convolutional neural networks*. Human Brain Mapping, 41(2):291-308, 2020. (Note: this citation covers the architecture's origin; the tool's WMH-segmentation mode used by this pipeline may derive from further unpublished/preprint work by the same group — treat this citation as provisional pending confirmation from the tool authors.)
+   * Source repository: [github.com/AICONSlab/HyperMapp3r](https://github.com/AICONSlab/HyperMapp3r) (Goubran M, et al.).
+   * Closest associated publication: Goubran M, et al. *Hippocampal segmentation for brains with extensive atrophy using three-dimensional convolutional neural networks*. Human Brain Mapping, 41(2):291-308, 2020. (Note: this citation covers the architecture's origin; the tool's WMH-segmentation mode used by this pipeline may derive from further unpublished/preprint work by the same group — treat the paper citation as provisional pending confirmation from the tool authors, though the repository link above is a confirmed, stable source.)
 8. **SegCSVD (segcsvdWMH)**:
    * Gibson E, Ramirez J, et al. *segcsvdWMH: A Convolutional Neural Network-Based Tool for Quantifying White Matter Hyperintensities in Heterogeneous Patient Cohorts*. Human Brain Mapping, 2024. https://doi.org/10.1002/hbm.70104
 9. **Emory Robust WMH**:
