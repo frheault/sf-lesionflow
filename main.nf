@@ -18,17 +18,26 @@ def helpMessage() {
       --fs_license [path]           Path to FreeSurfer license file (required for SAMSEG).
 
     Optional arguments:
+      --participant_label [str]     Filter subjects by comma-separated IDs (e.g. 'sub-001,sub-002').
       --output [path]               Directory to publish results (default: '${params.output}').
+      --algorithms [str]            Comma-separated allow-list of algorithms to run (e.g. 'lst_ai,samseg').
+                                    Valid options: ${AlgorithmSelection.ALL.join(', ')}.
+      --skip_algorithms [str]       Comma-separated deny-list of algorithms to skip (e.g. 'emory_robust').
+      --max_memory [str]            Warn about algorithms exceeding this memory limit (e.g. '20.GB').
       --help                        Display this help message.
     """.stripIndent()
 }
 
 // Default parameters
-params.input        = false
-params.mni_template = false
-params.fs_license   = false
-params.output       = "results"
-params.help         = false
+params.input             = false
+params.mni_template      = false
+params.fs_license        = false
+params.participant_label = false
+params.output            = "results"
+params.help              = false
+params.algorithms        = false
+params.skip_algorithms   = false
+params.max_memory        = false
 
 if (params.help) {
     helpMessage()
@@ -78,8 +87,7 @@ include {
     SEGMENTATION_MIMOSA;
     SEGMENTATION_SHIVAI;
     CONSENSUS_STAPLE;
-    HARMONIZATION_STAPLE;
-    EXPORT_SESSION
+    HARMONIZATION_STAPLE
 } from './modules/local/lesion_segmentation'
 
 // -----------------------------------------------------------------------------
@@ -125,6 +133,44 @@ workflow get_data {
         flair        = ch_flair
         mni_template = ch_mni_template
         fs_license   = ch_fs_license
+}
+
+// -----------------------------------------------------------------------------
+// Algorithm Selection & Resource Preflight Check
+// -----------------------------------------------------------------------------
+// Resolved once at parse time (params are CLI-time, not channel/runtime values) --
+// active_algorithms.size() below is therefore a plain constant by the time
+// groupTuple(size:) sees it. Do NOT replace this with anything computed from a
+// channel (e.g. `.count()`) -- Nextflow's groupTuple(size:) only accepts a
+// resolved-at-parse-time value, confirmed via nextflow-io/nextflow#1702.
+def active_algorithms = AlgorithmSelection.resolveActive(params)  // throws immediately if params are invalid
+log.info "Active segmentation algorithms (${active_algorithms.size()}/${AlgorithmSelection.ALL.size()}): ${active_algorithms.join(', ')}"
+if (active_algorithms.size() == 1) {
+    log.warn "Only one algorithm active (${active_algorithms[0]}) -- CONSENSUS_STAPLE will degenerate to that single mask, not a real consensus."
+}
+
+// Declared, hand-maintained approximation of each algorithm's peak memory need,
+// mirroring the labels in conf/base.config / conf/local_dev.config. NOT introspected
+// live from the active Nextflow config -- if those files' memory values change,
+// update this table too, or this check will quietly go stale.
+def ALGORITHM_MEMORY_GB = [
+    lst_ai: 8, samseg: 16, wmh_synthseg: 16, fast_outlier: 8, flames: 8,
+    truenet: 16, hypermapp3r: 16, segcsvd: 8, emory_robust: 16, mars_wmh: 8,
+    bawil: 8, mimosa: 8, shivai: 8
+]
+assert ALGORITHM_MEMORY_GB.keySet() == AlgorithmSelection.ALL as Set  // fails loudly if the two lists ever diverge
+
+if (params.max_memory) {
+    def max_gb = (params.max_memory as nextflow.util.MemoryUnit).toGiga()
+    def oversized = active_algorithms.findAll { ALGORITHM_MEMORY_GB[it] > max_gb }
+    if (oversized) {
+        log.warn """\
+        --max_memory ${params.max_memory} is below the declared requirement for:
+        ${oversized.collect { "  - ${it} (~${ALGORITHM_MEMORY_GB[it]}GB)" }.join('\n')}
+        These will likely fail or be OOM-killed under this limit.
+        Exclude them with --skip_algorithms ${oversized.join(',')}, or raise --max_memory.
+        """.stripIndent()
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -299,7 +345,7 @@ workflow {
             SEGMENTATION_MIMOSA.out.binary_mask,
             SEGMENTATION_SHIVAI.out.binary_mask
         )
-        .groupTuple(by: 0)
+        .groupTuple(by: 0, size: active_algorithms.size())
 
     ch_staple_input = TRANSFORM_FLAIR_TO_MNI.out.warped_image
         .join(ch_all_binary_masks)
@@ -315,38 +361,4 @@ workflow {
         .groupTuple(by: 0)
 
     HARMONIZATION_STAPLE(ch_harmonize_input)
-
-    // =========================================================================
-    // PHASE 5: Export Clean Final Outputs
-    // =========================================================================
-
-    ch_harmonized_binary = HARMONIZATION_STAPLE.out.harmonized_binary
-        .transpose()
-        .map { subject, file ->
-            def meta_id = file.name.replaceAll(/_staple_thr90_harmonized_binary\.nii\.gz/, '')
-            [ meta_id, file ]
-        }
-
-    ch_harmonized_labels = HARMONIZATION_STAPLE.out.harmonized_labels
-        .transpose()
-        .map { subject, file ->
-            def meta_id = file.name.replaceAll(/_staple_thr90_harmonized_labels_uint16\.nii\.gz/, '')
-            [ meta_id, file ]
-        }
-
-    ch_export_session_input = TRANSFORM_T1W_TO_MNI.out.warped_image
-        .map { meta, img -> [meta.id, meta, img] }
-        .join(TRANSFORM_T1W_UNSTRIPPED_TO_MNI.out.warped_image.map { meta, img -> [meta.id, img] })
-        .join(TRANSFORM_FLAIR_TO_MNI.out.warped_image.map { meta, img -> [meta.id, img] })
-        .join(TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI.out.warped_image.map { meta, img -> [meta.id, img] })
-        .join(CONSENSUS_STAPLE.out.staple_probmap.map { meta, img -> [meta.id, img] })
-        .join(CONSENSUS_STAPLE.out.staple_thr90_binary.map { meta, img -> [meta.id, img] })
-        .join(CONSENSUS_STAPLE.out.staple_thr90_labels.map { meta, img -> [meta.id, img] })
-        .join(ch_harmonized_binary)
-        .join(ch_harmonized_labels)
-        .map { id, meta, t1_str, t1_unstr, fl_str, fl_unstr, prob, st_bin, st_lbl, harm_bin, harm_lbl ->
-            [ meta, t1_str, t1_unstr, fl_str, fl_unstr, prob, st_bin, st_lbl, harm_bin, harm_lbl ]
-        }
-
-    EXPORT_SESSION(ch_export_session_input)
 }

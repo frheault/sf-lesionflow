@@ -8,7 +8,7 @@ nextflow_pipeline {
             params {
                 input        = "data"
                 mni_template = "template/mni_masked.nii.gz"
-                fs_license   = "/home/local/USHERBROOKE/rhef1902/Libraries/freesurfer/license.txt"
+                fs_license   = "${projectDir}/tests/data/fs_license.txt"
                 output       = "results_test"
             }
         }
@@ -23,7 +23,7 @@ nextflow_pipeline {
             params {
                 input        = "data"
                 mni_template = "template/mni_masked.nii.gz"
-                fs_license   = "/home/local/USHERBROOKE/rhef1902/Libraries/freesurfer/license.txt"
+                fs_license   = "${projectDir}/tests/data/fs_license.txt"
                 output       = "results_test"
             }
         }

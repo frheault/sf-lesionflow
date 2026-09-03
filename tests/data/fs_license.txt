@@ -1,0 +1,4 @@
+dummy@freesurfer.org
+12345
+*ABCDEFG
+FS12345

@@ -9,15 +9,23 @@ process SEGMENTATION_LST_AI {
     label 'process_medium'
     container 'ms_chus/lst_ai:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_lst_ai_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                     , emit: versions
 
     stub:
     """
     touch ${meta.id}_lst_ai_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        lst_ai: 2.0.0
+    END_VERSIONS
     """
 
     script:
@@ -38,6 +46,11 @@ process SEGMENTATION_LST_AI {
         exit 1
     fi
     rm -rf tmp_out
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        lst_ai: 2.0.0
+    END_VERSIONS
     """
 }
 
@@ -46,15 +59,23 @@ process SEGMENTATION_SAMSEG {
     label 'process_high_memory'
     container 'freesurfer/freesurfer:7.4.1'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_unstripped_mni), path(flair_unstripped_mni), path(fs_license)
 
     output:
     tuple val(meta), path("${meta.id}_samseg_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                     , emit: versions
 
     stub:
     """
     touch ${meta.id}_samseg_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samseg: 7.4.1
+    END_VERSIONS
     """
 
     script:
@@ -80,6 +101,11 @@ process SEGMENTATION_SAMSEG {
         exit 1
     fi
     rm -rf samseg_out
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samseg: 7.4.1
+    END_VERSIONS
     """
 }
 
@@ -88,15 +114,23 @@ process SEGMENTATION_WMH_SYNTHSEG {
     label 'process_high_memory'
     container 'ms_chus/wmh_synthseg:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(flair_unstripped_mni)
 
     output:
     tuple val(meta), path("${meta.id}_wmh-synthseg_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                           , emit: versions
 
     stub:
     """
     touch ${meta.id}_wmh-synthseg_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        wmh_synthseg: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -115,6 +149,11 @@ process SEGMENTATION_WMH_SYNTHSEG {
 
     conform_synthseg.py --input multiclass.nii.gz --ref ${flair_unstripped_mni} --output ${meta.id}_wmh-synthseg_binary.nii.gz --label_id ${label_id}
     rm -f multiclass.nii.gz *.lesion_probs.nii.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        wmh_synthseg: 1.0
+    END_VERSIONS
     """
 }
 
@@ -123,15 +162,24 @@ process SEGMENTATION_FAST_OUTLIER {
     label 'process_medium'
     container 'ms_chus/fast_outlier:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_fast-outlier_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                          , emit: versions
 
     stub:
     """
     touch ${meta.id}_fast-outlier_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        fast: 6.0
+        fast_outlier: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -151,9 +199,15 @@ process SEGMENTATION_FAST_OUTLIER {
                     --output ${meta.id}_fast-outlier_binary.nii.gz \
                     --sigma ${sigma} \
                     --pve_threshold ${pve_thresh} \
-                    --dwm_threshold ${dwm_thresh}
+                    --dwm_thresh ${dwm_thresh}
 
     rm -rf fast_out
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        fast: 6.0
+        fast_outlier: 1.0
+    END_VERSIONS
     """
 }
 
@@ -162,15 +216,24 @@ process SEGMENTATION_FLAMES {
     label 'process_medium'
     container 'ms_chus/flames:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_flames_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                     , emit: versions
 
     stub:
     """
     touch ${meta.id}_flames_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nnunet: 2.0
+        flames: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -191,6 +254,12 @@ process SEGMENTATION_FLAMES {
         exit 1
     fi
     rm -rf in_dir out_dir
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nnunet: 2.0
+        flames: 1.0
+    END_VERSIONS
     """
 }
 
@@ -198,15 +267,24 @@ process SEGMENTATION_TRUENET {
     tag "$meta.id"
     label 'process_high_memory'
     container 'ms_chus/truenet:latest'
+
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_truenet_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                      , emit: versions
 
     stub:
     """
     touch ${meta.id}_truenet_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        truenet: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -225,6 +303,11 @@ process SEGMENTATION_TRUENET {
                          --threshold ${threshold}
 
     rm -rf in_dir out
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        truenet: 1.0
+    END_VERSIONS
     """
 }
 
@@ -232,15 +315,24 @@ process SEGMENTATION_HYPERMAPP3R {
     tag "$meta.id"
     label 'process_high_memory'
     container 'mgoubran/hypermapper:latest'
+
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_hypermapp3r_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                         , emit: versions
 
     stub:
     """
     touch ${meta.id}_hypermapp3r_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        hypermapper: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -264,6 +356,11 @@ process SEGMENTATION_HYPERMAPP3R {
                          --threshold ${threshold}
 
     rm -rf tmp_hyper brain_mask.nii.gz prob.nii.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        hypermapper: 1.0
+    END_VERSIONS
     """
 }
 
@@ -271,15 +368,24 @@ process SEGMENTATION_SEGCSVD {
     tag "$meta.id"
     label 'process_medium'
     container 'segcsvd_rc03:latest'
+
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_segcsvd_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                      , emit: versions
 
     stub:
     """
     touch ${meta.id}_segcsvd_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        segcsvd: rc03
+    END_VERSIONS
     """
 
     script:
@@ -297,6 +403,11 @@ process SEGMENTATION_SEGCSVD {
                          --threshold ${threshold}
 
     rm -f temp_mask.nii.gz prob.nii.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        segcsvd: rc03
+    END_VERSIONS
     """
 }
 
@@ -304,15 +415,24 @@ process SEGMENTATION_EMORY_ROBUST {
     tag "$meta.id"
     label 'process_high_memory'
     container 'emorycn2l/emory_robust_wmh:v1.2'
+
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_emory_robust_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                           , emit: versions
 
     stub:
     """
     touch ${meta.id}_emory_robust_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        emory_robust_wmh: 1.2
+    END_VERSIONS
     """
 
     script:
@@ -320,9 +440,12 @@ process SEGMENTATION_EMORY_ROBUST {
     export OMP_NUM_THREADS=4
     export PATH=/opt/conda/envs/nnunet/bin:/opt/conda/bin:\$PATH
 
-    rm -rf /app/inputs/* /app/outputs/* 2>/dev/null || true
     bash /app/main.sh -t \$(realpath ${t1_mni}) -f \$(realpath ${flair_mni}) -o \$(realpath ${meta.id}_emory_robust_binary.nii.gz) --no-n4 --no-coreg
-    rm -rf /app/inputs/* /app/outputs/* 2>/dev/null || true
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        emory_robust_wmh: 1.2
+    END_VERSIONS
     """
 }
 
@@ -331,15 +454,23 @@ process SEGMENTATION_MARS_WMH {
     label 'process_medium'
     container 'ghcr.io/miac-research/wmh-nnunet:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_mars_wmh_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                       , emit: versions
 
     stub:
     """
     touch ${meta.id}_mars_wmh_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mars_wmh: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -353,6 +484,11 @@ process SEGMENTATION_MARS_WMH {
         --skipRegistration \
         --overwrite \
         --omitQC
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mars_wmh: 1.0
+    END_VERSIONS
     """
 }
 
@@ -367,15 +503,23 @@ process SEGMENTATION_BAWIL {
     label 'heuristic_proxy'
     container 'ms_chus/lst_ai:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_bawil_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                    , emit: versions
 
     stub:
     """
     touch ${meta.id}_bawil_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bawil_heuristic: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -389,6 +533,11 @@ process SEGMENTATION_BAWIL {
                     --output ${meta.id}_bawil_binary.nii.gz \
                     --sigma ${sigma} \
                     --min_cluster_size ${min_cluster}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bawil_heuristic: 1.0
+    END_VERSIONS
     """
 }
 
@@ -403,15 +552,23 @@ process SEGMENTATION_MIMOSA {
     label 'heuristic_proxy'
     container 'ms_chus/lst_ai:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_mimosa_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                     , emit: versions
 
     stub:
     """
     touch ${meta.id}_mimosa_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mimosa_heuristic: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -428,6 +585,11 @@ process SEGMENTATION_MIMOSA {
                      --prob_threshold ${prob_thresh} \
                      --flair_cand_threshold ${flair_thresh} \
                      --min_cluster_size ${min_cluster}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mimosa_heuristic: 1.0
+    END_VERSIONS
     """
 }
 
@@ -442,15 +604,23 @@ process SEGMENTATION_SHIVAI {
     label 'heuristic_proxy'
     container 'ms_chus/lst_ai:latest'
 
+    when:
+    task.ext.when == null || task.ext.when
+
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
     output:
     tuple val(meta), path("${meta.id}_shivai_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                     , emit: versions
 
     stub:
     """
     touch ${meta.id}_shivai_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        shivai_heuristic: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -465,6 +635,11 @@ process SEGMENTATION_SHIVAI {
                      --output ${meta.id}_shivai_binary.nii.gz \
                      --prob_threshold ${prob_thresh} \
                      --min_cluster_size ${min_cluster}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        shivai_heuristic: 1.0
+    END_VERSIONS
     """
 }
 
@@ -483,12 +658,17 @@ process CONSENSUS_STAPLE {
     tuple val(meta), path("${meta.id}_staple_probmap.nii.gz"), emit: staple_probmap
     tuple val(meta), path("${meta.id}_staple_thr90_binary.nii.gz"), emit: staple_thr90_binary
     tuple val(meta), path("${meta.id}_staple_thr90_labels_uint16.nii.gz"), emit: staple_thr90_labels
+    path "versions.yml"                                                   , emit: versions
 
     stub:
     """
     touch ${meta.id}_staple_probmap.nii.gz
     touch ${meta.id}_staple_thr90_binary.nii.gz
     touch ${meta.id}_staple_thr90_labels_uint16.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        staple: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -506,6 +686,11 @@ process CONSENSUS_STAPLE {
                         --min_cluster_size ${min_cluster} \
                         --min_distance ${min_dist} \
                         --gaussian_sigma ${g_sigma}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        staple: 1.0
+    END_VERSIONS
     """
 }
 
@@ -524,18 +709,27 @@ process HARMONIZATION_STAPLE {
     tuple val(subject), path("*_staple_thr90_harmonized_binary.nii.gz"), emit: harmonized_binary
     tuple val(subject), path("*_staple_thr90_harmonized_labels_uint16.nii.gz"), emit: harmonized_labels
     tuple val(subject), path("${subject}_staple_harmonized_lesion_tracking.csv"), emit: audit_csv
-
-    publishDir "${params.output}/final_outputs/${subject}", mode: 'copy', pattern: '*.csv'
+    path "versions.yml"                                                         , emit: versions
 
     stub:
     """
     for m in ${staple_masks}; do
         fname=\$(basename \$m)
         ses_name=\$(echo \$fname | grep -o 'ses-[0-9a-zA-Z]*')
-        touch ${subject}_\${ses_name}_staple_thr90_harmonized_binary.nii.gz
-        touch ${subject}_\${ses_name}_staple_thr90_harmonized_labels_uint16.nii.gz
+        if [ -n "\$ses_name" ]; then
+            ses_suffix="_\${ses_name}"
+        else
+            ses_suffix=""
+        fi
+        touch ${subject}\${ses_suffix}_staple_thr90_harmonized_binary.nii.gz
+        touch ${subject}\${ses_suffix}_staple_thr90_harmonized_labels_uint16.nii.gz
     done
     touch ${subject}_staple_harmonized_lesion_tracking.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        harmonization: 1.0
+    END_VERSIONS
     """
 
     script:
@@ -551,70 +745,10 @@ process HARMONIZATION_STAPLE {
                         --min_distance ${min_dist} \
                         --gaussian_sigma ${g_sigma} \
                         --pct_change_threshold ${pct_thresh}
-    """
-}
 
-// -----------------------------------------------------------------------------
-// Phase 5: Per-Session Standardized Export
-// -----------------------------------------------------------------------------
-
-process EXPORT_SESSION {
-    tag "$meta.id"
-    label 'process_single'
-    publishDir "${params.output}/final_outputs/${meta.subject}", mode: 'copy'
-
-    input:
-    tuple val(meta),
-          path(t1_stripped),
-          path(t1_unstripped),
-          path(flair_stripped),
-          path(flair_unstripped),
-          path(probmap),
-          path(consensus_binary),
-          path(consensus_labels),
-          path(harmonized_binary),
-          path(harmonized_labels)
-
-    output:
-    path "${meta.session}", type: 'dir'
-
-    stub:
-    """
-    mkdir -p ${meta.session}/staple_classical
-    touch ${meta.session}/t1_mni_stripped.nii.gz
-    touch ${meta.session}/t1_mni_unstripped.nii.gz
-    touch ${meta.session}/flair_mni_stripped.nii.gz
-    touch ${meta.session}/flair_mni_unstripped.nii.gz
-    touch ${meta.session}/staple_classical/t1_mni_stripped.nii.gz
-    touch ${meta.session}/staple_classical/t1_mni_unstripped.nii.gz
-    touch ${meta.session}/staple_classical/flair_mni_stripped.nii.gz
-    touch ${meta.session}/staple_classical/flair_mni_unstripped.nii.gz
-    touch ${meta.session}/staple_classical/staple_probmap.nii.gz
-    touch ${meta.session}/staple_classical/staple_thr90_binary.nii.gz
-    touch ${meta.session}/staple_classical/staple_thr90_labels_uint16.nii.gz
-    touch ${meta.session}/staple_classical/staple_thr90_harmonized_binary.nii.gz
-    touch ${meta.session}/staple_classical/staple_thr90_harmonized_labels_uint16.nii.gz
-    """
-
-    script:
-    """
-    mkdir -p ${meta.session}/staple_classical
-
-    # Root session anatomical volumes
-    cp -L ${t1_stripped} ${meta.session}/t1_mni_stripped.nii.gz
-    cp -L ${t1_unstripped} ${meta.session}/t1_mni_unstripped.nii.gz
-    cp -L ${flair_stripped} ${meta.session}/flair_mni_stripped.nii.gz
-    cp -L ${flair_unstripped} ${meta.session}/flair_mni_unstripped.nii.gz
-
-    # staple_classical structured folder
-    cp -L ${t1_stripped} ${meta.session}/staple_classical/t1_mni_stripped.nii.gz
-    cp -L ${t1_unstripped} ${meta.session}/staple_classical/t1_mni_unstripped.nii.gz
-    cp -L ${flair_stripped} ${meta.session}/staple_classical/flair_mni_stripped.nii.gz
-    cp -L ${flair_unstripped} ${meta.session}/staple_classical/flair_mni_unstripped.nii.gz
-    cp -L ${probmap} ${meta.session}/staple_classical/staple_probmap.nii.gz
-    cp -L ${consensus_binary} ${meta.session}/staple_classical/staple_thr90_binary.nii.gz
-    cp -L ${consensus_labels} ${meta.session}/staple_classical/staple_thr90_labels_uint16.nii.gz
-    cp -L ${harmonized_binary} ${meta.session}/staple_classical/staple_thr90_harmonized_binary.nii.gz
-    cp -L ${harmonized_labels} ${meta.session}/staple_classical/staple_thr90_harmonized_labels_uint16.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        harmonization: 1.0
+    END_VERSIONS
     """
 }

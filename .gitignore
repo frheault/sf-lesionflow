@@ -3,7 +3,7 @@ CHANGELOG.md
 .nextflow*
 results*/
 .nf-test/
-data/
+/data/
 report-*.html
 timeline-*.html
 trace-*.txt
