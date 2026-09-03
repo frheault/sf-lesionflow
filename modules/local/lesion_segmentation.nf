@@ -198,8 +198,6 @@ process SEGMENTATION_TRUENET {
     tag "$meta.id"
     label 'process_high_memory'
     container 'ms_chus/truenet:latest'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
@@ -234,8 +232,6 @@ process SEGMENTATION_HYPERMAPP3R {
     tag "$meta.id"
     label 'process_high_memory'
     container 'mgoubran/hypermapper:latest'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
@@ -275,8 +271,6 @@ process SEGMENTATION_SEGCSVD {
     tag "$meta.id"
     label 'process_medium'
     container 'segcsvd_rc03:latest'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(meta), path(flair_mni)
 
@@ -310,8 +304,6 @@ process SEGMENTATION_EMORY_ROBUST {
     tag "$meta.id"
     label 'process_high_memory'
     container 'emorycn2l/emory_robust_wmh:v1.2'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(meta), path(t1_mni), path(flair_mni)
 
@@ -484,8 +476,6 @@ process CONSENSUS_STAPLE {
     tag "$meta.id"
     label 'process_medium'
     container 'segcsvd_rc03:latest'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(meta), path(ref_image), path(binary_masks)
 
@@ -527,8 +517,6 @@ process HARMONIZATION_STAPLE {
     tag "$subject"
     label 'process_medium'
     container 'segcsvd_rc03:latest'
-    containerOptions '-u 0:0'
-
     input:
     tuple val(subject), val(metas), path(staple_masks)
 
