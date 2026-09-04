@@ -3,7 +3,7 @@
 
 """Shared connected-component filtering and watershed instance-labeling
 helpers, used by the STAPLE consensus/harmonization scripts and the
-heuristic-proxy segmentation scripts in this directory."""
+BAWIL/SHiVAi segmentation scripts in this directory."""
 
 import numpy as np
 import scipy.ndimage as ndi

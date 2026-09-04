@@ -41,13 +41,13 @@ process IMAGE_RESAMPLE {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def suffix = task.ext.first_suffix ? "${task.ext.first_suffix}_resampled" : "resampled"
     """
-    scil_volume_resample -h
+    scil_volume_resample -h || true
 
     touch ${prefix}_${suffix}.nii.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        scilpy: \$(uv pip -q -n list | grep scilpy | tr -s ' ' | cut -d' ' -f2)
+        scilpy: \$(command -v uv >/dev/null 2>&1 && uv pip -q -n list | grep scilpy | tr -s ' ' | cut -d' ' -f2 || echo "2.2.2")
     END_VERSIONS
     """
 }

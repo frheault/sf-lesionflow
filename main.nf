@@ -24,20 +24,30 @@ def helpMessage() {
                                     Valid options: ${AlgorithmSelection.ALL.join(', ')}.
       --skip_algorithms [str]       Comma-separated deny-list of algorithms to skip (e.g. 'emory_robust').
       --max_memory [str]            Warn about algorithms exceeding this memory limit (e.g. '20.GB').
+      --staple_threshold [float]    STAPLE consensus probability threshold (default: 0.90).
+      --staple_min_cluster_size [int] Minimum lesion cluster size in voxels/mm3 (default: 6).
+      --staple_min_distance [int]   Minimum peak distance for watershed instances (default: 3).
+      --staple_gaussian_sigma [float] Gaussian smoothing sigma for distance transform (default: 0.8).
+      --pct_change_threshold [float] Percentage volume change threshold for trajectory status (default: 20.0).
       --help                        Display this help message.
     """.stripIndent()
 }
 
 // Default parameters
-params.input             = false
-params.mni_template      = false
-params.fs_license        = false
-params.participant_label = false
-params.output            = "results"
-params.help              = false
-params.algorithms        = false
-params.skip_algorithms   = false
-params.max_memory        = false
+params.input                   = false
+params.mni_template            = false
+params.fs_license              = false
+params.participant_label       = false
+params.output                  = "results"
+params.help                    = false
+params.algorithms              = false
+params.skip_algorithms         = false
+params.max_memory              = false
+params.staple_threshold        = 0.90
+params.staple_min_cluster_size = 6
+params.staple_min_distance     = 3
+params.staple_gaussian_sigma   = 0.8
+params.pct_change_threshold    = 20.0
 
 if (params.help) {
     helpMessage()
@@ -107,6 +117,10 @@ workflow get_data {
 
         input_dir = file(params.input)
 
+        def allowed_participants = params.participant_label
+            ? (params.participant_label.toString().tokenize(',').collect { it.trim().replaceFirst('^sub-', '') } as Set)
+            : null
+
         // Loading T1w files (BIDS structure: sub-*/ses-*/anat/*T1w.nii.gz)
         ch_t1 = Channel.fromPath("${input_dir}/sub-*/ses-*/anat/*T1w.nii.gz")
             .map { f ->
@@ -114,7 +128,10 @@ workflow get_data {
                 def ses = f.parent.parent.name
                 [ [id: "${sid}_${ses}", subject: sid, session: ses], f ]
             }
-            .ifEmpty { error "No T1w files found in ${input_dir} matching sub-*/ses-*/anat/*T1w.nii.gz" }
+            .filter { meta, f ->
+                !allowed_participants || allowed_participants.contains(meta.subject.replaceFirst('^sub-', ''))
+            }
+            .ifEmpty { error "No T1w files found in ${input_dir} matching sub-*/ses-*/anat/*T1w.nii.gz${params.participant_label ? " for participant(s): ${params.participant_label}" : ''}" }
 
         // Loading FLAIR files (BIDS structure: sub-*/ses-*/anat/*FLAIR.nii.gz)
         ch_flair = Channel.fromPath("${input_dir}/sub-*/ses-*/anat/*FLAIR.nii.gz")
@@ -123,7 +140,10 @@ workflow get_data {
                 def ses = f.parent.parent.name
                 [ [id: "${sid}_${ses}", subject: sid, session: ses], f ]
             }
-            .ifEmpty { error "No FLAIR files found in ${input_dir} matching sub-*/ses-*/anat/*FLAIR.nii.gz" }
+            .filter { meta, f ->
+                !allowed_participants || allowed_participants.contains(meta.subject.replaceFirst('^sub-', ''))
+            }
+            .ifEmpty { error "No FLAIR files found in ${input_dir} matching sub-*/ses-*/anat/*FLAIR.nii.gz${params.participant_label ? " for participant(s): ${params.participant_label}" : ''}" }
 
         ch_mni_template = Channel.fromPath(params.mni_template, checkIfExists: true)
         ch_fs_license   = Channel.fromPath(params.fs_license, checkIfExists: true)

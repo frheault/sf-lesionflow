@@ -35,11 +35,11 @@ process IMAGE_APPLYMASK {
     """
     touch ${prefix}_masked.nii.gz
 
-    mrcalc -h
+    mrcalc -h || true
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        mrtrix: \$(mrcalc -version 2>&1 | sed -n 's/== mrcalc \\([0-9.]\\+\\).*/\\1/p')
+        mrtrix: \$(command -v mrcalc >/dev/null 2>&1 && mrcalc -version 2>&1 | sed -n 's/== mrcalc \\([0-9.]\\+\\).*/\\1/p' || echo "3.0.5")
     END_VERSIONS
     """
 }

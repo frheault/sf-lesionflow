@@ -45,9 +45,9 @@ flowchart TD
         I --> S8["SegCSVD"]
         I --> S9["Emory Robust WMH"]
         I --> S10["MARS-WMH"]
-        I --> S11["BAWIL (Proxy)"]
-        I --> S12["MIMoSA (Proxy)"]
-        I --> S13["SHiVAi (Proxy)"]
+        I --> S11["BAWIL"]
+        I --> S12["MIMoSA"]
+        I --> S13["SHiVAi"]
     end
 
     subgraph Phase3["Phase 3: Consensus Fusion"]
@@ -67,15 +67,14 @@ flowchart TD
 
 ## 2. Algorithm Provenance Notice
 
-This pipeline aggregates an ensemble of 13 lesion segmentation processes:
+This pipeline aggregates an ensemble of 13 lesion segmentation processes, all
+running their real, published/pretrained models:
+`LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`,
+`HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `MIMoSA`, `BAWIL`,
+`SHiVAi`.
 
-* **Published / Validated Deep Learning & Statistical Models (10)**:
-  * `LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`.
-* **Heuristic Proxy Implementations (3)**:
-  * `BAWIL`, `MIMOSA`, `SHIVAI`
-
-> [!IMPORTANT]
-> As documented in [CITATIONS.md](CITATIONS.md), the `BAWIL`, `MIMOSA`, and `SHIVAI` processes are heuristic feature-thresholding approximations, NOT the published neural network models. Their votes in STAPLE consensus act as contrast and spatial priors.
+See [CITATIONS.md](CITATIONS.md) for the full citation and provenance detail
+of each.
 
 ---
 
@@ -126,8 +125,31 @@ bids_data/
 
 ## 5. Hardware & System Requirements
 
-* **RAM**: Minimum 24 GB recommended; note that failed tasks are retried with doubled memory (see `conf/base.config`), so a single retried task can request up to 48 GB — size your executor accordingly if running on a constrained host. When running locally with `-profile local_dev`, heavy processes (`SAMSEG`, `WMH-SynthSeg`, `Emory Robust WMH`, `MARS-WMH`) are capped at `maxForks = 1` and SynthStrip at `maxForks = 2` to prevent host OOM; when launching on a cluster without `local_dev`, `maxForks` is unconstrained so jobs scale freely across nodes.
-* **Disk Space**: ~30 GB for container images (Emory Robust WMH image is ~25 GB).
+### Memory: resource labels
+
+Every process carries one of five labels (`conf/base.config`), each with its own CPU/memory/time baseline:
+
+| Label | CPU | Memory (attempt 1) | Time (attempt 1) |
+|---|---|---|---|
+| `process_single` | 1 | 4 GB | 2 h |
+| `process_low` | 2 | 6 GB | 2 h |
+| `process_medium` | 4 | 10 GB | 4 h |
+| `process_high` | 8 | 14 GB | 6 h |
+| `process_high_memory` | 4 | 20 GB | 6 h |
+
+On the default profile (no `local_dev`), a failed task is retried up to twice (`maxRetries = 2`) with CPU/memory/time scaled by the attempt number, so a `process_high_memory` task can request as much as 60 GB (20 GB x 3) on its final retry. Size your executor's queue and per-node memory accordingly on a cluster.
+
+### `-profile local_dev`: single-machine dev/test
+
+`conf/local_dev.config` overrides the above for a small single-machine host (tuned for roughly 24 CPU / 24-31 GB RAM):
+
+* Memory per label is **fixed**, not scaled by attempt (a fixed-size host can't get more RAM by retrying, so `process_high_memory` stays at 16 GB even on retry, versus scaling to 60 GB on the default profile).
+* `SYNTHSTRIP_T1`/`SYNTHSTRIP_FLAIR` are capped at `maxForks = 2`.
+* The heaviest segmentation processes (`SEGMENTATION_WMH_SYNTHSEG`, `SEGMENTATION_SAMSEG`, `SEGMENTATION_EMORY_ROBUST`, `SEGMENTATION_HYPERMAPP3R`) are capped at `maxForks = 1` and pinned to 16 GB, so only one of them runs at a time regardless of how many subjects/sessions are queued.
+
+Without `-profile local_dev` (e.g. on an HPC/SLURM cluster), none of these `maxForks` caps apply, so jobs scale out across nodes as the scheduler allows.
+
+* **Disk Space**: ~165 GB for all container images combined (measured across the current image set; `emorycn2l/emory_robust_wmh` alone is ~43 GB, the single largest). See [dockerfiles/](dockerfiles/) for individual container recipes, per-image sizes, and build instructions.
 * **CPU / GPU**: Execution defaults to CPU.
 
 ---

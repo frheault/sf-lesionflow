@@ -1,81 +1,88 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Real BAWIL inference (Bashiri Bawil M, et al., arXiv:2506.07123).
+
+Model: Hugging Face `Bawil/wmh_leverage_normal_abnormal_segmentation`,
+`unet/models/scenario2_multiclass_model.h5` -- a Keras U-Net, 3-class softmax
+(background / normal periventricular WMH / abnormal WMH) over 256x256 axial
+FLAIR slices.
+
+No official NIfTI-in/NIfTI-out inference code exists upstream: the paper's
+own repo (github.com/Mahdi-Bashiri/wmh-normal-abnormal-segmentation) is a
+research training/eval harness operating on pre-extracted 256x512 PNG slices
+(FLAIR|mask side by side), not a deployable CLI. The preprocessing below
+(per-slice z-score normalization, resize to 256x256) is reimplemented from
+that harness's own data loader. Axial slice orientation was confirmed by
+downloading and visually inspecting one of the paper's own training samples
+(data/train/101228_10.png), not assumed.
+"""
 
 import argparse
-import sys
 import numpy as np
 import nibabel as nib
-from scipy.ndimage import gaussian_filter
+import cv2 as cv
+from tensorflow import keras
 from _lesion_utils import filter_small_components
 
+
 def build_arg_parser():
-    parser = argparse.ArgumentParser(description="BAWIL Heuristic Proxy White Matter Lesion Segmentation")
+    parser = argparse.ArgumentParser(description="BAWIL real inference (3-class U-Net)")
     parser.add_argument("--flair", required=True, help="Input FLAIR NIfTI image")
     parser.add_argument("--output", required=True, help="Output binary lesion mask NIfTI file")
-    parser.add_argument("--sigma", type=float, default=2.0, help="Gaussian smoothing sigma (default: 2.0)")
-    parser.add_argument("--min_cluster_size", type=int, default=3, help="Minimum connected component size (default: 3)")
+    parser.add_argument("--model", default="/opt/bawil/scenario2_multiclass_model.h5",
+                         help="Path to the Keras .h5 model (baked into the image at build time)")
+    parser.add_argument("--prob_threshold", type=float, default=0.50,
+                         help="Threshold on the class-2 (abnormal WMH) softmax probability (default: 0.50)")
+    parser.add_argument("--min_cluster_size", type=int, default=3,
+                         help="Minimum connected component size (default: 3)")
     return parser
 
-def main():
-    parser = build_arg_parser()
-    args = parser.parse_args()
 
-    img = nib.load(args.flair)
+def main():
+    args = build_arg_parser().parse_args()
+
+    # Reorient to canonical RAS so axis 2 is reliably the axial (superior-inferior)
+    # axis regardless of how the input file happens to be stored. A no-op for
+    # this pipeline's actual MNI-space inputs (already RAS), verified directly.
+    img = nib.as_closest_canonical(nib.load(args.flair))
     data = img.get_fdata().astype(np.float32)
     affine = img.affine
     header = img.header
+    native_shape = data.shape[:2]
 
-    orig_shape = data.shape
-    brain_mask = data > 0
+    model = keras.models.load_model(args.model, compile=False)
 
-    if np.sum(brain_mask) == 0:
-        empty_out = np.zeros(orig_shape, dtype=np.uint8)
-        nib.save(nib.Nifti1Image(empty_out, affine, header), args.output)
-        sys.exit(0)
+    abnormal_prob = np.zeros(data.shape, dtype=np.float32)
 
-    mean_val = np.mean(data[brain_mask])
-    std_val = np.std(data[brain_mask]) or 1.0
-    norm_data = np.zeros_like(data)
-    norm_data[brain_mask] = np.clip((data[brain_mask] - mean_val) / std_val, -3.0, 10.0)
-
-    target_h, target_w = 256, 256
-    nx, ny, nz = orig_shape
-    pad_x = (target_h - nx) // 2
-    pad_y = (target_w - ny) // 2
-    pad_x_extra = target_h - (nx + pad_x)
-    pad_y_extra = target_w - (ny + pad_y)
-
-    class2_prob = np.zeros(orig_shape, dtype=np.float32)
-    class1_prob = np.zeros(orig_shape, dtype=np.float32)
-
-    for z in range(nz):
-        m_2d = brain_mask[:, :, z]
-        if np.sum(m_2d) < 10:
+    for z in range(data.shape[2]):
+        sl = data[:, :, z]
+        if np.max(sl) <= 0:
             continue
-        s_2d = norm_data[:, :, z]
-        padded = np.pad(s_2d, ((pad_x, pad_x_extra), (pad_y, pad_y_extra)), mode='constant')
 
-        smooth_2 = gaussian_filter(padded, sigma=args.sigma)
-        grad_mag = np.sqrt(np.gradient(padded, axis=0)**2 + np.gradient(padded, axis=1)**2)
-        local_contrast = padded - smooth_2
+        sl_resized = cv.resize(sl, (256, 256))
+        mean = np.mean(sl_resized)
+        std = np.std(sl_resized)
+        if std < 1e-7:
+            continue
+        sl_norm = (sl_resized - mean) / (std + 1e-7)
 
-        l0 = 3.0 - np.maximum(0, padded - 1.0) * 3.0
-        l1 = np.maximum(0, padded - 1.2) * 1.5 + np.maximum(0, smooth_2 - 1.0) * 2.0 - np.maximum(0, local_contrast) * 2.0 - grad_mag
-        l2 = -2.5 + np.maximum(0, padded - 1.8) * 3.0 + np.maximum(0, local_contrast - 0.5) * 3.5 + (padded > 2.5).astype(np.float32) * 2.0
+        pred = model.predict(sl_norm[np.newaxis, ..., np.newaxis], verbose=0)[0]
+        prob2 = pred[..., 2]  # class 2 = abnormal WMH
 
-        logits = np.stack([l0, l1, l2], axis=-1)
-        exp_l = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
-        probs = exp_l / np.sum(exp_l, axis=-1, keepdims=True)
+        # Resize the continuous probability map back to native in-plane
+        # resolution (not the argmax'd label), then threshold at native
+        # resolution -- smoother boundaries than resizing a hard label map.
+        prob2_native = cv.resize(prob2, (native_shape[1], native_shape[0]))
+        abnormal_prob[:, :, z] = prob2_native
 
-        class1_prob[:, :, z] = probs[pad_x:pad_x+nx, pad_y:pad_y+ny, 1] * m_2d
-        class2_prob[:, :, z] = probs[pad_x:pad_x+nx, pad_y:pad_y+ny, 2] * m_2d
+    binary = (abnormal_prob >= args.prob_threshold).astype(np.uint8)
+    if args.min_cluster_size > 1:
+        binary = filter_small_components(binary, args.min_cluster_size)
 
-    abnormal = ((class2_prob >= 0.5) & (class2_prob > class1_prob) & brain_mask).astype(np.uint8)
-    abnormal = filter_small_components(abnormal, args.min_cluster_size)
-
-    out_img = nib.Nifti1Image(abnormal, affine, header)
+    out_img = nib.Nifti1Image(binary, affine, header)
     out_img.set_data_dtype(np.uint8)
     nib.save(out_img, args.output)
+
 
 if __name__ == "__main__":
     main()

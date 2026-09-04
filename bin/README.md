@@ -1,6 +1,6 @@
 # Standalone CLI Tools (`bin/`)
 
-This directory contains standalone Python CLI scripts following the `nf-core` / `nf-junction_atlas` architecture. Each tool uses standard `argparse`, supports `--help`, and exposes algorithmic parameters directly to Nextflow via `task.ext.*` directives.
+This directory contains standalone CLI scripts (Python, plus one R script for `mimosa_predict.R`) following the `nf-core` / `nf-junction_atlas` architecture. Each tool uses standard `argparse` (or `optparse` for the R script), supports `--help`, and exposes algorithmic parameters directly to Nextflow via `task.ext.*` directives.
 
 In containerized pipeline runs (`-profile docker` / `-profile singularity`), dependencies are provided by the respective container environment. For local development or testing, install the dependencies listed in `requirements.txt`.
 
@@ -14,11 +14,12 @@ In containerized pipeline runs (`-profile docker` / `-profile singularity`), dep
 | **`threshold_probmap.py`** | Thresholds probability maps ($\ge \tau$) into binary masks | `numpy`, `nibabel` | `SEGMENTATION_TRUENET`<br>`SEGMENTATION_HYPERMAPP3R`<br>`SEGMENTATION_SEGCSVD` | `ms_chus/truenet:latest`<br>`mgoubran/hypermapper:latest`<br>`segcsvd_rc03:latest` |
 | **`fast_outlier.py`** | DWM mask generation & intensity $z$-score outlier filter | `numpy`, `nibabel` | `SEGMENTATION_FAST_OUTLIER` | `ms_chus/fast_outlier:latest` |
 | **`conform_synthseg.py`** | Extracts label 77 & conforms geometry to reference | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_WMH_SYNTHSEG` | `ms_chus/wmh_synthseg:latest` |
-| **`bawil_filter.py`** | Gaussian-smoothed z-score lesion proxy | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_BAWIL` | `ms_chus/lst_ai:latest` |
-| **`mimosa_filter.py`** | Multimodal T1/FLAIR regression candidate filter | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_MIMOSA` | `ms_chus/lst_ai:latest` |
-| **`shivai_filter.py`** | Multi-scale contrast lesion proxy | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_SHIVAI` | `ms_chus/lst_ai:latest` |
+| **`bawil_filter.py`** | Real BAWIL: pretrained 3-class Keras U-Net (Hugging Face), per-axial-slice inference | `tensorflow`, `numpy`, `nibabel`, `opencv`, `scipy`, `scikit-image` | `SEGMENTATION_BAWIL` | `ms_chus/bawil:latest` |
+| **`mimosa_predict.R`** | Real MIMoSA: pretrained `mimosa_model_No_PD_T2` (R package) | R (`mimosa`, `fslr`, `neurobase`, `mmand`, `optparse`) | `SEGMENTATION_MIMOSA` | `ms_chus/mimosa:latest` |
+| **`shivai_predict.py`** | Real SHIVA-WMH: pretrained 5-fold ResUnet3D SavedModel ensemble | `tensorflow`, `nibabel` | `SEGMENTATION_SHIVAI` | `ms_chus/shivai:latest` |
 | **`staple_consensus.py`** | SimpleITK STAPLE EM fusion + watershed instance segmentation | `numpy`, `scipy`, `SimpleITK`, `scikit-image` | `CONSENSUS_STAPLE` | `segcsvd_rc03:latest` |
 | **`harmonize_staple.py`** | 4D longitudinal lesion tracking & audit CSV generation | `numpy`, `scipy`, `nibabel`, `pandas`, `scikit-image` | `HARMONIZATION_STAPLE` | `segcsvd_rc03:latest` |
+| **`profile_resources.py`** | Telemetry profiling & resource misattribution analysis | `pandas`, `tabulate` | Standalone CLI / CI audit | Host Python environment |
 
 ---
 
@@ -48,19 +49,20 @@ conform_synthseg.py --input <multiclass.nii.gz> --ref <ref.nii.gz> --output <out
 
 ### 5. `bawil_filter.py`
 ```bash
-bawil_filter.py --flair <flair.nii.gz> --output <out_binary.nii.gz> [--sigma 2.0] [--min_cluster_size 3]
+bawil_filter.py --flair <flair.nii.gz> --output <out_binary.nii.gz> \
+                [--model /opt/bawil/scenario2_multiclass_model.h5] [--prob_threshold 0.50] [--min_cluster_size 3]
 ```
 
-### 6. `mimosa_filter.py`
+### 6. `mimosa_predict.R`
 ```bash
-mimosa_filter.py --t1 <t1.nii.gz> --flair <flair.nii.gz> --output <out_binary.nii.gz> \
-                 [--prob_threshold 0.30] [--flair_cand_threshold 1.5] [--min_cluster_size 3]
+mimosa_predict.R --t1 <t1.nii.gz> --flair <flair.nii.gz> --output <out_binary.nii.gz> \
+                 [--prob_threshold 0.30] [--smooth_sigma 1.25] [--min_cluster_size 3]
 ```
 
-### 7. `shivai_filter.py`
+### 7. `shivai_predict.py`
 ```bash
-shivai_filter.py --t1 <t1.nii.gz> --flair <flair.nii.gz> --output <out_binary.nii.gz> \
-                 [--prob_threshold 0.50] [--min_cluster_size 3]
+shivai_predict.py --t1 <t1.nii.gz> --flair <flair.nii.gz> --output <out_binary.nii.gz> \
+                  [--models_dir /opt/shivai/T1.FLAIR-WMH] [--prob_threshold 0.50]
 ```
 
 ### 8. `staple_consensus.py`
@@ -76,3 +78,13 @@ harmonize_staple.py --subject <sub-001> --masks <ses1_mask.nii.gz ses2_mask.nii.
                     --out_csv <audit.csv> [--min_cluster_size 6] [--min_distance 3] \
                     [--gaussian_sigma 0.8] [--pct_change_threshold 20.0]
 ```
+
+### 10. `profile_resources.py`
+```bash
+# Auto-detect latest trace*.txt in current directory
+profile_resources.py
+
+# Or specify a custom Nextflow trace file
+profile_resources.py trace-20260904-48000033.txt
+```
+

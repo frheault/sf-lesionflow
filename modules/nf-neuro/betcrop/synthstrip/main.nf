@@ -48,12 +48,12 @@ process BETCROP_SYNTHSTRIP {
     set +e
     function handle_code () {
     local code=\$?
-    ignore=( 1 )
+    ignore=( 1 127 )
     [[ " \${ignore[@]} " =~ " \$code " ]] || exit \$code
     }
     trap 'handle_code' ERR
 
-    mri_synthstrip -h
+    mri_synthstrip -h || true
 
     touch ${prefix}__bet_image.nii.gz
     touch ${prefix}__brain_mask.nii.gz

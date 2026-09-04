@@ -16,3 +16,7 @@ trace.txt
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Model weights cache
+dockerfiles/truenet/models/
+dockerfiles/shivai/models/

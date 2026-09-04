@@ -159,7 +159,7 @@ process SEGMENTATION_WMH_SYNTHSEG {
 
 process SEGMENTATION_FAST_OUTLIER {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_single'
     container 'ms_chus/fast_outlier:latest'
 
     when:
@@ -199,7 +199,7 @@ process SEGMENTATION_FAST_OUTLIER {
                     --output ${meta.id}_fast-outlier_binary.nii.gz \
                     --sigma ${sigma} \
                     --pve_threshold ${pve_thresh} \
-                    --dwm_thresh ${dwm_thresh}
+                    --dwm_threshold ${dwm_thresh}
 
     rm -rf fast_out
 
@@ -265,7 +265,7 @@ process SEGMENTATION_FLAMES {
 
 process SEGMENTATION_TRUENET {
     tag "$meta.id"
-    label 'process_high_memory'
+    label 'process_medium'
     container 'ms_chus/truenet:latest'
 
     when:
@@ -291,18 +291,21 @@ process SEGMENTATION_TRUENET {
     def threshold = task.ext.threshold ?: 0.5
     """
     export TRUENET_PRETRAINED_MODEL_PATH=/opt/truenet_models
-    mkdir -p in_dir out
+    mkdir -p out
 
-    ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_FLAIR.nii.gz
-    ln -s \$(realpath ${t1_mni}) in_dir/${meta.id}_T1.nii.gz
+    flair_path=\$(realpath ${flair_mni} | head -n 1)
+    t1_path=\$(realpath ${t1_mni} | head -n 1)
 
-    truenet evaluate -i in_dir -m mwsc -o out -cpu
+    echo "FLAIR T1" > masterfile.txt
+    echo "\$flair_path \$t1_path" >> masterfile.txt
+
+    truenet apply -i \$(realpath masterfile.txt) -m mwsc -o out -cpu True
 
     threshold_probmap.py --input_glob 'out/Predicted_probmap_truenet_*.nii.gz' \
                          --output ${meta.id}_truenet_binary.nii.gz \
                          --threshold ${threshold}
 
-    rm -rf in_dir out
+    rm -rf masterfile.txt out
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -451,7 +454,7 @@ process SEGMENTATION_EMORY_ROBUST {
 
 process SEGMENTATION_MARS_WMH {
     tag "$meta.id"
-    label 'process_high_memory'
+    label 'process_medium'
     container 'ghcr.io/miac-research/wmh-nnunet:latest'
 
     when:
@@ -492,16 +495,16 @@ process SEGMENTATION_MARS_WMH {
     """
 }
 
-// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
-// Bawil approach, NOT the published Bawil model. No model weights are loaded; the mask
-// comes from logit coefficients on smoothed FLAIR z-score features.
-// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
-// independent validated classifier.
+// BAWIL (Bashiri Bawil M, et al., arXiv:2506.07123): runs the REAL, pretrained
+// Keras model (huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation),
+// not a heuristic proxy -- see CITATIONS.md and bin/bawil_filter.py's docstring
+// for the full preprocessing story (per-slice axial inference, no official
+// NIfTI CLI exists upstream so this reimplements the paper's own preprocessing,
+// verified end-to-end before being wired in here).
 process SEGMENTATION_BAWIL {
     tag "$meta.id"
     label 'process_medium'
-    label 'heuristic_proxy'
-    container 'ms_chus/lst_ai:latest'
+    container 'ms_chus/bawil:latest'
 
     when:
     task.ext.when == null || task.ext.when
@@ -518,39 +521,37 @@ process SEGMENTATION_BAWIL {
     touch ${meta.id}_bawil_binary.nii.gz
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        bawil_heuristic: 1.0
+        bawil: 1.0
     END_VERSIONS
     """
 
     script:
-    def sigma = task.ext.sigma ?: 2.0
+    def prob_thresh = task.ext.prob_threshold ?: 0.50
     def min_cluster = task.ext.min_cluster_size ?: 3
     """
     export CUDA_VISIBLE_DEVICES=-1
-    export OMP_NUM_THREADS=${task.cpus}
+    export TF_CPP_MIN_LOG_LEVEL=2
 
     bawil_filter.py --flair ${flair_mni} \
                     --output ${meta.id}_bawil_binary.nii.gz \
-                    --sigma ${sigma} \
+                    --prob_threshold ${prob_thresh} \
                     --min_cluster_size ${min_cluster}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        bawil_heuristic: 1.0
+        bawil: 1.0
     END_VERSIONS
     """
 }
 
-// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
-// MIMoSA (Valcarcel et al.) approach, NOT a fitted/loaded MIMoSA model. The coefficients
-// are hardcoded feature regression weights, not trained models.
-// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
-// independent validated classifier.
+// MIMoSA (Valcarcel et al. 2018, doi:10.1111/jon.12506): runs the REAL, pretrained
+// `mimosa_model_No_PD_T2` model shipped inside the `mimosa` R package itself
+// (FLAIR + T1, matching this pipeline's inputs exactly). No training data
+// required, and no heuristic proxy involved -- see CITATIONS.md.
 process SEGMENTATION_MIMOSA {
     tag "$meta.id"
     label 'process_medium'
-    label 'heuristic_proxy'
-    container 'ms_chus/lst_ai:latest'
+    container 'ms_chus/mimosa:latest'
 
     when:
     task.ext.when == null || task.ext.when
@@ -567,42 +568,41 @@ process SEGMENTATION_MIMOSA {
     touch ${meta.id}_mimosa_binary.nii.gz
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        mimosa_heuristic: 1.0
+        mimosa: 1.0
     END_VERSIONS
     """
 
     script:
     def prob_thresh = task.ext.prob_threshold ?: 0.30
-    def flair_thresh = task.ext.flair_cand_threshold ?: 1.5
     def min_cluster = task.ext.min_cluster_size ?: 3
     """
-    export CUDA_VISIBLE_DEVICES=-1
-    export OMP_NUM_THREADS=${task.cpus}
+    export FSLDIR=/opt/fsl-6.0.3
+    export PATH="\${FSLDIR}/bin:\${PATH}"
+    export FSLOUTPUTTYPE=NIFTI_GZ
 
-    mimosa_filter.py --t1 ${t1_mni} \
+    mimosa_predict.R --t1 ${t1_mni} \
                      --flair ${flair_mni} \
                      --output ${meta.id}_mimosa_binary.nii.gz \
                      --prob_threshold ${prob_thresh} \
-                     --flair_cand_threshold ${flair_thresh} \
                      --min_cluster_size ${min_cluster}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        mimosa_heuristic: 1.0
+        mimosa: 1.0
     END_VERSIONS
     """
 }
 
-// PROVENANCE NOTICE (see PLAN.md §4.4 & CITATIONS.md): this is a heuristic reproduction of the general
-// SHiVAi (Boutinaud et al.) approach, NOT the published deep-learning model. No torch/
-// tensorflow model is loaded here — output comes from multi-scale FLAIR/T1 contrast features.
-// Treat its vote in CONSENSUS_STAPLE as a smoothing/thresholding heuristic, not an
-// independent validated DL classifier.
+// SHIVA-WMH (Tsuchida A, Boutinaud P, et al., doi:10.1002/hbm.26548): runs the REAL,
+// pretrained 5-fold ResUnet3D SavedModel ensemble (github.com/pboutinaud/SHIVA_WMH,
+// v2/T1+FLAIR-WMH), not a heuristic proxy -- see CITATIONS.md and
+// bin/shivai_predict.py's docstring for the center-crop/normalize preprocessing this
+// pipeline's MNI-space inputs need before the model's fixed 160x214x176 input shape,
+// verified end-to-end before being wired in here.
 process SEGMENTATION_SHIVAI {
     tag "$meta.id"
     label 'process_medium'
-    label 'heuristic_proxy'
-    container 'ms_chus/lst_ai:latest'
+    container 'ms_chus/shivai:latest'
 
     when:
     task.ext.when == null || task.ext.when
@@ -619,7 +619,7 @@ process SEGMENTATION_SHIVAI {
     touch ${meta.id}_shivai_binary.nii.gz
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        shivai_heuristic: 1.0
+        shivai: 1.0
     END_VERSIONS
     """
 
@@ -628,9 +628,8 @@ process SEGMENTATION_SHIVAI {
     def min_cluster = task.ext.min_cluster_size ?: 3
     """
     export CUDA_VISIBLE_DEVICES=-1
-    export OMP_NUM_THREADS=${task.cpus}
 
-    shivai_filter.py --t1 ${t1_mni} \
+    shivai_predict.py --t1 ${t1_mni} \
                      --flair ${flair_mni} \
                      --output ${meta.id}_shivai_binary.nii.gz \
                      --prob_threshold ${prob_thresh} \
@@ -638,7 +637,7 @@ process SEGMENTATION_SHIVAI {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        shivai_heuristic: 1.0
+        shivai: 1.0
     END_VERSIONS
     """
 }
@@ -649,7 +648,7 @@ process SEGMENTATION_SHIVAI {
 
 process CONSENSUS_STAPLE {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_single'
     container 'segcsvd_rc03:latest'
     input:
     tuple val(meta), path(ref_image), path(binary_masks)

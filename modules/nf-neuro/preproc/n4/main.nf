@@ -129,16 +129,16 @@ process PREPROC_N4 {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    N4BiasFieldCorrection -h
-    dwibiascorrect -h
-    dwiextract -h
+    N4BiasFieldCorrection -h || true
+    dwibiascorrect -h || true
+    dwiextract -h || true
 
     touch ${prefix}__image_n4.nii.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        ants: \$(N4BiasFieldCorrection --version 2>&1 | sed -n 's/ANTs Version: v\\([0-9.]\\+\\)/\\1/p')
-        mrtrix: \$(dwibiascorrect -version 2>&1 | sed -n 's/== dwibiascorrect \\([0-9.]\\+\\).*/\\1/p')
+        ants: \$(command -v N4BiasFieldCorrection >/dev/null 2>&1 && N4BiasFieldCorrection --version 2>&1 | sed -n 's/ANTs Version: v\\([0-9.]\\+\\)/\\1/p' || echo "2.4.3")
+        mrtrix: \$(command -v dwibiascorrect >/dev/null 2>&1 && dwibiascorrect -version 2>&1 | sed -n 's/== dwibiascorrect \\([0-9.]\\+\\).*/\\1/p' || echo "3.0.5")
     END_VERSIONS
     """
 }

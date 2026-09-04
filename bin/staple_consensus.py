@@ -36,6 +36,22 @@ def main():
             img = res.Execute(img)
         aligned_masks.append(img)
 
+    has_any_lesion = any(np.any(sitk.GetArrayViewFromImage(img) > 0) for img in aligned_masks)
+    if not has_any_lesion:
+        ref_size = ref_sitk.GetSize()
+        empty_float = sitk.Image(ref_size, sitk.sitkFloat32)
+        empty_float.CopyInformation(ref_sitk)
+        sitk.WriteImage(empty_float, args.out_probmap)
+
+        empty_uint8 = sitk.Image(ref_size, sitk.sitkUInt8)
+        empty_uint8.CopyInformation(ref_sitk)
+        sitk.WriteImage(empty_uint8, args.out_binary)
+
+        empty_uint16 = sitk.Image(ref_size, sitk.sitkUInt16)
+        empty_uint16.CopyInformation(ref_sitk)
+        sitk.WriteImage(empty_uint16, args.out_labels)
+        return
+
     staple = sitk.STAPLEImageFilter()
     staple_prob = staple.Execute(aligned_masks)
     sitk.WriteImage(staple_prob, args.out_probmap)

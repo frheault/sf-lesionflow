@@ -26,7 +26,10 @@ def main():
 
     subject = args.subject
     files = sorted(args.masks, key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
-    session_names = [re.search(r'ses-[0-9a-zA-Z]+', os.path.basename(f)).group(0) for f in files]
+    session_names = []
+    for idx, f in enumerate(files):
+        m = re.search(r'ses-[0-9a-zA-Z]+', os.path.basename(f))
+        session_names.append(m.group(0) if m else f"ses-{idx+1}")
 
     imgs = [nib.load(f) for f in files]
     voxel_sizes = imgs[0].header.get_zooms()[:3]
@@ -91,7 +94,10 @@ def main():
         })
         records.append(row)
 
-    pd.DataFrame(records).to_csv(args.out_csv, index=False)
+    expected_cols = ["Lesion_ID"] + [f"Vol_mm3_{ses}" for ses in session_names] + [
+        "Status", "Delta_Vol_mm3", "Pct_Change", "Centroid_X_mm", "Centroid_Y_mm", "Centroid_Z_mm"
+    ]
+    pd.DataFrame(records, columns=expected_cols).to_csv(args.out_csv, index=False)
 
 if __name__ == "__main__":
     main()

@@ -3,7 +3,7 @@ nextflow_pipeline {
     script "main.nf"
 
     test("Stub-run wires the full DAG without errors") {
-        options "-stub-run"
+        options "-stub-run -profile stub"
         when {
             params {
                 input        = "data"
@@ -29,7 +29,7 @@ nextflow_pipeline {
         }
         then {
             assert workflow.success
-            assert file("${params.output}/final_outputs/sub-003/sub-003_staple_harmonized_lesion_tracking.csv").exists()
+            assert file("${params.output}/final_outputs/sub-018/sub-018_staple_harmonized_lesion_tracking.csv").exists()
         }
     }
 }

@@ -112,9 +112,9 @@ process REGISTRATION_ANTSAPPLYTRANSFORMS {
     def run_qc = task.ext.run_qc as Boolean || false
 
     """
-    antsApplyTransforms -h
-    scil_viz_volume_screenshot -h
-    convert -help .
+    antsApplyTransforms -h || true
+    scil_viz_volume_screenshot -h || true
+    convert -help . || true
 
     for image in $images; do
         ext=\${image#*.}

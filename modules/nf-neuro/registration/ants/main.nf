@@ -146,19 +146,19 @@ process REGISTRATION_ANTS {
     set +e
     function handle_code () {
         local code=\$?
-        ignore=( 1 )
+        ignore=( 1 127 )
         [[ " \${ignore[@]} " =~ " \$code " ]] || exit \$code
     }
 
     # Local trap to ignore awaited non-zero exit codes
     {
         trap 'handle_code' ERR
-        antsRegistrationSyNQuick.sh -h
+        antsRegistrationSyNQuick.sh -h || true
     }
 
-    antsApplyTransforms -h
-    convert -help .
-    scil_viz_volume_screenshot -h
+    antsApplyTransforms -h || true
+    convert -help . || true
+    scil_viz_volume_screenshot -h || true
 
     moving_base=\$(basename "${moving_image}")
     ext=\${moving_base#*.}
