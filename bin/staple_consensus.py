@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""STAPLE consensus fusion and watershed instance segmentation.
+
+Executes expectation-maximization STAPLE fusion across input binary masks.
+Applies probability thresholding and minimum cluster size filtering.
+Labels distinct lesion instances using marker-controlled watershed segmentation.
+"""
 
 import argparse
 import numpy as np
 import SimpleITK as sitk
 from _lesion_utils import filter_small_components, watershed_instances
+
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="STAPLE Consensus Fusion with Size Filter and Marker-Controlled Watershed")
@@ -19,6 +26,7 @@ def build_arg_parser():
     parser.add_argument("--gaussian_sigma", type=float, default=0.8, help="Gaussian smoothing sigma for distance transform (default: 0.8)")
     return parser
 
+
 def main():
     parser = build_arg_parser()
     args = parser.parse_args()
@@ -26,6 +34,7 @@ def main():
     ref_sitk = sitk.ReadImage(args.ref_image)
     mask_files = sorted(args.masks)
 
+    # Resample input masks to reference image geometry if dimensions or spacing differ.
     aligned_masks = []
     for m in mask_files:
         img = sitk.ReadImage(m, sitk.sitkUInt8)
@@ -36,6 +45,7 @@ def main():
             img = res.Execute(img)
         aligned_masks.append(img)
 
+    # Return empty output images if all input masks contain zero lesion voxels.
     has_any_lesion = any(np.any(sitk.GetArrayViewFromImage(img) > 0) for img in aligned_masks)
     if not has_any_lesion:
         ref_size = ref_sitk.GetSize()
@@ -52,24 +62,27 @@ def main():
         sitk.WriteImage(empty_uint16, args.out_labels)
         return
 
+    # Execute expectation-maximization STAPLE algorithm.
     staple = sitk.STAPLEImageFilter()
     staple_prob = staple.Execute(aligned_masks)
     sitk.WriteImage(staple_prob, args.out_probmap)
 
+    # Threshold probability map and filter small connected components.
     thr_raw = sitk.BinaryThreshold(staple_prob, lowerThreshold=args.threshold, upperThreshold=1.0, insideValue=1, outsideValue=0)
     arr = sitk.GetArrayFromImage(thr_raw) > 0
-
     arr = filter_small_components(arr, args.min_cluster_size)
 
     thr_sitk = sitk.GetImageFromArray(arr.astype(np.uint8))
     thr_sitk.CopyInformation(ref_sitk)
     sitk.WriteImage(thr_sitk, args.out_binary)
 
+    # Segment lesion instances using marker-controlled watershed.
     ws_labels = watershed_instances(arr, min_distance=args.min_distance, gaussian_sigma=args.gaussian_sigma)
 
     ws_sitk = sitk.GetImageFromArray(ws_labels)
     ws_sitk.CopyInformation(ref_sitk)
     sitk.WriteImage(ws_sitk, args.out_labels)
+
 
 if __name__ == "__main__":
     main()

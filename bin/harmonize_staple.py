@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Longitudinal STAPLE harmonization and lesion tracking audit trail.
+
+Constructs a 4D spatio-temporal lesion volume across longitudinal sessions.
+Generates consistent lesion instance labels via watershed segmentation.
+Computes per-lesion volume evolution, trajectory status, and centroid coordinates.
+"""
 
 import argparse
 import os
@@ -8,6 +14,7 @@ import numpy as np
 import nibabel as nib
 import pandas as pd
 from _lesion_utils import filter_small_components, watershed_instances
+
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="Longitudinal STAPLE Harmonization & Lesion Tracking Audit Trail")
@@ -20,16 +27,18 @@ def build_arg_parser():
     parser.add_argument("--pct_change_threshold", type=float, default=20.0, help="Percentage change threshold for Enlarging/Shrinking (default: 20.0)")
     return parser
 
+
 def main():
     parser = build_arg_parser()
     args = parser.parse_args()
 
     subject = args.subject
+    # Sort input masks in chronological session order.
     files = sorted(args.masks, key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
     session_names = []
     for idx, f in enumerate(files):
         m = re.search(r'ses-[0-9a-zA-Z]+', os.path.basename(f))
-        session_names.append(m.group(0) if m else f"ses-{idx+1}")
+        session_names.append(m.group(0) if m else f"ses-{idx + 1}")
 
     imgs = [nib.load(f) for f in files]
     voxel_sizes = imgs[0].header.get_zooms()[:3]
@@ -37,12 +46,15 @@ def main():
     affine = imgs[0].affine
     header = imgs[0].header
 
+    # Construct 4D spatio-temporal volume and compute longitudinal union mask.
     stack = np.stack([img.get_fdata() > 0 for img in imgs], axis=-1)
     time_union = np.any(stack, axis=-1)
 
+    # Filter small components and segment lesion instances on union volume.
     time_union = filter_small_components(time_union, args.min_cluster_size)
     ws_harmonized = watershed_instances(time_union, min_distance=args.min_distance, gaussian_sigma=args.gaussian_sigma)
 
+    # Project longitudinal instance labels back to individual sessions.
     for i, f in enumerate(files):
         ses = session_names[i]
         ses_mask = stack[..., i]
@@ -52,6 +64,7 @@ def main():
         nib.save(nib.Nifti1Image(ses_bin, affine, header), f"{subject}_{ses}_staple_thr90_harmonized_binary.nii.gz")
         nib.save(nib.Nifti1Image(ses_labels, affine, header), f"{subject}_{ses}_staple_thr90_harmonized_labels_uint16.nii.gz")
 
+    # Compute lesion volume change, trajectory classification, and centroids.
     unique_labels = [l for l in np.unique(ws_harmonized) if l > 0]
     records = []
     for lid in unique_labels:
@@ -98,6 +111,7 @@ def main():
         "Status", "Delta_Vol_mm3", "Pct_Change", "Centroid_X_mm", "Centroid_Y_mm", "Centroid_Z_mm"
     ]
     pd.DataFrame(records, columns=expected_cols).to_csv(args.out_csv, index=False)
+
 
 if __name__ == "__main__":
     main()

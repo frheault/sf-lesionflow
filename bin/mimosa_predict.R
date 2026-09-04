@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
-# Real MIMoSA inference (Valcarcel AM, et al. 2018, doi:10.1111/jon.12506)
-# using the pretrained `mimosa_model_No_PD_T2` model (FLAIR + T1, no T2/PD)
-# shipped inside the `mimosa` R package itself -- no training data required.
+# MIMoSA lesion segmentation inference (Valcarcel et al., 2018, doi:10.1111/jon.12506).
+# Executes pretrained mimosa_model_No_PD_T2 (FLAIR and T1) from the mimosa package.
 
 suppressMessages({
   library(optparse)
@@ -16,22 +15,21 @@ option_list <- list(
   make_option("--flair", type = "character"),
   make_option("--output", type = "character"),
   make_option("--prob_threshold", type = "double", default = 0.30,
-              help = "Binarization threshold on the smoothed probability map. The package vignette only documents an optimal-threshold search range of [0.25, 0.35] for the full (FLAIR+T1+T2+PD) model trained from scratch; there is no published default specifically for the pretrained FLAIR+T1-only model used here, so 0.30 (midpoint of that range) is used as a reasonable default -- tune via this flag if needed."),
+              help = "Binarization threshold on smoothed probability map (default: 0.30)"),
   make_option("--smooth_sigma", type = "double", default = 1.25,
-              help = "Gaussian smoothing sigma (voxels) applied to the probability map before thresholding, matching the package vignette."),
+              help = "Gaussian smoothing sigma in voxels for probability map (default: 1.25)"),
   make_option("--min_cluster_size", type = "integer", default = 3,
-              help = "Minimum connected-component size (voxels) to keep in the final binary mask.")
+              help = "Minimum connected-component size in voxels (default: 3)")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 
 T1 <- readnii(opt$t1)
 FLAIR <- readnii(opt$flair)
 
-# Inputs arrive already skull-stripped/masked (background == 0). Derive the
-# brain mask the same way the mimosa package's own vignette does: the union
-# of nonzero voxels across the available sequences.
+# Derive brain mask from nonzero voxels across T1 and FLAIR sequences.
 brain_mask <- niftiarr(FLAIR, as.numeric((T1 > 0) | (FLAIR > 0)))
 
+# Return empty mask if brain mask contains zero foreground voxels.
 if (sum(brain_mask) == 0) {
   writenii(niftiarr(FLAIR, 0), filename = opt$output)
   quit(save = "no", status = 0)
@@ -62,6 +60,7 @@ probability_map <- fslsmooth(probability_map, sigma = opt$smooth_sigma, mask = b
 
 segmentation_mask <- probability_map > opt$prob_threshold
 
+# Filter connected components smaller than min_cluster_size voxels.
 if (opt$min_cluster_size > 1) {
   labeled <- components(as.array(segmentation_mask), shapeKernel(c(3, 3, 3), type = "box"))
   counts <- table(labeled)

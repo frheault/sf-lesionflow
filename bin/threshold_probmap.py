@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Probability map binarization utility."""
 
 import argparse
 import glob
 import sys
 import nibabel as nib
 import numpy as np
+
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="Threshold a probability map NIfTI file to create a binary mask")
@@ -14,6 +16,7 @@ def build_arg_parser():
     parser.add_argument("--output", required=True, help="Output binary mask NIfTI file")
     parser.add_argument("--threshold", type=float, default=0.5, help="Probability threshold (default: 0.5)")
     return parser
+
 
 def main():
     parser = build_arg_parser()
@@ -36,6 +39,7 @@ def main():
     out_img = nib.Nifti1Image(binary, img.affine, img.header)
     out_img.set_data_dtype(np.uint8)
     nib.save(out_img, args.output)
+
 
 if __name__ == "__main__":
     main()

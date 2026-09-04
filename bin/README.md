@@ -1,8 +1,12 @@
 # Standalone CLI Tools (`bin/`)
 
-This directory contains standalone CLI scripts (Python, plus one R script for `mimosa_predict.R`) following the `nf-core` / `nf-junction_atlas` architecture. Each tool uses standard `argparse` (or `optparse` for the R script), supports `--help`, and exposes algorithmic parameters directly to Nextflow via `task.ext.*` directives.
+This directory contains standalone CLI scripts for the pipeline. Each tool uses standard argument parsing (`argparse` or `optparse`), supports the `--help` flag, and accepts Nextflow directives.
 
-In containerized pipeline runs (`-profile docker` / `-profile singularity`), dependencies are provided by the respective container environment. For local development or testing, install the dependencies listed in `requirements.txt`.
+Container environments provide all dependencies during Docker or Singularity runs. Install dependencies from `requirements.txt` for local development or testing:
+
+```bash
+pip install -r bin/requirements.txt
+```
 
 ---
 
@@ -14,12 +18,12 @@ In containerized pipeline runs (`-profile docker` / `-profile singularity`), dep
 | **`threshold_probmap.py`** | Thresholds probability maps ($\ge \tau$) into binary masks | `numpy`, `nibabel` | `SEGMENTATION_TRUENET`<br>`SEGMENTATION_HYPERMAPP3R`<br>`SEGMENTATION_SEGCSVD` | `ms_chus/truenet:latest`<br>`mgoubran/hypermapper:latest`<br>`segcsvd_rc03:latest` |
 | **`fast_outlier.py`** | DWM mask generation & intensity $z$-score outlier filter | `numpy`, `nibabel` | `SEGMENTATION_FAST_OUTLIER` | `ms_chus/fast_outlier:latest` |
 | **`conform_synthseg.py`** | Extracts label 77 & conforms geometry to reference | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_WMH_SYNTHSEG` | `ms_chus/wmh_synthseg:latest` |
-| **`bawil_filter.py`** | Real BAWIL: pretrained 3-class Keras U-Net (Hugging Face), per-axial-slice inference | `tensorflow`, `numpy`, `nibabel`, `opencv`, `scipy`, `scikit-image` | `SEGMENTATION_BAWIL` | `ms_chus/bawil:latest` |
-| **`mimosa_predict.R`** | Real MIMoSA: pretrained `mimosa_model_No_PD_T2` (R package) | R (`mimosa`, `fslr`, `neurobase`, `mmand`, `optparse`) | `SEGMENTATION_MIMOSA` | `ms_chus/mimosa:latest` |
-| **`shivai_predict.py`** | Real SHIVA-WMH: pretrained 5-fold ResUnet3D SavedModel ensemble | `tensorflow`, `nibabel` | `SEGMENTATION_SHIVAI` | `ms_chus/shivai:latest` |
-| **`staple_consensus.py`** | SimpleITK STAPLE EM fusion + watershed instance segmentation | `numpy`, `scipy`, `SimpleITK`, `scikit-image` | `CONSENSUS_STAPLE` | `segcsvd_rc03:latest` |
+| **`bawil_filter.py`** | Pretrained 3-class Keras U-Net for axial FLAIR lesion segmentation | `tensorflow`, `numpy`, `nibabel`, `opencv`, `scipy`, `scikit-image` | `SEGMENTATION_BAWIL` | `ms_chus/bawil:latest` |
+| **`mimosa_predict.R`** | Pretrained MIMoSA logistic regression model execution | R (`mimosa`, `fslr`, `neurobase`, `mmand`, `optparse`) | `SEGMENTATION_MIMOSA` | `ms_chus/mimosa:latest` |
+| **`shivai_predict.py`** | Pretrained 5-fold ResUnet3D SavedModel ensemble execution | `tensorflow`, `nibabel` | `SEGMENTATION_SHIVAI` | `ms_chus/shivai:latest` |
+| **`staple_consensus.py`** | STAPLE EM consensus fusion & watershed instance segmentation | `numpy`, `scipy`, `SimpleITK`, `scikit-image` | `CONSENSUS_STAPLE` | `segcsvd_rc03:latest` |
 | **`harmonize_staple.py`** | 4D longitudinal lesion tracking & audit CSV generation | `numpy`, `scipy`, `nibabel`, `pandas`, `scikit-image` | `HARMONIZATION_STAPLE` | `segcsvd_rc03:latest` |
-| **`profile_resources.py`** | Telemetry profiling & resource misattribution analysis | `pandas`, `tabulate` | Standalone CLI / CI audit | Host Python environment |
+| **`profile_resources.py`** | Telemetry profiling & resource allocation analysis | `pandas`, `tabulate` | Standalone CLI / CI audit | Host Python environment |
 
 ---
 
@@ -81,10 +85,9 @@ harmonize_staple.py --subject <sub-001> --masks <ses1_mask.nii.gz ses2_mask.nii.
 
 ### 10. `profile_resources.py`
 ```bash
-# Auto-detect latest trace*.txt in current directory
+# Detect latest trace file automatically
 profile_resources.py
 
-# Or specify a custom Nextflow trace file
+# Specify a trace file directly
 profile_resources.py trace-20260904-48000033.txt
 ```
-

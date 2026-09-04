@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Shared image processing utilities for lesion segmentation and consensus fusion.
 
-"""Shared connected-component filtering and watershed instance-labeling
-helpers, used by the STAPLE consensus/harmonization scripts and the
-BAWIL/SHiVAi segmentation scripts in this directory."""
+Provides connected-component filtering and marker-controlled watershed
+instance segmentation algorithms.
+"""
 
 import numpy as np
 import scipy.ndimage as ndi
@@ -12,7 +13,7 @@ from skimage.segmentation import watershed
 
 
 def filter_small_components(binary_mask, min_size):
-    """Zero out connected components smaller than min_size voxels."""
+    """Filter connected components smaller than min_size voxels from binary mask."""
     labeled, n_features = ndi.label(binary_mask)
     if n_features > 0:
         counts = np.bincount(labeled.ravel())
@@ -22,7 +23,7 @@ def filter_small_components(binary_mask, min_size):
 
 
 def watershed_instances(binary_mask, min_distance=3, gaussian_sigma=0.8):
-    """Marker-controlled watershed instance labeling of a binary mask."""
+    """Label distinct lesion instances using marker-controlled watershed segmentation."""
     if not np.any(binary_mask):
         return np.zeros(binary_mask.shape, dtype=np.uint16)
 

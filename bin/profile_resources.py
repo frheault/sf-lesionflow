@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Nextflow trace resource profiling and allocation analysis.
 
-"""
-Resource profiling and misattribution analysis script for Nextflow trace logs.
-Implements the methodology defined in OPTIM.md.
+Analyzes execution time, CPU utilization, and peak memory usage from
+trace logs to recommend process resource allocation tiers.
 """
 
 import sys
@@ -12,8 +12,10 @@ import glob
 import argparse
 import pandas as pd
 
+
 def parse_time(t_str):
-    if not isinstance(t_str, str): return 0.0
+    if not isinstance(t_str, str):
+        return 0.0
     t_str = t_str.strip()
     if t_str.endswith('ms'):
         return float(t_str[:-2].strip()) / 1000.0
@@ -28,17 +30,20 @@ def parse_time(t_str):
         total += float(t_str.replace('s', '').strip())
     return total
 
+
 def parse_bytes_gb(b_str):
-    if not isinstance(b_str, str): return 0.0
+    if not isinstance(b_str, str):
+        return 0.0
     b_str = b_str.strip()
     units = {'KB': 1024, 'MB': 1024**2, 'GB': 1024**3, 'TB': 1024**4, 'B': 1}
     for u, mult in units.items():
         if b_str.endswith(u):
             val = float(b_str[:-len(u)].strip())
-            return (val * mult) / (1024**3) # GB
+            return (val * mult) / (1024**3)  # GB
     return 0.0
 
-# Canonical label mapping in conf/base.config & conf/local_dev.config
+
+# Canonical label specifications from conf/base.config and conf/local_dev.config.
 TIER_SPECS = {
     'process_single': {'cpu': 1, 'base_ram': 4.0, 'dev_ram': 4.0},
     'process_low': {'cpu': 2, 'base_ram': 8.0, 'dev_ram': 6.0},
@@ -83,6 +88,7 @@ CURRENT_LABELS = {
     'HARMONIZATION_STAPLE': 'process_medium'
 }
 
+
 def analyze_trace(trace_file):
     df = pd.read_csv(trace_file, sep='\t')
     df['realtime_sec'] = df['realtime'].apply(parse_time)
@@ -100,7 +106,7 @@ def analyze_trace(trace_file):
         mem_eff = (r['peak_rss_gb'] / alloc_ram) * 100.0
         cpu_eff = (r['cpu_pct'] / (alloc_cpu * 100.0)) * 100.0
 
-        # Classification based on OPTIM.md
+        # Classify process resource utilization.
         if label == 'process_high_memory' and r['peak_rss_gb'] < 2.0:
             category = "Phantom High-Memory"
             rec_label = "process_single" if r['cpu_pct'] < 150 else "process_low"
@@ -154,6 +160,7 @@ def analyze_trace(trace_file):
         })
 
     return pd.DataFrame(rows)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Profile Nextflow resources & classify misattributions.")

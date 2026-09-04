@@ -1,24 +1,24 @@
 # Citations & Scientific Provenance
 
-When using `sf-lesionflow` in academic research, please cite the respective algorithms, foundational tools, and pipeline infrastructure utilized below.
+Cite the following algorithms, foundational tools, and pipeline infrastructure when using `sf-lesionflow` in academic research.
 
 ---
 
 ## 1. Published Lesion Segmentation Algorithms
 
 1. **LST-AI**:
-   * Wiltgen T, et al. *LST-AI: A deep learning ensemble for accurate MS lesion segmentation*. NeuroImage: Clinical, 42:103611, 2024. https://doi.org/10.1016/j.nicl.2024.103611. (Not to be confused with the earlier, unrelated "LST" lesion-growth tool of Schmidt et al., 2012. This pipeline uses the newer deep-learning ensemble.)
+   * Wiltgen T, et al. *LST-AI: A deep learning ensemble for accurate MS lesion segmentation*. NeuroImage: Clinical, 42:103611, 2024. https://doi.org/10.1016/j.nicl.2024.103611. This pipeline uses the deep learning ensemble model.
 2. **SAMSEG (Sequence Adaptive Multimodal SEGmentation)**:
    * Cerri S, Puonti O, Meier DS, Wuerfel J, Mühlau M, Siebner HR, Van Leemput K. *A contrast-adaptive method for simultaneous whole-brain and lesion segmentation in multiple sclerosis*. NeuroImage, 225:117471, 2021. https://doi.org/10.1016/j.neuroimage.2020.117471
 3. **WMH-SynthSeg**:
    * Laso P, Cerri S, Sorby-Adams A, et al. *Quantifying white matter hyperintensity and brain volumes in heterogeneous clinical and low-field portable MRI*. IEEE International Symposium on Biomedical Imaging (ISBI), 2024. arXiv:2312.05119. https://doi.org/10.48550/arXiv.2312.05119
-   * Built on: Billot B, Greve DN, Puonti O, et al. *SynthSeg: Segmentation of brain MRI scans of any contrast and resolution without retraining*. Medical Image Analysis, 86:102789, 2023. https://doi.org/10.1016/j.media.2023.102789 (underlying domain-randomization framework, not the WMH-specific model itself).
+   * Built on: Billot B, Greve DN, Puonti O, et al. *SynthSeg: Segmentation of brain MRI scans of any contrast and resolution without retraining*. Medical Image Analysis, 86:102789, 2023. https://doi.org/10.1016/j.media.2023.102789 (underlying domain-randomization framework).
 4. **FSL FAST Outlier**:
    * Zhang Y, Brady M, Smith S. *Segmentation of brain MR images through a hidden Markov random field model and the expectation-maximization algorithm*. IEEE Transactions on Medical Imaging, 20(1):45-57, 2001. https://doi.org/10.1109/42.906424
 5. **FLAMeS (Fast Lesion Assessment in Multiple Sclerosis)**:
    * FLAMeS model record (Dataset004_WML, trainer `nnUNetTrainer_8000epochs`): [Zenodo record 17955359](https://zenodo.org/records/17955359). https://doi.org/10.5281/zenodo.17955359
    * Dereskewicz E, La Rosa F, dos Santos Silva J, Sizer E, Kohli A, Wynen M, et al. *A Novel Convolutional Neural Network for Automated Multiple Sclerosis Brain Lesion Segmentation*. Journal of Neuroimaging, 35(5):e70085, 2025. https://doi.org/10.1111/jon.70085
-   * Built on: Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. *nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation*. Nature Methods, 18:203-211, 2021. https://doi.org/10.1038/s41592-020-01008-z (underlying framework, not the FLAMeS model itself).
+   * Built on: Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. *nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation*. Nature Methods, 18:203-211, 2021. https://doi.org/10.1038/s41592-020-01008-z (underlying framework).
 6. **TrueNet**:
    * Sundaresan V, Zamboni G, Rothwell PM, Jenkinson M, Griffanti L. *Triplanar ensemble U-Net model for white matter hyperintensities segmentation on MR images*. Medical Image Analysis, 73:102184, 2021. https://doi.org/10.1016/j.media.2021.102184
 7. **HyperMapp3r**:
@@ -31,13 +31,13 @@ When using `sf-lesionflow` in academic research, please cite the respective algo
 10. **MARS-WMH**:
     * Gesierich B, Pirpamer L, Meier DS, et al. *Technical and Clinical Validation of a Novel Deep Learning-Based White Matter Hyperintensity Segmentation Tool*. Cerebral Circulation - Cognition and Behavior, 2025. https://doi.org/10.1016/j.cccb.2025.100393 ([github.com/miac-research/MARS-WMH](https://github.com/miac-research/MARS-WMH))
 11. **MIMoSA**:
-    * Valcarcel AM, Linn KA, Vandekar SN, Satterthwaite TD, Muschelli J, Calabresi PA, et al. *MIMoSA: An Automated Method for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions*. Journal of Neuroimaging, 28(4):389-398, 2018. https://doi.org/10.1111/jon.12506. `SEGMENTATION_MIMOSA` runs the package's own pretrained `mimosa_model_No_PD_T2` model (fitted logistic regression on multiscale FLAIR/T1 intensity and coupling features), not a heuristic approximation. See [`dockerfiles/mimosa/README.md`](dockerfiles/mimosa/) for the exact call chain.
+    * Valcarcel AM, Linn KA, Vandekar SN, Satterthwaite TD, Muschelli J, Calabresi PA, et al. *MIMoSA: An Automated Method for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions*. Journal of Neuroimaging, 28(4):389-398, 2018. https://doi.org/10.1111/jon.12506. The `SEGMENTATION_MIMOSA` process executes the pretrained `mimosa_model_No_PD_T2` logistic regression model from the `mimosa` package. Consult [`dockerfiles/mimosa/README.md`](dockerfiles/mimosa/) for execution details.
 12. **BAWIL**:
-    * Named for and using the Hugging Face model `Bawil/wmh_leverage_normal_abnormal_segmentation`, corresponding to: Bashiri Bawil M, Shamsi M, Shakeri Bavil A. *Adversarial Deep Learning for Simultaneous Segmentation of Ventricular and White Matter Hyperintensities in Clinical MRI*. arXiv:2506.07123, 2025. https://doi.org/10.48550/arXiv.2506.07123. A pix2pix-based 3-class U-Net distinguishing normal periventricular hyperintensities from pathological lesions on axial FLAIR slices. This is a preprint, not a peer-reviewed publication. `SEGMENTATION_BAWIL` runs the real pretrained Keras model (no official NIfTI inference code exists upstream, so `bin/bawil_filter.py` reimplements the paper's own preprocessing from its training/eval source, verified end-to-end). See [`dockerfiles/bawil/README.md`](dockerfiles/bawil/) for the exact call chain.
+    * Uses the Hugging Face model `Bawil/wmh_leverage_normal_abnormal_segmentation`: Bashiri Bawil M, Shamsi M, Shakeri Bavil A. *Adversarial Deep Learning for Simultaneous Segmentation of Ventricular and White Matter Hyperintensities in Clinical MRI*. arXiv:2506.07123, 2025. https://doi.org/10.48550/arXiv.2506.07123. The model is a 3-class U-Net that segments periventricular and white matter hyperintensities on axial FLAIR slices. `SEGMENTATION_BAWIL` executes the pretrained Keras model via `bin/bawil_filter.py`. Consult [`dockerfiles/bawil/README.md`](dockerfiles/bawil/) for implementation details.
 13. **SHIVA-WMH**:
-    * Tsuchida A, Boutinaud P, Verrecchia V, Tzourio C, Debette S, Joliot M. *Early detection of white matter hyperintensities using SHIVA-WMH detector*. Human Brain Mapping, 45(1):e26548, 2024. https://doi.org/10.1002/hbm.26548 ([github.com/pboutinaud/SHIVA_WMH](https://github.com/pboutinaud/SHIVA_WMH)). `SEGMENTATION_SHIVAI` runs the real pretrained 5-fold ResUnet3D SavedModel ensemble (v2/T1+FLAIR-WMH), not a heuristic approximation. Weights are CC BY-NC-SA licensed and were downloaded manually (no scriptable source); the upstream repo states explicitly the model's inferences "should not be used for clinical purposes." See [`dockerfiles/shivai/README.md`](dockerfiles/shivai/) for the exact call chain and preprocessing this pipeline needed to add.
+    * Tsuchida A, Boutinaud P, Verrecchia V, Tzourio C, Debette S, Joliot M. *Early detection of white matter hyperintensities using SHIVA-WMH detector*. Human Brain Mapping, 45(1):e26548, 2024. https://doi.org/10.1002/hbm.26548 ([github.com/pboutinaud/SHIVA_WMH](https://github.com/pboutinaud/SHIVA_WMH)). `SEGMENTATION_SHIVAI` executes the pretrained 5-fold ResUnet3D SavedModel ensemble (`v2/T1+FLAIR-WMH`). Model weights use a CC BY-NC-SA license. Consult [`dockerfiles/shivai/README.md`](dockerfiles/shivai/) for setup and execution details.
 
-All 13 lesion segmentation algorithms in this pipeline now run their real, published/pretrained models, none are heuristic placeholders.
+All 13 lesion segmentation algorithms execute published, pretrained models.
 
 ---
 
@@ -65,4 +65,4 @@ All 13 lesion segmentation algorithms in this pipeline now run their real, publi
 * **nf-core**:
   * Ewels PA, Peltzer A, Fillinger S, Patel H, Alneberg J, Wilm A, Garcia MU, Di Tommaso P, Nahnsen S. *The nf-core framework for community-curated bioinformatics pipelines*. Nature Biotechnology, 38(3):276-278, 2020. https://doi.org/10.1038/s41587-020-0439-x
 * **nf-neuro**:
-  * SCIL (Sherbrooke Connectivity Imaging Lab). *nf-neuro: Nextflow modules and subworkflows for neuroimaging analysis*. [GitHub](https://github.com/scilus/nf-neuro). (No DOI available; GitHub-hosted, not archived on Zenodo as of this writing.)
+  * SCIL (Sherbrooke Connectivity Imaging Lab). *nf-neuro: Nextflow modules and subworkflows for neuroimaging analysis*. [GitHub](https://github.com/scilus/nf-neuro).

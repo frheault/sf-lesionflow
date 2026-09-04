@@ -1,22 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Real SHIVA-WMH inference (Tsuchida A, Boutinaud P, et al., doi:10.1002/hbm.26548).
+"""SHIVA-WMH lesion segmentation inference (Tsuchida et al., doi:10.1002/hbm.26548).
 
-Model: v2/T1+FLAIR-WMH, github.com/pboutinaud/SHIVA_WMH -- a 5-fold TensorFlow
-SavedModel ResUnet3D ensemble. Verified directly (real model, real predict
-call) that its input signature is a fixed (None, 160, 214, 176, 2) float32
-tensor (T1 + FLAIR as 2 channels) and its output is (None, 160, 214, 176, 1).
-
-The upstream repo ships a real, usable `predict_one_file.py` CLI -- but it
-requires inputs *already* at the fixed 160x214x176 shape ("for now, you will
-have to do it yourself" per its README). This pipeline's inputs are
-already-skull-stripped, MNI-registered volumes at a different shape (e.g.
-193x229x193 for the 1mm MNI152 template used here), so this script adds the
-one missing piece: center-crop/pad to 160x214x176, min-max normalize per the
-upstream README's exact recipe, run the same real SavedModel ensemble
-inference as predict_one_file.py, then paste the result back into the
-original shape/affine so it aligns with every other algorithm's output mask
-for STAPLE fusion.
+Model: v2/T1+FLAIR-WMH (github.com/pboutinaud/SHIVA_WMH).
+Architecture: 5-fold TensorFlow SavedModel ResUnet3D ensemble.
+Input tensor shape: (None, 160, 214, 176, 2) [T1w, FLAIR].
+Output tensor shape: (None, 160, 214, 176, 1) [WMH probability].
+Pipeline workflow: center-crop or pad to target shape, normalize intensities,
+execute ensemble inference, and reconstruct output into original volume space.
 """
 
 import argparse
@@ -34,21 +25,26 @@ def build_arg_parser():
     parser.add_argument("--t1", required=True, help="Input T1w NIfTI image (already skull-stripped, MNI space)")
     parser.add_argument("--flair", required=True, help="Input FLAIR NIfTI image (already skull-stripped, MNI space)")
     parser.add_argument("--output", required=True, help="Output binary lesion mask NIfTI file")
-    parser.add_argument("--models_dir", default="/opt/shivai/T1.FLAIR-WMH",
-                         help="Directory containing the 5 fold_*.tf_inference SavedModel subdirectories")
-    parser.add_argument("--prob_threshold", type=float, default=0.50,
-                         help="Threshold on the averaged fold probability map (default: 0.50, per upstream README)")
-    parser.add_argument("--min_cluster_size", type=int, default=3,
-                         help="Minimum connected component size (default: 3), matching bawil_filter.py/mimosa_predict.R")
+    parser.add_argument(
+        "--models_dir", default="/opt/shivai/T1.FLAIR-WMH",
+        help="Directory containing the 5 fold_*.tf_inference SavedModel subdirectories"
+    )
+    parser.add_argument(
+        "--prob_threshold", type=float, default=0.50,
+        help="Threshold on the averaged fold probability map (default: 0.50, per upstream README)"
+    )
+    parser.add_argument(
+        "--min_cluster_size", type=int, default=3,
+        help="Minimum connected component size (default: 3), matching bawil_filter.py/mimosa_predict.R"
+    )
     return parser
 
 
 def center_crop_or_pad(volume, target_shape):
-    """Center crop (if larger) or zero-pad (if smaller) each axis to target_shape.
+    """Center crop or zero-pad each volume axis to target_shape.
 
-    Returns (result, slices) where slices are the index ranges in `result`'s
-    coordinate frame that the original data occupies -- needed to invert this
-    exact transform later.
+    Returns (result, dst_slices) where dst_slices defines coordinate
+    ranges for output reconstruction.
     """
     result = np.zeros(target_shape, dtype=volume.dtype)
     src_slices = []
@@ -67,8 +63,7 @@ def center_crop_or_pad(volume, target_shape):
 
 
 def paste_back(cropped_volume, dst_slices, original_shape):
-    """Inverse of center_crop_or_pad: place a TARGET_SHAPE-sized array back
-    into a zero volume of original_shape at the same offset used to crop it."""
+    """Reconstruct target_shape array into original volume dimensions."""
     result = np.zeros(original_shape, dtype=cropped_volume.dtype)
     src_slices = []
     out_slices = []
@@ -85,8 +80,7 @@ def paste_back(cropped_volume, dst_slices, original_shape):
 
 
 def minmax_normalize(volume):
-    """Per-volume min-max normalization with max = 99th percentile of nonzero
-    (brain) voxel values, per the upstream README's exact recipe."""
+    """Normalize nonzero brain voxel intensities to [0, 1] using 99th percentile."""
     brain_voxels = volume[volume > 0]
     if brain_voxels.size == 0:
         return np.zeros_like(volume, dtype=np.float32)
@@ -123,9 +117,7 @@ def main():
     batch = tf.constant(images[np.newaxis, ...], dtype=tf.float32)  # (1, 160, 214, 176, 2)
 
     def _is_fold_dir(p):
-        # Guards against unreadable/unrelated sibling entries (e.g. a stray
-        # directory with restrictive permissions from a different UID): any
-        # OSError while probing it means "not a usable fold dir", not a crash.
+        # Verify valid SavedModel directory and handle filesystem permission errors.
         try:
             return p.is_dir() and (p / "saved_model.pb").exists()
         except OSError:
