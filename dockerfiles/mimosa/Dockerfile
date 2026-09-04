@@ -1,5 +1,5 @@
 # =============================================================================
-# Docker image: MIMoSA (real, pretrained -- not a heuristic proxy)
+# Docker image: MIMoSA
 # Tool:   MIMoSA -- Method for Inter-Modal Segmentation Analysis
 # Paper:  Valcarcel AM, et al. 2018, Journal of Neuroimaging
 # Repo:   https://github.com/avalcarcel9/mimosa
@@ -16,13 +16,11 @@
 # synthetic data before wiring it into Nextflow; no build step is needed here
 # beyond pulling the base image.
 #
-# WHAT THIS ACTUALLY RUNS
-# -------------------------
+# WHAT THIS RUNS
 # `bin/mimosa_predict.R` uses the package's own pretrained model,
 # `mimosa_model_No_PD_T2` (trained for FLAIR + T1 only, matching this
-# pipeline's inputs exactly) -- a real fitted logistic regression on
-# multiscale intensity/coupling features, NOT hardcoded coefficients. No
-# training data is required at runtime.
+# pipeline's inputs exactly): a fitted logistic regression on multiscale
+# intensity/coupling features. No training data is required at runtime.
 #
 # USAGE
 # -----

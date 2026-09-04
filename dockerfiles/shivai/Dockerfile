@@ -1,5 +1,5 @@
 # =============================================================================
-# Docker image: SHIVA-WMH (real, pretrained -- not a heuristic proxy)
+# Docker image: SHIVA-WMH
 # Tool:   SHIVA-WMH detector, v2/T1+FLAIR-WMH (5-fold ResUnet3D ensemble)
 # Paper:  Tsuchida A, Boutinaud P, et al., doi:10.1002/hbm.26548
 # Repo:   https://github.com/pboutinaud/SHIVA_WMH

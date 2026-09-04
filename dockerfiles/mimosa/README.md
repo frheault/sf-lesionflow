@@ -1,18 +1,16 @@
-# MIMoSA (`SEGMENTATION_MIMOSA`): Real, Pretrained Model
+# MIMoSA (`SEGMENTATION_MIMOSA`)
 
-## What this actually is
+## What this runs
 
-This runs the real, published MIMoSA method: Valcarcel AM, Linn KA, Vandekar SN,
-Satterthwaite TD, Muschelli J, Calabresi PA, et al. *MIMoSA: An Automated Method
-for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions*.
-Journal of Neuroimaging, 28(4):389-398, 2018.
-https://doi.org/10.1111/jon.12506
+Valcarcel AM, Linn KA, Vandekar SN, Satterthwaite TD, Muschelli J, Calabresi
+PA, et al. *MIMoSA: An Automated Method for Intermodal Segmentation Analysis
+of Multiple Sclerosis Brain Lesions*. Journal of Neuroimaging, 28(4):389-398,
+2018. https://doi.org/10.1111/jon.12506
 
-It uses the pretrained `mimosa_model_No_PD_T2` model shipped inside the
-`mimosa` R package itself (fitted on FLAIR + T1, matching this pipeline's
-inputs exactly). This is a real fitted logistic regression on multiscale
-intensity/coupling features, not hardcoded coefficients, and it requires no
-training data at runtime.
+Uses the pretrained `mimosa_model_No_PD_T2` model shipped inside the `mimosa`
+R package itself (fitted on FLAIR + T1, matching this pipeline's inputs
+exactly): a fitted logistic regression on multiscale intensity/coupling
+features. No training data is required at runtime.
 
 ## Container Info
 
@@ -34,7 +32,7 @@ provenance.
 docker build -t ms_chus/mimosa:latest dockerfiles/mimosa/
 ```
 
-## What `bin/mimosa_predict.R` actually does
+## What `bin/mimosa_predict.R` does
 
 See `SEGMENTATION_MIMOSA` in `modules/local/lesion_segmentation.nf` for the
 exact invocation and flag defaults. The script itself does, in order, exactly

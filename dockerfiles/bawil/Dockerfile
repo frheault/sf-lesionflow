@@ -1,5 +1,5 @@
 # =============================================================================
-# Docker image: BAWIL (real, pretrained -- not a heuristic proxy)
+# Docker image: BAWIL
 # Tool:   BAWIL -- 3-class WMH segmentation (normal vs abnormal periventricular)
 # Paper:  Bashiri Bawil M, Shamsi M, Shakeri Bavil A, arXiv:2506.07123
 # Model:  huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation
@@ -25,7 +25,7 @@
 # confirmed by visually inspecting a real training sample from the paper's
 # own repo). No official NIfTI inference CLI exists upstream, so this script
 # is a from-scratch, verified reimplementation of the paper's own
-# preprocessing pipeline -- not the paper's own code.
+# preprocessing pipeline.
 #
 # USAGE
 #   docker build -t ms_chus/bawil:latest .
@@ -61,7 +61,7 @@ RUN pip install --no-cache-dir \
         "scipy" \
         "scikit-image"
 
-# 3. Download the real pretrained weights from Hugging Face
+# 3. Download the pretrained weights from Hugging Face
 RUN mkdir -p /opt/bawil \
     && wget -q --show-progress \
         "https://huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation/resolve/main/unet/models/scenario2_multiclass_model.h5" \

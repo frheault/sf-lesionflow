@@ -1,16 +1,15 @@
-# SHIVA-WMH (`SEGMENTATION_SHIVAI`): Real, Pretrained Model (manual weights)
+# SHIVA-WMH (`SEGMENTATION_SHIVAI`) (manual weights)
 
-## What this actually is
+## What this runs
 
-This runs the real, published SHIVA-WMH detector: Tsuchida A, Boutinaud P,
-Verrecchia V, Tzourio C, Debette S, Joliot M. *Early detection of white
-matter hyperintensities using SHIVA-WMH detector*. Human Brain Mapping,
-45(1):e26548, 2024. https://doi.org/10.1002/hbm.26548
+Tsuchida A, Boutinaud P, Verrecchia V, Tzourio C, Debette S, Joliot M. *Early
+detection of white matter hyperintensities using SHIVA-WMH detector*. Human
+Brain Mapping, 45(1):e26548, 2024. https://doi.org/10.1002/hbm.26548
 
 Model: v2/T1+FLAIR-WMH from github.com/pboutinaud/SHIVA_WMH, a 5-fold
-TensorFlow SavedModel ResUnet3D ensemble. Verified directly (real model, real
-prediction): input signature is a fixed `(None, 160, 214, 176, 2)` float32
-tensor (T1 + FLAIR as 2 channels), output `(None, 160, 214, 176, 1)`.
+TensorFlow SavedModel ResUnet3D ensemble. Verified directly: input signature
+is a fixed `(None, 160, 214, 176, 2)` float32 tensor (T1 + FLAIR as 2
+channels), output `(None, 160, 214, 176, 1)`.
 
 ## Weights: manually downloaded, not scriptable
 
@@ -18,7 +17,7 @@ Every other custom Dockerfile in this repo fetches weights from a scriptable
 public URL. This one can't: the weights are hosted on a personal Synology NAS
 share (`cloud.efixia.com/sharing/cpb3eUvMa`) with no stable unauthenticated
 download endpoint, confirmed directly (the share's FileStation API requires
-a real browser session, not a `wget`/`curl` one-liner).
+a browser session, not a `wget`/`curl` one-liner).
 
 **Before building**, download `T1.FLAIR-WMH.zip` yourself from
 https://cloud.efixia.com/sharing/cpb3eUvMa, verify its integrity, and unzip
@@ -53,14 +52,14 @@ ms_chus/shivai:latest
 docker build -t ms_chus/shivai:latest dockerfiles/shivai/
 ```
 
-The build itself smoke-tests all 5 folds (loads each real SavedModel and runs
-a prediction, asserting the expected `(1, 160, 214, 176, 1)` output shape)
+The build itself smoke-tests all 5 folds (loads each SavedModel and runs a
+prediction, asserting the expected `(1, 160, 214, 176, 1)` output shape)
 before the image is considered built.
 
-## What `bin/shivai_predict.py` actually does
+## What `bin/shivai_predict.py` does
 
 See `SEGMENTATION_SHIVAI` in `modules/local/lesion_segmentation.nf` for the
-exact invocation and flag defaults. The upstream repo ships a real, usable
+exact invocation and flag defaults. The upstream repo ships a usable
 `predict_one_file.py` CLI, but it requires inputs already at the model's
 fixed 160x214x176 shape ("for now, you will have to do it yourself" per its
 own README). This pipeline's inputs are already-skull-stripped, MNI-space
@@ -71,15 +70,15 @@ template used here), so `bin/shivai_predict.py` adds the missing piece:
    percentile of nonzero (brain) voxel values, the upstream README's exact
    documented recipe.
 2. Center-crop (or zero-pad, if ever smaller) to 160x214x176.
-3. Stack as 2 channels, run the real 5-fold SavedModel ensemble, average.
+3. Stack as 2 channels, run the 5-fold SavedModel ensemble, average.
 4. Threshold at `--prob_threshold` (default 0.50, the value the upstream
    README reports using successfully).
 5. Paste the result back into the native shape/affine, so it aligns with
    every other algorithm's output mask for STAPLE fusion.
 
-This was verified end-to-end (real 5-fold ensemble, real container, the
-exact bare `shivai_predict.py` invocation Nextflow uses) against a synthetic
-193x229x193 volume before being wired into the pipeline.
+This was verified end-to-end (the exact bare `shivai_predict.py` invocation
+Nextflow uses, under the same non-root UID Nextflow runs containers as)
+against a synthetic 193x229x193 volume before being wired into the pipeline.
 
 ## Technical Notes
 

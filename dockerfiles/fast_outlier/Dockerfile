@@ -12,7 +12,6 @@
 # so the image only needs to provide FSL + the Python packages it imports.
 #
 # USAGE (via Nextflow, see SEGMENTATION_FAST_OUTLIER)
-# -----------------------------------------------------
 #   docker build -t ms_chus/fast_outlier:latest .
 #
 # The process itself runs:
@@ -31,7 +30,7 @@ LABEL maintainer="ms_chus_pipeline"
 LABEL tool="FSL FAST Outlier"
 LABEL version="1.0"
 
-# ── 1. Install Python dependencies ───────────────────────────────────────────
+# 1. Install Python dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pip \
         python3-dev \
@@ -42,7 +41,7 @@ RUN pip3 install --no-cache-dir \
         numpy \
         scipy
 
-# ── 2. Environment for FSL ───────────────────────────────────────────────────
+# 2. Environment for FSL
 ENV FSLDIR=/usr/local/fsl
 ENV PATH="${FSLDIR}/bin:${PATH}"
 ENV FSLOUTPUTTYPE=NIFTI_GZ
