@@ -8,4 +8,11 @@ report-*.html
 timeline-*.html
 trace-*.txt
 report.html
+timeline.html
+trace.txt
 .agents/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class

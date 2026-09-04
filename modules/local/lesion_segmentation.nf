@@ -147,7 +147,7 @@ process SEGMENTATION_WMH_SYNTHSEG {
                     --device cpu \
                     --threads 1
 
-    conform_synthseg.py --input multiclass.nii.gz --ref ${flair_unstripped_mni} --output ${meta.id}_wmh-synthseg_binary.nii.gz --label_id ${label_id}
+    fspython "\$(command -v conform_synthseg.py)" --input multiclass.nii.gz --ref ${flair_unstripped_mni} --output ${meta.id}_wmh-synthseg_binary.nii.gz --label_id ${label_id}
     rm -f multiclass.nii.gz *.lesion_probs.nii.gz
 
     cat <<-END_VERSIONS > versions.yml
@@ -451,7 +451,7 @@ process SEGMENTATION_EMORY_ROBUST {
 
 process SEGMENTATION_MARS_WMH {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_high_memory'
     container 'ghcr.io/miac-research/wmh-nnunet:latest'
 
     when:

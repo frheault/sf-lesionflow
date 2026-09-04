@@ -23,7 +23,7 @@ def main():
     if not input_file and args.input_glob:
         matched = glob.glob(args.input_glob)
         if not matched:
-            sys.exit(f"Error: No files matched pattern '{args.input_glob}'")
+            sys.exit("Error: No files matched pattern '{}'".format(args.input_glob))
         input_file = matched[0]
 
     if not input_file:

@@ -2,12 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import sys
 import numpy as np
-import scipy.ndimage as ndi
 import SimpleITK as sitk
-from skimage.feature import peak_local_max
-from skimage.segmentation import watershed
+from _lesion_utils import filter_small_components, watershed_instances
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="STAPLE Consensus Fusion with Size Filter and Marker-Controlled Watershed")
@@ -46,28 +43,13 @@ def main():
     thr_raw = sitk.BinaryThreshold(staple_prob, lowerThreshold=args.threshold, upperThreshold=1.0, insideValue=1, outsideValue=0)
     arr = sitk.GetArrayFromImage(thr_raw) > 0
 
-    labeled, n_f = ndi.label(arr)
-    if n_f > 0:
-        counts = np.bincount(labeled.flat)
-        arr[(counts < args.min_cluster_size)[labeled]] = 0
+    arr = filter_small_components(arr, args.min_cluster_size)
 
     thr_sitk = sitk.GetImageFromArray(arr.astype(np.uint8))
     thr_sitk.CopyInformation(ref_sitk)
     sitk.WriteImage(thr_sitk, args.out_binary)
 
-    if np.any(arr):
-        dist = ndi.distance_transform_edt(arr)
-        dist_sm = ndi.gaussian_filter(dist, sigma=args.gaussian_sigma)
-        coords = peak_local_max(dist_sm, min_distance=args.min_distance, labels=arr)
-        if len(coords) > 0:
-            markers_mask = np.zeros(dist.shape, dtype=bool)
-            markers_mask[tuple(coords.T)] = True
-            markers, _ = ndi.label(markers_mask)
-            ws_labels = watershed(-dist_sm, markers, mask=arr).astype(np.uint16)
-        else:
-            ws_labels = labeled.astype(np.uint16)
-    else:
-        ws_labels = np.zeros(arr.shape, dtype=np.uint16)
+    ws_labels = watershed_instances(arr, min_distance=args.min_distance, gaussian_sigma=args.gaussian_sigma)
 
     ws_sitk = sitk.GetImageFromArray(ws_labels)
     ws_sitk.CopyInformation(ref_sitk)

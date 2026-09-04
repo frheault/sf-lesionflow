@@ -1,12 +1,24 @@
 # sf-lesionflow
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new/frheault/sf-lesionflow)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.04.0-23aa62.svg)](https://www.nextflow.io/)
+[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
+[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
+[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
+[![built with nf-neuro](https://img.shields.io/badge/built%20with-nf--neuro-blue.svg)](https://github.com/scilus/nf-neuro)
+[![built with nf-core](https://img.shields.io/badge/built%20with-nf--core-24B064?style=flat&logo=nfcore&logoColor=white)](https://nf-co.re)
+[![SCIL](https://img.shields.io/badge/Lab-SCIL-orange.svg)](https://scil.usherbrooke.ca/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Multiple Sclerosis lesion segmentation and longitudinal harmonization pipeline in Nextflow DSL2.**
+
+Developed at the **Sherbrooke Connectivity Imaging Lab (SCIL)**, Université de Sherbrooke.
 
 ---
 
 ## 1. Overview & Pipeline Architecture
 
-`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline designed for automated brain extraction, multi-modal registration, multi-algorithm lesion segmentation ensemble, STAPLE consensus fusion, and 4D longitudinal lesion tracking across multi-session MRI datasets.
+`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline built using the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. It is designed for automated brain extraction, multi-modal registration, multi-algorithm lesion segmentation ensemble, STAPLE consensus fusion, and 4D longitudinal lesion tracking across multi-session MRI datasets.
 
 ```mermaid
 flowchart TD
@@ -60,9 +72,10 @@ This pipeline aggregates an ensemble of 13 lesion segmentation processes:
 * **Published / Validated Deep Learning & Statistical Models (10)**:
   * `LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`.
 * **Heuristic Proxy Implementations (3)**:
-  * `BAWIL`, `MIMOSA`, `SHIVAI`:
-  > [!IMPORTANT]
-  > As documented in [CITATIONS.md](CITATIONS.md), the `BAWIL`, `MIMOSA`, and `SHIVAI` processes are heuristic feature-thresholding approximations, NOT the published neural network models. Their votes in STAPLE consensus act as contrast and spatial priors.
+  * `BAWIL`, `MIMOSA`, `SHIVAI`
+
+> [!IMPORTANT]
+> As documented in [CITATIONS.md](CITATIONS.md), the `BAWIL`, `MIMOSA`, and `SHIVAI` processes are heuristic feature-thresholding approximations, NOT the published neural network models. Their votes in STAPLE consensus act as contrast and spatial priors.
 
 ---
 
@@ -113,7 +126,7 @@ bids_data/
 
 ## 5. Hardware & System Requirements
 
-* **RAM**: Minimum 24 GB recommended; note that failed tasks are retried with doubled memory (see `conf/base.config`), so a single retried task can request up to 48 GB — size your executor accordingly if running on a constrained host. Heavy processes (`SAMSEG`, `WMH-SynthSeg`, `Emory Robust WMH`) are individually capped at `maxForks = 2` in `nextflow.config` to limit how many run concurrently (this is not a pipeline-wide default, just those three).
+* **RAM**: Minimum 24 GB recommended; note that failed tasks are retried with doubled memory (see `conf/base.config`), so a single retried task can request up to 48 GB — size your executor accordingly if running on a constrained host. When running locally with `-profile local_dev`, heavy processes (`SAMSEG`, `WMH-SynthSeg`, `Emory Robust WMH`, `MARS-WMH`) are capped at `maxForks = 1` and SynthStrip at `maxForks = 2` to prevent host OOM; when launching on a cluster without `local_dev`, `maxForks` is unconstrained so jobs scale freely across nodes.
 * **Disk Space**: ~30 GB for container images (Emory Robust WMH image is ~25 GB).
 * **CPU / GPU**: Execution defaults to CPU.
 
@@ -135,6 +148,7 @@ nextflow run main.nf \
 
 ---
 
-## 7. Citations & References
+## 7. Citations & Acknowledgements
 
-Please see [CITATIONS.md](CITATIONS.md) for full citations of all tools, packages, and algorithms integrated into this pipeline.
+* **Scientific Citations**: Please see [CITATIONS.md](CITATIONS.md) for full citations of all segmentation models, foundational tools, and pipeline infrastructure.
+* **SCIL & nf-neuro**: This pipeline is part of the SCIL Flow family, developed and maintained at the [Sherbrooke Connectivity Imaging Lab (SCIL)](https://scil.usherbrooke.ca/), Université de Sherbrooke. It incorporates standardized neuroimaging modules and subworkflows from [nf-neuro](https://github.com/scilus/nf-neuro) and follows code and architecture standards developed by the [nf-core](https://nf-co.re) community.

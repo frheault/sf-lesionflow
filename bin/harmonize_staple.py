@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import sys
 import os
 import re
 import numpy as np
-import scipy.ndimage as ndi
 import nibabel as nib
 import pandas as pd
-from skimage.feature import peak_local_max
-from skimage.segmentation import watershed
+from _lesion_utils import filter_small_components, watershed_instances
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="Longitudinal STAPLE Harmonization & Lesion Tracking Audit Trail")
@@ -40,24 +37,8 @@ def main():
     stack = np.stack([img.get_fdata() > 0 for img in imgs], axis=-1)
     time_union = np.any(stack, axis=-1)
 
-    labeled, n_f = ndi.label(time_union)
-    if n_f > 0:
-        counts = np.bincount(labeled.flat)
-        time_union[(counts < args.min_cluster_size)[labeled]] = 0
-
-    if np.any(time_union):
-        dist = ndi.distance_transform_edt(time_union)
-        dist_sm = ndi.gaussian_filter(dist, sigma=args.gaussian_sigma)
-        coords = peak_local_max(dist_sm, min_distance=args.min_distance, labels=time_union)
-        if len(coords) > 0:
-            markers_mask = np.zeros(dist.shape, dtype=bool)
-            markers_mask[tuple(coords.T)] = True
-            markers, _ = ndi.label(markers_mask)
-            ws_harmonized = watershed(-dist_sm, markers, mask=time_union).astype(np.uint16)
-        else:
-            ws_harmonized = labeled.astype(np.uint16)
-    else:
-        ws_harmonized = np.zeros(time_union.shape, dtype=np.uint16)
+    time_union = filter_small_components(time_union, args.min_cluster_size)
+    ws_harmonized = watershed_instances(time_union, min_distance=args.min_distance, gaussian_sigma=args.gaussian_sigma)
 
     for i, f in enumerate(files):
         ses = session_names[i]

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import sys
 import nibabel as nib
 import numpy as np
 from scipy.ndimage import affine_transform

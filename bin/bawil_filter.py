@@ -3,10 +3,10 @@
 
 import argparse
 import sys
-import os
 import numpy as np
 import nibabel as nib
-from scipy.ndimage import gaussian_filter, label
+from scipy.ndimage import gaussian_filter
+from _lesion_utils import filter_small_components
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="BAWIL Heuristic Proxy White Matter Lesion Segmentation")
@@ -71,10 +71,7 @@ def main():
         class2_prob[:, :, z] = probs[pad_x:pad_x+nx, pad_y:pad_y+ny, 2] * m_2d
 
     abnormal = ((class2_prob >= 0.5) & (class2_prob > class1_prob) & brain_mask).astype(np.uint8)
-    labeled, n_f = label(abnormal)
-    if n_f > 0:
-        counts = np.bincount(labeled.ravel())
-        abnormal[(counts < args.min_cluster_size)[labeled]] = 0
+    abnormal = filter_small_components(abnormal, args.min_cluster_size)
 
     out_img = nib.Nifti1Image(abnormal, affine, header)
     out_img.set_data_dtype(np.uint8)

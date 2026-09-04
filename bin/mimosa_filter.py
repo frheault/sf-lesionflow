@@ -3,10 +3,10 @@
 
 import argparse
 import sys
-import os
 import numpy as np
 import nibabel as nib
-from scipy.ndimage import gaussian_filter, label
+from scipy.ndimage import gaussian_filter
+from _lesion_utils import filter_small_components
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description="MIMoSA Heuristic Proxy Lesion Segmentation")
@@ -51,11 +51,7 @@ def main():
     prob = np.zeros_like(flair_data, dtype=np.float32)
     prob[cand] = 1.0 / (1.0 + np.exp(-np.clip(logit[cand], -20.0, 20.0)))
     binary = ((prob >= args.prob_threshold) & cand).astype(np.uint8)
-
-    labeled, n_f = label(binary)
-    if n_f > 0:
-        counts = np.bincount(labeled.ravel())
-        binary[(counts < args.min_cluster_size)[labeled]] = 0
+    binary = filter_small_components(binary, args.min_cluster_size)
 
     out_img = nib.Nifti1Image(binary, flair_img.affine, flair_img.header)
     out_img.set_data_dtype(np.uint8)
