@@ -18,7 +18,7 @@ Developed at the **Sherbrooke Connectivity Imaging Lab (SCIL)**, Université de 
 
 ## 1. Overview & Pipeline Architecture
 
-`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a 13-algorithm lesion segmentation ensemble. It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets.
+`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a 13-algorithm lesion segmentation ensemble. It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets. Six algorithms (`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`) support optional GPU acceleration, on workstations and Slurm HPC clusters alike.
 
 ```mermaid
 flowchart TD
@@ -82,6 +82,7 @@ Install the following software prerequisites:
 * [Nextflow](https://www.nextflow.io/) (`>= 24.04.0`)
 * [Docker](https://www.docker.com/) (or Singularity/Apptainer)
 * [FreeSurfer License](https://surfer.nmr.mgh.harvard.edu/registration.html) (for SAMSEG)
+* NVIDIA GPU + [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) (optional, for GPU acceleration)
 
 ### Running the Pipeline
 
@@ -94,6 +95,28 @@ nextflow run main.nf \
     --fs_license /path/to/license.txt \
     --output results \
     -profile docker
+```
+
+To enable GPU acceleration on a workstation, add the `gpu` profile alongside a container engine profile:
+
+```bash
+nextflow run main.nf \
+    --input /path/to/bids_data \
+    --mni_template /path/to/mni_template.nii.gz \
+    --fs_license /path/to/license.txt \
+    --output results \
+    -profile docker,gpu
+```
+
+To run on a Slurm HPC cluster (e.g. Alliance Canada, NIH Biowulf), combine `hpc` with `apptainer` (or `singularity`), and optionally `gpu`:
+
+```bash
+nextflow run main.nf \
+    --input /path/to/bids_data \
+    --mni_template /path/to/mni_template.nii.gz \
+    --fs_license /path/to/license.txt \
+    --output results \
+    -profile hpc,apptainer,gpu
 ```
 
 ### Expected Input Layout (BIDS)
@@ -123,6 +146,9 @@ bids_data/
 | `--mni_template` | Yes | Path to standard MNI reference brain template (`.nii.gz`) | `false` |
 | `--fs_license` | Yes | Path to FreeSurfer `license.txt` | `false` |
 | `--output` | No | Directory to publish output results | `results` |
+| `--use_gpu` | No | Run GPU-capable algorithms on GPU (also set by the `gpu` profile) | `false` |
+| `--cluster_gpu_options` | No | Slurm GPU request string for the `hpc` profile, overrides default `--gres=gpu:1` | `false` |
+| `--sif_cache` | No | Cache directory for pulled Apptainer/Singularity images | `false` |
 
 ---
 
@@ -142,18 +168,40 @@ Each process uses one of five resource labels defined in `conf/base.config`. Eac
 
 The default execution profile retries failed tasks up to two times (`maxRetries = 2`). Nextflow multiplies CPU, memory, and time by the attempt number. A `process_high_memory` task can request up to 60 GB memory on the final attempt. Configure executor queues and node memory to support these maximum resource requirements.
 
+A sixth label, `process_gpu`, stacks on top of one of the labels above (e.g. `SEGMENTATION_WMH_SYNTHSEG` carries both `process_high_memory` and `process_gpu`). It sets no CPU/memory/time of its own — it only requests a GPU (`accelerator`, `clusterOptions`) when `task.ext.gpu` is true.
+
+### GPU Acceleration
+
+`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, and `MARS-WMH` can run on GPU. GPU use is opt-in and off by default:
+
+* Enable it with `--use_gpu true` or the `gpu` profile (`-profile docker,gpu`). The `gpu` profile also adds the container flags needed to expose the GPU (`--gpus all` for Docker, `--nv` for Apptainer/Singularity).
+* On `docker`/`apptainer`/`singularity`, the GPU comes from the local host. On `hpc` (Slurm), it's requested from the scheduler via `clusterOptions` (default `--gres=gpu:1`, override with `--cluster_gpu_options`).
+* Without `--use_gpu`, all six algorithms run on CPU — no extra configuration needed.
+* Exception: `SEGMENTATION_WMH_SYNTHSEG` always runs on CPU under `local_dev`, even with `--use_gpu`. On an 8 GB workstation GPU, `mri_WMHsynthseg` needs ~9-10 GB VRAM and triggers a CUDA OOM alongside the display server. It uses GPU normally under `hpc`.
+
 ### `-profile local_dev`: single-machine dev/test
 
 `conf/local_dev.config` overrides default allocations for single-workstation execution (24 CPUs, 24-31 GB RAM):
 
-* Memory limits remain fixed across retries. `process_high_memory` tasks use 16 GB memory on all attempts.
-* `SYNTHSTRIP_T1` and `SYNTHSTRIP_FLAIR` processes enforce a concurrency limit of `maxForks = 2`.
-* Heavy segmentation processes (`SEGMENTATION_WMH_SYNTHSEG`, `SEGMENTATION_SAMSEG`, `SEGMENTATION_EMORY_ROBUST`, `SEGMENTATION_HYPERMAPP3R`) use `maxForks = 1` and 16 GB memory. Only one heavy process runs at a time.
+* Memory limits stay fixed across retries. `process_high_memory` tasks use 16 GB on every attempt.
+* `SYNTHSTRIP_T1` and `SYNTHSTRIP_FLAIR` are capped at `maxForks = 2`.
+* Heavy segmentation processes (`SEGMENTATION_SAMSEG`, `SEGMENTATION_EMORY_ROBUST`, `SEGMENTATION_HYPERMAPP3R`, `SEGMENTATION_WMH_SYNTHSEG`) are capped at `maxForks = 1` with 16-20 GB memory, so only one runs at a time.
+* GPU-capable processes are also capped at `maxForks = 1` — a single workstation GPU can't serve multiple concurrent jobs.
 
-Standard cluster profiles do not enforce these concurrency limits. Jobs scale across cluster nodes according to scheduler capacity.
+Cluster profiles don't enforce these caps; jobs scale across nodes according to scheduler capacity.
 
-* **Disk Space**: Allocate approximately 165 GB disk space for all container images combined. The `emorycn2l/emory_robust_wmh` image requires approximately 43 GB. Consult [dockerfiles/](dockerfiles/) for container recipes, image sizes, and build instructions.
-* **CPU / GPU**: Execution defaults to CPU.
+* **Disk Space**: Allocate ~165 GB for all container images combined. The `emorycn2l/emory_robust_wmh` image alone needs ~43 GB. See [dockerfiles/](dockerfiles/) for recipes, sizes, and build instructions.
+* **CPU / GPU**: Defaults to CPU. Pass `--use_gpu true` (or the `gpu` profile) to enable GPU acceleration where supported — see [GPU Acceleration](#gpu-acceleration).
+
+### `-profile hpc`: Slurm & shared HPC clusters
+
+`conf/hpc.config` targets Slurm clusters (e.g. Alliance Canada Beluga/Narval/Graham, NIH Biowulf) running Apptainer/Singularity. Combine it with `apptainer` or `singularity`, and optionally `gpu`:
+
+* Uses the `slurm` executor (`queueSize = 100`, `submitRateLimit = '10 sec'`) and `cache = 'lenient'` to tolerate timestamp jitter on distributed filesystems (Lustre/GPFS).
+* Re-tunes CPU/memory/time per resource label for cluster hardware (e.g. `process_high_memory` gets 8 CPUs / 24 GB), plus per-algorithm tuning for `SEGMENTATION_SAMSEG`, `SEGMENTATION_MIMOSA`, `SEGMENTATION_WMH_SYNTHSEG`, `SEGMENTATION_HYPERMAPP3R`, `SEGMENTATION_LST_AI`, `SYNTHSTRIP_T1`/`SYNTHSTRIP_FLAIR`, the ANTs registration/N4 processes, and the STAPLE consensus/harmonization steps.
+* `SEGMENTATION_WMH_SYNTHSEG` requests 16 GB / 1 h on GPU vs. 24 GB / 3 h on CPU — GPU inference finishes in ~30 s on a cluster GPU with >= 16 GB VRAM.
+* GPU-capable processes request a GPU from Slurm via `clusterOptions` (default `--gres=gpu:1`, override with `--cluster_gpu_options` to match your cluster's syntax), only when `--use_gpu` is set.
+* Set `--sif_cache` (or `NXF_APPTAINER_CACHEDIR`/`NXF_SINGULARITY_CACHEDIR`) to cache images on persistent, shared storage instead of the pipeline's working directory.
 
 ---
 
