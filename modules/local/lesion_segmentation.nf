@@ -418,7 +418,6 @@ process SEGMENTATION_SEGCSVD {
     export OMP_NUM_THREADS=${task.cpus}
     export TORCH_HOME="\$(pwd)/.cache/torch"
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
-    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
     create_nonzero_mask.py --input ${flair_mni} --output temp_mask.nii.gz
 
