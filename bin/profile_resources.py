@@ -93,7 +93,7 @@ def analyze_trace(trace_file):
     df = pd.read_csv(trace_file, sep='\t')
     df['realtime_sec'] = df['realtime'].apply(parse_time)
     df['peak_rss_gb'] = df['peak_rss'].apply(parse_bytes_gb)
-    df['cpu_pct'] = df['%cpu'].str.rstrip('%').astype(float)
+    df['cpu_pct'] = pd.to_numeric(df['%cpu'].astype(str).str.rstrip('%').replace('-', '0'), errors='coerce').fillna(0.0)
 
     rows = []
     for _, r in df.iterrows():

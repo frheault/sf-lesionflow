@@ -79,6 +79,10 @@ RUN mkdir -p /usr/local/freesurfer/models \
     && test -f /usr/local/freesurfer/python/packages/WMHSynthSeg/inference.py \
     && echo "WMH-SynthSeg code and weights verified."
 
+# 3. Patch inference.py to resolve model path directly from /usr/local/freesurfer/models
+RUN sed -i 's|/app/models|/usr/local/freesurfer/models|g' /usr/local/freesurfer/python/packages/WMHSynthSeg/inference.py
+
+
 # No ENTRYPOINT: Nextflow's global --entrypoint "" override makes this moot
 # during pipeline runs, but declaring one anyway breaks manual `docker run
 # ms_chus/wmh_synthseg:latest mri_WMHsynthseg ...` invocations (bash would try

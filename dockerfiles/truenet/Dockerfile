@@ -12,7 +12,7 @@
 # WHAT GETS DOWNLOADED AT BUILD TIME
 # 1. Base image: brainlife/fsl:6.0.4-patched (~5 GB, includes FSL + fslmaths)
 # 2. TrueNet source via git clone from Oxford GitLab
-# 3. Python deps: torch (CPU), torchvision, nibabel, etc.
+# 3. Python deps: torch (CUDA 11.3), torchvision, nibabel, etc.
 # 4. Pre-trained models from Google Drive via gdown:
 #      Folder: https://drive.google.com/drive/folders/1iqO-hd27NSHHfKun125Rt-2fh1l9EiuT
 #      Contains: MWSC_FLAIR_T1/ model directory
@@ -84,8 +84,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel
 RUN pip3 install --no-cache-dir "typing_extensions<=4.1.1"
 RUN pip3 install --no-cache-dir \
-        "torch==1.10.2+cpu" "torchvision==0.11.3+cpu" \
-        -f https://download.pytorch.org/whl/cpu/torch_stable.html
+        "torch==1.10.2+cu113" "torchvision==0.11.3+cu113" \
+        -f https://download.pytorch.org/whl/cu113/torch_stable.html
 
 # 3. TrueNet Python deps
 RUN pip3 install --no-cache-dir \

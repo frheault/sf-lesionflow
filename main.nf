@@ -321,12 +321,18 @@ workflow {
         .map { meta, img, txs, mni -> [meta, img, mni, txs] }
     TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI(ch_warp_flair_unstripped)
 
+    // Helper closure to reliably extract the 3D MNI warped NIfTI when ANTs emits multiple files
+    def toMniSpace = { meta, imgs -> [meta, imgs instanceof List ? imgs.find { it.name.endsWith('space-MNI.nii.gz') } : imgs] }
+
+    ch_t1_mni               = TRANSFORM_T1W_TO_MNI.out.warped_image.map(toMniSpace)
+    ch_flair_mni            = TRANSFORM_FLAIR_TO_MNI.out.warped_image.map(toMniSpace)
+    ch_t1_unstripped_mni    = TRANSFORM_T1W_UNSTRIPPED_TO_MNI.out.warped_image.map(toMniSpace)
+    ch_flair_unstripped_mni = TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI.out.warped_image.map(toMniSpace)
+
     // Channel bundles for MNI inputs
-    ch_mni_paired = TRANSFORM_T1W_TO_MNI.out.warped_image
-        .join(TRANSFORM_FLAIR_TO_MNI.out.warped_image)
-    ch_mni_flair_only = TRANSFORM_FLAIR_TO_MNI.out.warped_image
-    ch_mni_unstripped = TRANSFORM_T1W_UNSTRIPPED_TO_MNI.out.warped_image
-        .join(TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI.out.warped_image)
+    ch_mni_paired     = ch_t1_mni.join(ch_flair_mni)
+    ch_mni_flair_only = ch_flair_mni
+    ch_mni_unstripped = ch_t1_unstripped_mni.join(ch_flair_unstripped_mni)
 
     // =========================================================================
     // PHASE 2: Independent Algorithm Execution (Parallelized)
@@ -334,7 +340,7 @@ workflow {
 
     SEGMENTATION_LST_AI(ch_mni_paired)
     SEGMENTATION_SAMSEG(ch_mni_unstripped.combine(data.fs_license))
-    SEGMENTATION_WMH_SYNTHSEG(TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI.out.warped_image)
+    SEGMENTATION_WMH_SYNTHSEG(ch_flair_unstripped_mni)
     SEGMENTATION_FAST_OUTLIER(ch_mni_paired)
     SEGMENTATION_FLAMES(ch_mni_flair_only)
     SEGMENTATION_TRUENET(ch_mni_paired)
@@ -367,7 +373,7 @@ workflow {
         )
         .groupTuple(by: 0, size: active_algorithms.size())
 
-    ch_staple_input = TRANSFORM_FLAIR_TO_MNI.out.warped_image
+    ch_staple_input = ch_flair_mni
         .join(ch_all_binary_masks)
 
     CONSENSUS_STAPLE(ch_staple_input)

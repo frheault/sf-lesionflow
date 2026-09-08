@@ -35,6 +35,8 @@ process SEGMENTATION_LST_AI {
     export TF_GPU_ALLOCATOR=cuda_malloc_async
     export TF_CPP_MIN_LOG_LEVEL=2
     export OMP_NUM_THREADS=${task.cpus}
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
     mkdir -p tmp_out
     lst --t1 ${t1_mni} --flair ${flair_mni} --output tmp_out --segment_only --stripped --threads ${task.cpus}
@@ -112,6 +114,7 @@ process SEGMENTATION_SAMSEG {
 process SEGMENTATION_WMH_SYNTHSEG {
     tag "$meta.id"
     label 'process_high_memory'
+    label 'process_gpu'
     container 'ms_chus/wmh_synthseg:latest'
 
     when:
@@ -135,17 +138,21 @@ process SEGMENTATION_WMH_SYNTHSEG {
 
     script:
     def label_id = task.ext.label_id ?: 77
+    def use_gpu = task.ext.gpu
+    def device_args = use_gpu ? "--device cuda --crop" : "--device cpu --crop --threads 1"
     """
     set +u
     export FREESURFER_HOME=/usr/local/freesurfer
     source /usr/local/freesurfer/SetUpFreeSurfer.sh
     set -u
 
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+
     mri_WMHsynthseg --i ${flair_unstripped_mni} \
                     --o multiclass.nii.gz \
                     --save_lesion_probabilities \
-                    --device cpu \
-                    --threads 1
+                    ${device_args}
 
     fspython "\$(command -v conform_synthseg.py)" --input multiclass.nii.gz --ref ${flair_unstripped_mni} --output ${meta.id}_wmh-synthseg_binary.nii.gz --label_id ${label_id}
     rm -f multiclass.nii.gz *.lesion_probs.nii.gz
@@ -214,6 +221,7 @@ process SEGMENTATION_FAST_OUTLIER {
 process SEGMENTATION_FLAMES {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
     container 'ms_chus/flames:latest'
 
     when:
@@ -237,15 +245,20 @@ process SEGMENTATION_FLAMES {
     """
 
     script:
+    def use_gpu = task.ext.gpu
+    def device = use_gpu ? "cuda" : "cpu"
     """
     export nnUNet_results=/opt/nnunet_results
     export nnUNet_raw=/opt/nnunet_raw
     export nnUNet_preprocessed=/opt/nnunet_preprocessed
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
     mkdir -p in_dir out_dir
     ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_0000.nii.gz
 
-    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device cpu
+    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device ${device}
 
     if [ -f "out_dir/${meta.id}.nii.gz" ]; then
         mv out_dir/${meta.id}.nii.gz ${meta.id}_flames_binary.nii.gz
@@ -266,6 +279,7 @@ process SEGMENTATION_FLAMES {
 process SEGMENTATION_TRUENET {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
     container 'ms_chus/truenet:latest'
 
     when:
@@ -289,8 +303,12 @@ process SEGMENTATION_TRUENET {
 
     script:
     def threshold = task.ext.threshold ?: 0.5
+    def use_gpu = task.ext.gpu
+    def cpu_arg = use_gpu ? "False" : "True"
     """
     export TRUENET_PRETRAINED_MODEL_PATH=/opt/truenet_models
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
     mkdir -p out
 
     flair_path=\$(realpath ${flair_mni} | head -n 1)
@@ -299,7 +317,7 @@ process SEGMENTATION_TRUENET {
     echo "FLAIR T1" > masterfile.txt
     echo "\$flair_path \$t1_path" >> masterfile.txt
 
-    truenet apply -i \$(realpath masterfile.txt) -m mwsc -o out -cpu True
+    truenet apply -i \$(realpath masterfile.txt) -m mwsc -o out -cpu ${cpu_arg}
 
     threshold_probmap.py --input_glob 'out/Predicted_probmap_truenet_*.nii.gz' \
                          --output ${meta.id}_truenet_binary.nii.gz \
@@ -351,7 +369,7 @@ process SEGMENTATION_HYPERMAPP3R {
     mkdir -p tmp_hyper
     (
         cd tmp_hyper
-        hypermapper seg_wmh -t1 \$(realpath ../${t1_mni}) -fl \$(realpath ../${flair_mni}) -m \$(realpath ../brain_mask.nii.gz) -o \$(realpath ../prob.nii.gz) -n ${mc_samples} -f
+        hypermapper seg_wmh -s \$(pwd) -t1 \$(realpath ../${t1_mni}) -fl \$(realpath ../${flair_mni}) -m \$(realpath ../brain_mask.nii.gz) -o \$(realpath ../prob.nii.gz) -n ${mc_samples} -f
     )
 
     threshold_probmap.py --input prob.nii.gz \
@@ -370,6 +388,7 @@ process SEGMENTATION_HYPERMAPP3R {
 process SEGMENTATION_SEGCSVD {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
     container 'segcsvd_rc03:latest'
 
     when:
@@ -392,20 +411,30 @@ process SEGMENTATION_SEGCSVD {
     """
 
     script:
+    def use_gpu = task.ext.gpu
     def threshold = task.ext.threshold ?: 0.5
     def patch_size = task.ext.patch_size ?: "96,128"
     """
     export OMP_NUM_THREADS=${task.cpus}
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
     create_nonzero_mask.py --input ${flair_mni} --output temp_mask.nii.gz
 
-    segment_wmh \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+    if [ "${use_gpu}" = "true" ]; then
+        sed 's/ -c//' /seg/tools/segment_wmh > ./segment_wmh_device
+        chmod +x ./segment_wmh_device
+        ./segment_wmh_device \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+    else
+        segment_wmh \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+    fi
 
     threshold_probmap.py --input prob.nii.gz \
                          --output ${meta.id}_segcsvd_binary.nii.gz \
                          --threshold ${threshold}
 
-    rm -f temp_mask.nii.gz prob.nii.gz
+    rm -f temp_mask.nii.gz prob.nii.gz segment_wmh_device
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -417,6 +446,7 @@ process SEGMENTATION_SEGCSVD {
 process SEGMENTATION_EMORY_ROBUST {
     tag "$meta.id"
     label 'process_high_memory'
+    label 'process_gpu'
     container 'emorycn2l/emory_robust_wmh:v1.2'
 
     when:
@@ -439,11 +469,16 @@ process SEGMENTATION_EMORY_ROBUST {
     """
 
     script:
+    def use_gpu = task.ext.gpu
+    def gpu_flag = use_gpu ? "--gpu" : ""
     """
     export OMP_NUM_THREADS=4
     export PATH=/opt/conda/envs/nnunet/bin:/opt/conda/bin:\$PATH
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-    bash /app/main.sh -t \$(realpath ${t1_mni}) -f \$(realpath ${flair_mni}) -o \$(realpath ${meta.id}_emory_robust_binary.nii.gz) --no-n4 --no-coreg
+    bash /app/main.sh -t \$(realpath ${t1_mni}) -f \$(realpath ${flair_mni}) -o \$(realpath ${meta.id}_emory_robust_binary.nii.gz) --no-n4 --no-coreg ${gpu_flag}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -455,6 +490,7 @@ process SEGMENTATION_EMORY_ROBUST {
 process SEGMENTATION_MARS_WMH {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
     container 'ghcr.io/miac-research/wmh-nnunet:latest'
 
     when:
@@ -477,8 +513,14 @@ process SEGMENTATION_MARS_WMH {
     """
 
     script:
+    def use_gpu = task.ext.gpu
+    def gpu_env = use_gpu ? "export CUDA_VISIBLE_DEVICES=0" : "export CUDA_VISIBLE_DEVICES=\"\""
     """
     export OMP_NUM_THREADS=${task.cpus}
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    ${gpu_env}
 
     python /opt/scripts/pipeline_nnunet.py \
         --flair \$(realpath ${flair_mni}) \
@@ -531,6 +573,7 @@ process SEGMENTATION_BAWIL {
     """
     export CUDA_VISIBLE_DEVICES=-1
     export TF_CPP_MIN_LOG_LEVEL=2
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
     bawil_filter.py --flair ${flair_mni} \
                     --output ${meta.id}_bawil_binary.nii.gz \
@@ -628,6 +671,7 @@ process SEGMENTATION_SHIVAI {
     def min_cluster = task.ext.min_cluster_size ?: 3
     """
     export CUDA_VISIBLE_DEVICES=-1
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
     shivai_predict.py --t1 ${t1_mni} \
                      --flair ${flair_mni} \
