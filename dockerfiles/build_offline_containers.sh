@@ -46,10 +46,21 @@ fi
 BUILD_CMD=$(command -v apptainer &> /dev/null && echo apptainer || echo singularity)
 
 echo "Output directory: $OUT_DIR"
-echo "Build tool: $BUILD_CMD"
+echo "Build tool:       $BUILD_CMD"
 echo ""
 
 FAILED=0
+
+# Helper: print elapsed seconds since a given epoch second.
+elapsed() { echo "$(( $(date +%s) - $1 ))s"; }
+
+# Helper: print a progress header.
+# Usage: progress_header <current> <total> <label>
+progress_header() {
+    local cur=$1 tot=$2 label=$3
+    printf "\n[%d/%d] %s\n" "$cur" "$tot" "$label"
+    printf '%*s\n' "${#label}" '' | tr ' ' '-'
+}
 
 # -----------------------------------------------------------------------------
 # Phase 1: locally-built-only images (docker-daemon:// source)
@@ -68,32 +79,37 @@ LOCAL_IMAGES=(
 )
 
 if docker info &> /dev/null; then
-    echo "=== Phase 1: locally-built containers (docker-daemon://) ==="
+    total=${#LOCAL_IMAGES[@]}
+    echo "=== Phase 1: locally-built containers (docker-daemon://) — ${total} images ==="
+    idx=0
     for entry in "${LOCAL_IMAGES[@]}"; do
+        idx=$(( idx + 1 ))
         sif_name="${entry%%:*}"
         docker_image="${entry#*:}"
         out_file="$OUT_DIR/$sif_name"
 
+        progress_header "$idx" "$total" "$sif_name"
+
         if [ -f "$out_file" ]; then
-            echo "Skipping $sif_name (already exists)"
+            echo "  ✓ Already exists — skipping ($(du -sh "$out_file" | cut -f1))"
             continue
         fi
 
         if ! docker image inspect "$docker_image" &> /dev/null; then
-            echo "Skipping $sif_name: Docker image '$docker_image' not found locally" \
-                 "(see dockerfiles/<algo>/README.md to build it)" >&2
+            echo "  ✗ Docker image '$docker_image' not found locally" >&2
+            echo "    (see dockerfiles/<algo>/README.md to build it)" >&2
             FAILED=1
             continue
         fi
 
-        echo "Building $sif_name from docker-daemon://$docker_image ..."
+        echo "  Converting docker-daemon://$docker_image → $sif_name ..."
+        t0=$(date +%s)
         if "$BUILD_CMD" build --force "$out_file" "docker-daemon://$docker_image"; then
-            echo "Done: $out_file"
+            echo "  ✓ Done in $(elapsed $t0) — $(du -sh "$out_file" | cut -f1)"
         else
-            echo "Failed: $sif_name" >&2
+            echo "  ✗ FAILED after $(elapsed $t0)" >&2
             FAILED=1
         fi
-        echo ""
     done
 else
     echo "=== Phase 1 skipped: no Docker daemon reachable here ==="
@@ -106,21 +122,35 @@ fi
 # Phase 2: public registry images (docker:// source)
 # Named using Nextflow's own apptainer/singularity cache-file convention, so
 # they are found automatically -- no conf/offline.config entry needed.
+#
+# *** ADD NEW PUBLIC CONTAINERS HERE — keep sorted by purpose ***
 # -----------------------------------------------------------------------------
 PUBLIC_IMAGES=(
-    "freesurfer/freesurfer:7.4.1"
-    "mgoubran/hypermapper:latest"
-    "emorycn2l/emory_robust_wmh:v1.2"
-    "ghcr.io/miac-research/wmh-nnunet:latest"
+    # --- nf-neuro standard modules ---
     "scilus/scilpy:2.2.2_cpu"
     "scilus/scilus:2.2.2"
     "mrtrix3/mrtrix3:3.0.5"
+    # --- Segmentation algorithms (public registries) ---
+    "freesurfer/freesurfer:7.4.1"
     "freesurfer/synthstrip:1.8"
     "freesurfer/synthstrip:1.8-gpu"
+    "mgoubran/hypermapper:latest"
+    "emorycn2l/emory_robust_wmh:v1.2"
+    "ghcr.io/miac-research/wmh-nnunet:latest"
+    # --- QC & Reporting ---
+    # multiqc-neuroimaging provides MultiQC >= 1.25 plus the custom
+    # --single-subject-report flag required by the QC_PIPELINE subworkflow.
+    # Keep this version pinned in sync with modules/local/qc_multiqc.nf.
+    "gagnonanthony/multiqc-neuroimaging:0.1.4"
 )
 
-echo "=== Phase 2: public containers (docker://) ==="
+total=${#PUBLIC_IMAGES[@]}
+echo ""
+echo "=== Phase 2: public containers (docker://) — ${total} images ==="
+idx=0
 for docker_image in "${PUBLIC_IMAGES[@]}"; do
+    idx=$(( idx + 1 ))
+
     # Same sanitization Nextflow itself applies: prefix docker.io/ when no
     # registry domain is present, then replace / and : with -.
     if [[ "$docker_image" =~ ^[^/]+\.[^/]+/ ]]; then
@@ -131,27 +161,34 @@ for docker_image in "${PUBLIC_IMAGES[@]}"; do
     cache_name=$(echo "$clean_image" | sed 's|/|-|g; s|:|-|g')
     out_file="$OUT_DIR/${cache_name}.img"
 
+    progress_header "$idx" "$total" "$docker_image"
+
     if [ -f "$out_file" ]; then
-        echo "Skipping $cache_name (already exists)"
+        echo "  ✓ Already exists — skipping ($(du -sh "$out_file" | cut -f1))"
         continue
     fi
 
-    echo "Pulling docker://$docker_image ..."
+    echo "  Pulling docker://$docker_image ..."
+    echo "  (apptainer/singularity will stream layer progress below)"
+    t0=$(date +%s)
     if "$BUILD_CMD" pull --disable-cache "$out_file" "docker://$docker_image"; then
-        echo "Done: $out_file"
+        echo "  ✓ Done in $(elapsed $t0) — $(du -sh "$out_file" | cut -f1)"
     else
-        echo "Failed: $cache_name" >&2
+        echo "  ✗ FAILED after $(elapsed $t0)" >&2
         FAILED=1
     fi
-    echo ""
 done
 
+echo ""
 if [ $FAILED -eq 0 ]; then
-    echo "All offline containers are ready in $OUT_DIR"
-    echo "Transfer this directory to the cluster (e.g. /project/<def-group>/sf-lesionflow_sif)"
-    echo "and export NXF_APPTAINER_CACHEDIR / NXF_SINGULARITY_CACHEDIR (or pass --sif_cache)"
-    echo "together with -profile ...,offline"
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  All offline containers are ready in $OUT_DIR"
+    echo "  Transfer this directory to the cluster, then:"
+    echo "    export NXF_APPTAINER_CACHEDIR=$OUT_DIR"
+    echo "    nextflow run main.nf ... -profile ...,offline"
+    echo "════════════════════════════════════════════════════════════════"
 else
-    echo "One or more containers failed -- see messages above." >&2
+    echo "One or more containers failed — see ✗ messages above." >&2
     exit 1
 fi
+
