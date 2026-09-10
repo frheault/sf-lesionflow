@@ -205,13 +205,11 @@ Cluster profiles don't enforce these caps; jobs scale across nodes according to 
 
 ### Offline / air-gapped clusters (e.g. Alliance Canada)
 
-Nine containers (`ms_chus/*`, `segcsvd_rc03`) were built locally and never pushed to a registry, so a compute node without internet can't auto-pull them.
+All nine pipeline-specific containers (`frheault/sf-lesionflow-*`) are now published on DockerHub and can be pulled directly from the registry on any machine with internet access (including HPC login nodes).
 
-`dockerfiles/build_offline_containers.sh <output_dir>` builds the whole offline cache in one run:
-* Converts those nine from the local Docker daemon — run this part on a machine with Docker and the images already built.
-* Pulls the rest (`freesurfer/freesurfer`, `mgoubran/hypermapper`, `emorycn2l/emory_robust_wmh`, `ghcr.io/miac-research/wmh-nnunet`, and the nf-neuro modules' containers) straight from their public registries. This part needs no Docker, so it also works on a login node with internet.
+`dockerfiles/build_offline_containers.sh <output_dir>` builds the whole offline cache in one run by pulling all containers — including the sf-lesionflow ones — straight from their public registries. This works on any login node that has Apptainer/Singularity and internet access (no Docker required).
 
-Transfer `<output_dir>` to shared cluster storage (e.g. `/project` on Alliance Canada), then export `NXF_APPTAINER_CACHEDIR`/`NXF_SINGULARITY_CACHEDIR` (or pass `--sif_cache`) pointing at it, with the `offline` profile (`conf/offline.config`) added to redirect the nine local-only processes to their `.sif` files.
+Transfer `<output_dir>` to shared cluster storage (e.g. `/project` on Alliance Canada), then export `NXF_APPTAINER_CACHEDIR`/`NXF_SINGULARITY_CACHEDIR` (or pass `--sif_cache`) pointing at it, with the `offline` profile (`conf/offline.config`) added. Nextflow resolves every container — including the `frheault/sf-lesionflow-*` ones — from that cache directory automatically; `conf/offline.config` only kicks in as a developer override if you baked a locally-modified image into a `.sif` there instead of pulling the public one.
 
 ```bash
 nextflow run frheault/sf-lesionflow -r main \

@@ -7,7 +7,7 @@
 process SEGMENTATION_LST_AI {
     tag "$meta.id"
     label 'process_medium'
-    container 'ms_chus/lst_ai:latest'
+    container 'frheault/sf-lesionflow-lst_ai:1.1.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -115,7 +115,7 @@ process SEGMENTATION_WMH_SYNTHSEG {
     tag "$meta.id"
     label 'process_high_memory'
     label 'process_gpu'
-    container 'ms_chus/wmh_synthseg:latest'
+    container 'frheault/sf-lesionflow-wmh_synthseg:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -167,7 +167,7 @@ process SEGMENTATION_WMH_SYNTHSEG {
 process SEGMENTATION_FAST_OUTLIER {
     tag "$meta.id"
     label 'process_single'
-    container 'ms_chus/fast_outlier:latest'
+    container 'frheault/sf-lesionflow-fast_outlier:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -222,7 +222,7 @@ process SEGMENTATION_FLAMES {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
-    container 'ms_chus/flames:latest'
+    container 'frheault/sf-lesionflow-flames:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -280,7 +280,7 @@ process SEGMENTATION_TRUENET {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
-    container 'ms_chus/truenet:latest'
+    container 'frheault/sf-lesionflow-truenet:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -389,7 +389,7 @@ process SEGMENTATION_SEGCSVD {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
-    container 'segcsvd_rc03:latest'
+    container 'frheault/sf-lesionflow-segcsvd:rc03'
 
     when:
     task.ext.when == null || task.ext.when
@@ -545,7 +545,7 @@ process SEGMENTATION_MARS_WMH {
 process SEGMENTATION_BAWIL {
     tag "$meta.id"
     label 'process_medium'
-    container 'ms_chus/bawil:latest'
+    container 'frheault/sf-lesionflow-bawil:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -593,7 +593,7 @@ process SEGMENTATION_BAWIL {
 process SEGMENTATION_MIMOSA {
     tag "$meta.id"
     label 'process_medium'
-    container 'ms_chus/mimosa:latest'
+    container 'frheault/sf-lesionflow-mimosa:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -644,7 +644,7 @@ process SEGMENTATION_MIMOSA {
 process SEGMENTATION_SHIVAI {
     tag "$meta.id"
     label 'process_medium'
-    container 'ms_chus/shivai:latest'
+    container 'frheault/sf-lesionflow-shivai:1.0.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -692,7 +692,7 @@ process SEGMENTATION_SHIVAI {
 process CONSENSUS_STAPLE {
     tag "$meta.id"
     label 'process_single'
-    container 'segcsvd_rc03:latest'
+    container 'frheault/sf-lesionflow-segcsvd:rc03'
     input:
     tuple val(meta), path(ref_image), path(binary_masks)
 
@@ -743,7 +743,7 @@ process CONSENSUS_STAPLE {
 process HARMONIZATION_STAPLE {
     tag "$subject"
     label 'process_medium'
-    container 'segcsvd_rc03:latest'
+    container 'frheault/sf-lesionflow-segcsvd:rc03'
     input:
     tuple val(subject), val(metas), path(staple_masks)
 
