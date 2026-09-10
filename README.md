@@ -203,6 +203,28 @@ Cluster profiles don't enforce these caps; jobs scale across nodes according to 
 * GPU-capable processes request a GPU from Slurm via `clusterOptions` (default `--gres=gpu:1`, override with `--cluster_gpu_options` to match your cluster's syntax), only when `--use_gpu` is set.
 * Set `--sif_cache` (or `NXF_APPTAINER_CACHEDIR`/`NXF_SINGULARITY_CACHEDIR`) to cache images on persistent, shared storage instead of the pipeline's working directory.
 
+### Offline / air-gapped clusters (e.g. Alliance Canada)
+
+Nine containers (`ms_chus/*`, `segcsvd_rc03`) were built locally and never pushed to a registry, so a compute node without internet can't auto-pull them.
+
+`dockerfiles/build_offline_containers.sh <output_dir>` builds the whole offline cache in one run:
+* Converts those nine from the local Docker daemon — run this part on a machine with Docker and the images already built.
+* Pulls the rest (`freesurfer/freesurfer`, `mgoubran/hypermapper`, `emorycn2l/emory_robust_wmh`, `ghcr.io/miac-research/wmh-nnunet`, and the nf-neuro modules' containers) straight from their public registries. This part needs no Docker, so it also works on a login node with internet.
+
+Transfer `<output_dir>` to shared cluster storage (e.g. `/project` on Alliance Canada), then export `NXF_APPTAINER_CACHEDIR`/`NXF_SINGULARITY_CACHEDIR` (or pass `--sif_cache`) pointing at it, with the `offline` profile (`conf/offline.config`) added to redirect the nine local-only processes to their `.sif` files.
+
+```bash
+nextflow run frheault/sf-lesionflow -r main \
+    --input /project/<def-group>/bids_data \
+    --mni_template /project/<def-group>/mni_masked.nii.gz \
+    --fs_license /project/<def-group>/license.txt \
+    --output /project/<def-group>/results \
+    --sif_cache /project/<def-group>/sf-lesionflow_sif \
+    --use_gpu true \
+    -profile hpc,apptainer,gpu,offline \
+    -resume
+```
+
 ---
 
 ## 6. Testing
