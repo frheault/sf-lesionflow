@@ -59,7 +59,7 @@ flowchart TD
     end
 
     subgraph Phase5["Phase 5: Consolidated Export"]
-        LH --> EXP["EXPORT_SESSION<br>(Standardized BIDS & final_outputs/ Organization)"]
+        LH --> EXP["EXPORT_SESSION<br>(Standardized BIDS Organization: sub-XXX/ses-YYY/)"]
     end
 ```
 

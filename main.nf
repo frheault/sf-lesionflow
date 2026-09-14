@@ -100,6 +100,8 @@ include {
     HARMONIZATION_STAPLE
 } from './modules/local/lesion_segmentation'
 
+include { QC_PIPELINE } from './subworkflows/local/qc_pipeline'
+
 // -----------------------------------------------------------------------------
 // Channel Ingestion Workflow
 // -----------------------------------------------------------------------------
@@ -387,4 +389,66 @@ workflow {
         .groupTuple(by: 0)
 
     HARMONIZATION_STAPLE(ch_harmonize_input)
+
+    // =========================================================================
+    // PHASE 5: Quality Control & MultiQC Reporting
+    // =========================================================================
+
+    def summary_html = "<dl>" +
+        "<dt>Input</dt><dd>${params.input ?: ''}</dd>" +
+        "<dt>Active Algorithms</dt><dd>${active_algorithms.join(', ')}</dd>" +
+        "<dt>STAPLE Threshold</dt><dd>${params.staple_threshold}</dd>" +
+        "<dt>Min Cluster Size</dt><dd>${params.staple_min_cluster_size}</dd>" +
+        "<dt>Pct Change Threshold</dt><dd>${params.pct_change_threshold}</dd>" +
+        "</dl>"
+
+    def summary_yaml = """\
+id: sf-lesionflow-summary
+section_name: Workflow Parameters
+plot_type: html
+data: '${summary_html}'
+"""
+    ch_workflow_summary = Channel.value(summary_yaml)
+        .collectFile(name: 'workflow_summary_mqc.yaml')
+
+    ch_methods_desc = Channel.fromPath("${projectDir}/assets/methods_description_template.yml")
+        .collectFile(name: 'methods_description_mqc.yaml')
+
+    ch_collated_versions = CONSENSUS_STAPLE.out.versions
+        .mix(HARMONIZATION_STAPLE.out.versions)
+        .mix(SYNTHSTRIP_T1.out.versions)
+        .mix(N4_T1.out.versions)
+        .mix(REGISTER_FLAIR_TO_T1.out.versions)
+        .mix(REGISTER_BASELINE_TO_MNI.out.versions)
+        .mix(REGISTER_T1_TO_BASELINE.out.versions)
+        .collectFile(name: 'collated_versions_mqc_versions.yml', newLine: true) { file ->
+            file.text.replaceAll(/(:[ \t]+)(["']?)([^"'\s\n]+)(["']?)/, '$1"$3"')
+        }
+
+    // Registration QC channels (one [meta, fixed, warped] triple per stage)
+    ch_reg_flair_to_t1 = MASK_T1.out.image
+        .join(REGISTER_FLAIR_TO_T1.out.image_warped)
+
+    ch_followup_base_t1 = ch_grouped_t1.filter { meta, base_img, cur_img, is_base -> !is_base }
+        .map { meta, base_img, cur_img, is_base -> [meta, base_img] }
+    ch_reg_t1_to_baseline = ch_followup_base_t1
+        .join(REGISTER_T1_TO_BASELINE.out.image_warped)
+
+    ch_reg_t1_to_mni = REGISTER_BASELINE_TO_MNI.out.image_warped
+        .combine(data.mni_template)
+        .map { meta, warped_t1, mni -> [meta, mni, warped_t1] }
+
+    QC_PIPELINE(
+        ch_mni_paired,
+        ch_all_binary_masks,
+        CONSENSUS_STAPLE.out.staple_thr90_binary,
+        ch_reg_flair_to_t1,
+        ch_reg_t1_to_baseline,
+        ch_reg_t1_to_mni,
+        HARMONIZATION_STAPLE.out.audit_csv,
+        ch_collated_versions,
+        ch_workflow_summary,
+        ch_methods_desc
+    )
 }
+

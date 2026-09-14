@@ -29,7 +29,7 @@ nextflow_pipeline {
         }
         then {
             assert workflow.success
-            assert file("${params.output}/final_outputs/sub-018/sub-018_staple_harmonized_lesion_tracking.csv").exists()
+            assert file("${params.output}/sub-018/sub-018_staple_harmonized_lesion_tracking.csv").exists()
         }
     }
 }
