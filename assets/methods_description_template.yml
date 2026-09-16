@@ -1,0 +1,20 @@
+id: "sf-lesionflow-methods-description"
+section_name: "Methods Description"
+description: "Suggested publication boilerplate describing sf-lesionflow processing and QC methodology."
+plot_type: "html"
+data: |
+  <h4>Pipeline Processing & Consensus Fusion</h4>
+  <p>
+    Automated Multiple Sclerosis lesion segmentation was performed using <em>sf-lesionflow</em>.
+    Structural T1-weighted and FLAIR images were preprocessed including skull-stripping with SynthStrip,
+    N4 bias-field correction, and rigid coregistration via ANTs. Lesion candidates were segmented using an
+    ensemble of deep-learning and statistical algorithms. Probability consensus was fused via the
+    Simultaneous Truth and Performance Level Estimation (STAPLE) algorithm with Expectation-Maximization
+    and thresholded at 0.90 with connected component minimum size filtering.
+  </p>
+  <h4>Longitudinal Harmonization & Quality Control</h4>
+  <p>
+    Longitudinal lesions were harmonized across chronological sessions and tracked to classify individual
+    lesion fates (New, Enlarging, Stable, Shrinking, Resolved). Quality control reports and visual diagnostic
+    montages were compiled using MultiQC.
+  </p>
