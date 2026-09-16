@@ -396,7 +396,7 @@ workflow {
 
     def summary_html = "<dl>" +
         "<dt>Input</dt><dd>${params.input ?: ''}</dd>" +
-        "<dt>Active Algorithms</dt><dd>${active_algorithms.join(', ')}</dd>" +
+        "<dt>Active Algorithms</dt><dd>" + active_algorithms.join(', ') + "</dd>" +
         "<dt>STAPLE Threshold</dt><dd>${params.staple_threshold}</dd>" +
         "<dt>Min Cluster Size</dt><dd>${params.staple_min_cluster_size}</dd>" +
         "<dt>Pct Change Threshold</dt><dd>${params.pct_change_threshold}</dd>" +
