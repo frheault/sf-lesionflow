@@ -18,12 +18,12 @@
 # PyPI metadata: no nvidia-* entries in requires_dist for 2.11.1/2.12/2.13).
 # Bumped to 2.15.1 (same GPU-enabled version already used by
 # dockerfiles/lst_ai) to get `tensorflow[and-cuda]`'s bundled CUDA/cuDNN pip
-# packages. Run validate.py in this directory after building to confirm the
-# real downloaded .h5 model still loads and predicts with the expected
-# (256, 256, 3) output shape before trusting this version bump. numpy is left
-# unpinned -- TF 2.15's own requires_dist resolves a compatible numpy<2.0
-# automatically (the numpy 2.x incompatibility that required pinning was
-# specific to the 2.11.1 wheel).
+# packages. Re-verified end-to-end with validate.py in this directory: the
+# real downloaded .h5 model loads and predicts with the expected
+# (256, 256, 3) output shape under 2.15.1. numpy is left unpinned -- TF 2.15's
+# own requires_dist resolves a compatible numpy (1.26.4 observed) automatically
+# (the numpy 2.x incompatibility that required pinning was specific to the
+# 2.11.1 wheel).
 #
 # WHAT THIS ACTUALLY RUNS
 # `bin/bawil_filter.py` -- see the module docstring there for the full
