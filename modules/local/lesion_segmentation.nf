@@ -6,6 +6,7 @@
 
 process SEGMENTATION_LST_AI {
     tag "$meta.id"
+    label 'process_gpu'
     container 'frheault/sf-lesionflow-lst_ai:1.1.0'
 
     when:
@@ -28,8 +29,10 @@ process SEGMENTATION_LST_AI {
     """
 
     script:
+    def use_gpu = task.ext.gpu
+    def device = use_gpu ? "0" : "cpu"
     """
-    export CUDA_VISIBLE_DEVICES=-1
+    export CUDA_VISIBLE_DEVICES=${use_gpu ? '0' : '-1'}
     export TF_FORCE_GPU_ALLOW_GROWTH=true
     export TF_GPU_ALLOCATOR=cuda_malloc_async
     export TF_CPP_MIN_LOG_LEVEL=2
@@ -38,7 +41,7 @@ process SEGMENTATION_LST_AI {
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
     mkdir -p tmp_out
-    lst --t1 ${t1_mni} --flair ${flair_mni} --output tmp_out --segment_only --stripped --threads ${task.cpus}
+    lst --t1 ${t1_mni} --flair ${flair_mni} --output tmp_out --segment_only --stripped --device ${device} --threads ${task.cpus}
 
     if [ -f "tmp_out/space-flair_seg-lst.nii.gz" ]; then
         mv tmp_out/space-flair_seg-lst.nii.gz ${meta.id}_lst_ai_binary.nii.gz
@@ -215,9 +218,12 @@ process SEGMENTATION_FAST_OUTLIER {
     """
 }
 
+// GPU disabled: the published image only has the CPU-only torch wheel baked in
+// (dockerfiles/flames/Dockerfile installs torch from the CPU index), so
+// `-device cuda` would fail nnU-Net's torch.cuda.is_available() check. Revisit
+// once the image is rebuilt with a CUDA-enabled torch wheel.
 process SEGMENTATION_FLAMES {
     tag "$meta.id"
-    label 'process_gpu'
     container 'frheault/sf-lesionflow-flames:1.0.0'
 
     when:
@@ -241,20 +247,17 @@ process SEGMENTATION_FLAMES {
     """
 
     script:
-    def use_gpu = task.ext.gpu
-    def device = use_gpu ? "cuda" : "cpu"
     """
     export nnUNet_results=/opt/nnunet_results
     export nnUNet_raw=/opt/nnunet_raw
     export nnUNet_preprocessed=/opt/nnunet_preprocessed
     export TORCH_HOME="\$(pwd)/.cache/torch"
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
-    export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
     mkdir -p in_dir out_dir
     ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_0000.nii.gz
 
-    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device ${device}
+    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device cpu
 
     if [ -f "out_dir/${meta.id}.nii.gz" ]; then
         mv out_dir/${meta.id}.nii.gz ${meta.id}_flames_binary.nii.gz
@@ -535,6 +538,7 @@ process SEGMENTATION_MARS_WMH {
 // verified end-to-end before being wired in here).
 process SEGMENTATION_BAWIL {
     tag "$meta.id"
+    label 'process_gpu'
     container 'frheault/sf-lesionflow-bawil:1.0.0'
 
     when:
@@ -559,8 +563,9 @@ process SEGMENTATION_BAWIL {
     script:
     def prob_thresh = task.ext.prob_threshold ?: 0.50
     def min_cluster = task.ext.min_cluster_size ?: 3
+    def use_gpu = task.ext.gpu
     """
-    export CUDA_VISIBLE_DEVICES=-1
+    export CUDA_VISIBLE_DEVICES=${use_gpu ? '0' : '-1'}
     export TF_CPP_MIN_LOG_LEVEL=2
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
@@ -632,6 +637,7 @@ process SEGMENTATION_MIMOSA {
 // verified end-to-end before being wired in here.
 process SEGMENTATION_SHIVAI {
     tag "$meta.id"
+    label 'process_gpu'
     container 'frheault/sf-lesionflow-shivai:1.0.0'
 
     when:
@@ -656,8 +662,9 @@ process SEGMENTATION_SHIVAI {
     script:
     def prob_thresh = task.ext.prob_threshold ?: 0.50
     def min_cluster = task.ext.min_cluster_size ?: 3
+    def use_gpu = task.ext.gpu
     """
-    export CUDA_VISIBLE_DEVICES=-1
+    export CUDA_VISIBLE_DEVICES=${use_gpu ? '0' : '-1'}
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
     shivai_predict.py --t1 ${t1_mni} \

@@ -54,11 +54,18 @@
 # OUTPUT: /data/lst_ai/ses-Y_out/space-flair_seg-lst.nii.gz (binary mask)
 #
 # NOTES
-# - CPU-only: CUDA_VISIBLE_DEVICES=-1 disables GPU to avoid the TF XLA
-#   libdevice.10.bc crash on machines without a full CUDA stack.
-#   Remove or set to "0" to enable GPU.
-# - Image size: ~5 GB (TF + PyTorch CPU + LST-AI data)
-# - RAM at runtime: ~8 GB
+# - GPU-enabled: torch is installed from the cu118 wheel index and tensorflow
+#   is installed with the `[and-cuda]` extra, which bundles the matching
+#   nvidia-* CUDA/cuDNN/NVRTC runtime libraries as pip packages -- no separate
+#   CUDA base image or system toolkit needed. This also fixes the TF XLA
+#   `libdevice.10.bc` crash that CPU-only builds dodge by disabling GPU
+#   entirely: `[and-cuda]` ships the nvidia-cuda-nvcc package that provides
+#   that exact file.
+# - GPU vs CPU is controlled at runtime by CUDA_VISIBLE_DEVICES (set by the
+#   Nextflow process, not baked into the image) and the `lst --device` flag.
+# - Image size: ~7 GB (TF + PyTorch CUDA + bundled nvidia-* libs + LST-AI data)
+# - RAM at runtime: ~8 GB (CPU path); GPU path needs a CUDA-capable GPU visible
+#   via `--gpus`/`--nv` at container runtime.
 # =============================================================================
 
 FROM python:3.10-slim
@@ -92,10 +99,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #   3. All remaining deps with PINNED versions, nibabel==5.1.0 is critical
 #   4. numpy --force-reinstall LAST: torch silently upgrades it to 2.x,
 #      so we lock it back to 1.24.3 as the very final step
-RUN pip install --no-cache-dir "tensorflow==2.15.1"
+RUN pip install --no-cache-dir "tensorflow[and-cuda]==2.15.1"
 RUN pip install --no-cache-dir \
         "torch==2.1.0" "torchvision==0.16.0" \
-        --index-url https://download.pytorch.org/whl/cpu
+        --index-url https://download.pytorch.org/whl/cu118
 RUN pip install --no-cache-dir \
         "nibabel==5.1.0" \
         "Pillow" \
@@ -132,9 +139,8 @@ RUN chmod +x /opt/LST-AI/LST_AI/binaries/greedy* 2>/dev/null || true \
     && ln -sf /opt/LST-AI/LST_AI/binaries/greedy /usr/local/bin/greedy
 
 # 7. Runtime environment variables.
-# Disable GPU to avoid TF XLA / libdevice.10.bc crash (safe on CPU machines).
-# Remove CUDA_VISIBLE_DEVICES=-1 (or set to "0") to re-enable GPU.
-ENV CUDA_VISIBLE_DEVICES=-1
+# GPU vs CPU (CUDA_VISIBLE_DEVICES) is set by the Nextflow process at runtime,
+# not baked in here, so the same image serves both paths.
 ENV TF_FORCE_GPU_ALLOW_GROWTH=true
 ENV TF_GPU_ALLOCATOR=cuda_malloc_async
 ENV TF_CPP_MIN_LOG_LEVEL=2

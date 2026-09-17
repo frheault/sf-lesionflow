@@ -45,10 +45,18 @@
 #       ms_chus/shivai:latest python3 /tmp/validate.py
 #
 # NOTES
-# - CPU inference works (confirmed: TF 2.21 loads and runs this SavedModel on
-#   CPU) but is slower than GPU; the upstream README recommends a 9GB-VRAM
-#   GPU. `--gpu -1` equivalent behavior here (no CUDA_VISIBLE_DEVICES set to
-#   a real GPU) is the default.
+# - GPU-enabled: `tensorflow[and-cuda]` bundles the matching nvidia-*
+#   CUDA/cuDNN runtime pip packages, so no CUDA base image is needed. Plain
+#   `pip install tensorflow` was confirmed (live, inside the previously built
+#   image) to be "built with CUDA" at compile time but ship zero CUDA/cuDNN
+#   runtime libraries -- `tf.test.is_built_with_cuda()` was True yet
+#   `cudart_stub.cc` reported "Could not find cuda drivers" regardless of the
+#   host. GPU vs CPU is controlled at runtime by CUDA_VISIBLE_DEVICES (set by
+#   the Nextflow process), not baked into the image.
+# - NOT rebuilt/verified from this repo -- the model weights
+#   (dockerfiles/shivai/models/T1.FLAIR-WMH/) are git-ignored and manually
+#   placed (see note above), so this change needs to be built and run through
+#   validate.py by whoever has those weight files locally.
 # - License: CC BY-NC-SA (non-commercial) per the SHIVA_WMH repo. The repo
 #   also states explicitly: "inferences... should not be used for clinical
 #   purposes."
@@ -65,7 +73,7 @@ LABEL weights_sha256="B2FE8D18FC62F4B1A447F0EF571781CF7656D808BD76A28C4B0CF53BDD
 # 1. Python dependencies. scipy/scikit-image are for bin/shivai_predict.py's
 # use of bin/_lesion_utils.py's filter_small_components() (--min_cluster_size).
 RUN pip install --no-cache-dir \
-        "tensorflow>=2.17" \
+        "tensorflow[and-cuda]>=2.17" \
         "nibabel" \
         "scipy" \
         "scikit-image"

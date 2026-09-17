@@ -11,13 +11,19 @@
 # resolve URL (verified: 372,598,224 bytes, a real HDF5 file, not a git-lfs
 # pointer stub). No account/token needed.
 #
-# WHY tensorflow==2.11.1 + numpy==1.23.5
-# These are the exact framework versions the model was trained/exported with
-# (paper repo's requirements.txt). Verified directly: installing
-# tensorflow==2.11.1 with pip's own dependency resolution (no numpy pin) pulls
-# a numpy 2.x that CANNOT load this TF build (`_ARRAY_API not found`).
-# Pinning numpy==1.23.5 alongside it was confirmed to install cleanly and
-# load the actual downloaded .h5 model with a real prediction.
+# WHY tensorflow==2.15.1, not the paper's exact tensorflow==2.11.1
+# The model was trained/exported with tensorflow==2.11.1 (paper repo's
+# requirements.txt), but pip's tensorflow package has no `and-cuda` extra
+# until 2.14 -- 2.11.1 can only ever run on CPU via pip alone (confirmed via
+# PyPI metadata: no nvidia-* entries in requires_dist for 2.11.1/2.12/2.13).
+# Bumped to 2.15.1 (same GPU-enabled version already used by
+# dockerfiles/lst_ai) to get `tensorflow[and-cuda]`'s bundled CUDA/cuDNN pip
+# packages. Run validate.py in this directory after building to confirm the
+# real downloaded .h5 model still loads and predicts with the expected
+# (256, 256, 3) output shape before trusting this version bump. numpy is left
+# unpinned -- TF 2.15's own requires_dist resolves a compatible numpy<2.0
+# automatically (the numpy 2.x incompatibility that required pinning was
+# specific to the 2.11.1 wheel).
 #
 # WHAT THIS ACTUALLY RUNS
 # `bin/bawil_filter.py` -- see the module docstring there for the full
@@ -50,12 +56,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Python dependencies, pinned to the paper's own exported versions.
-# numpy MUST be installed/pinned alongside tensorflow, not left to pip's
-# resolver -- see note above.
+# 2. Python dependencies. See note above re: tensorflow version and numpy.
 RUN pip install --no-cache-dir \
-        "tensorflow==2.11.1" \
-        "numpy==1.23.5" \
+        "tensorflow[and-cuda]==2.15.1" \
         "opencv-python-headless==4.10.0.84" \
         "nibabel==5.2.1" \
         "scipy" \
@@ -74,7 +77,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends procps \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CUDA_VISIBLE_DEVICES=-1
+# GPU vs CPU (CUDA_VISIBLE_DEVICES) is set by the Nextflow process at
+# runtime, not baked in here, so the same image serves both paths.
 ENV TF_CPP_MIN_LOG_LEVEL=2
 
 # No ENTRYPOINT: Nextflow's global --entrypoint "" override makes this moot
