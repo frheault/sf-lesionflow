@@ -146,6 +146,7 @@ process SEGMENTATION_WMH_SYNTHSEG {
     source /usr/local/freesurfer/SetUpFreeSurfer.sh
     set -u
 
+    export HOME="\$(pwd)"
     export TORCH_HOME="\$(pwd)/.cache/torch"
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
