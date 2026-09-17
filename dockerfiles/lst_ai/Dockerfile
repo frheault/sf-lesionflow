@@ -15,7 +15,7 @@
 #      - numpy==1.24.3 (LST-AI requires <1.24.4)
 #      - tensorflow==2.15.1 (LST-AI requires >=2.13,<2.16, pinned to avoid
 #                            pip downloading every TF candidate wheel)
-#      - torch==2.1.0+cpu (LST-AI requires <=2.1.0)
+#      - torch==2.1.0+cu118 (LST-AI requires <=2.1.0)
 #      - + nibabel, scipy, scikit-image, pillow, requests
 # 2. LST-AI source via git clone from GitHub (tag v1.1.0)
 # 3. lst_data.zip from GitHub Releases v1.0.0 (~300 MB):

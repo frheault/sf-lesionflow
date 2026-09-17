@@ -7,7 +7,7 @@
 process SEGMENTATION_LST_AI {
     tag "$meta.id"
     label 'process_gpu'
-    container 'frheault/sf-lesionflow-lst_ai:1.1.0'
+    container 'frheault/sf-lesionflow-lst_ai:1.2.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -364,11 +364,13 @@ process SEGMENTATION_HYPERMAPP3R {
     create_nonzero_mask.py --input ${t1_mni} --output brain_mask.nii.gz
 
     mkdir -p tmp_hyper
+    set +e
     (
         cd tmp_hyper
         hypermapper seg_wmh -s \$(pwd) -t1 \$(realpath ../${t1_mni}) -fl \$(realpath ../${flair_mni}) -m \$(realpath ../brain_mask.nii.gz) -o \$(realpath ../prob.nii.gz) -n ${mc_samples} -f
     )
     hyper_status=\$?
+    set -e
     if [ \$hyper_status -ne 0 ]; then
         echo "hypermapper exited with status \$hyper_status (likely OOM-killed)" >&2
         exit \$hyper_status
