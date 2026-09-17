@@ -159,20 +159,26 @@ idx=0
 for docker_image in "${PUBLIC_IMAGES[@]}"; do
     idx=$(( idx + 1 ))
 
-    # Same sanitization Nextflow itself applies: prefix docker.io/ when no
-    # registry domain is present, then replace / and : with -.
-    if [[ "$docker_image" =~ ^[^/]+\.[^/]+/ ]]; then
-        clean_image="$docker_image"
-    else
-        clean_image="docker.io/$docker_image"
-    fi
-    cache_name=$(echo "$clean_image" | sed 's|/|-|g; s|:|-|g')
+    # Nextflow names cached images by replacing / and : with - directly from
+    # the container directive string (e.g. scilus/scilpy:2.2.2_cpu -> scilus-scilpy-2.2.2_cpu.img).
+    # It does NOT prepend 'docker.io-' for DockerHub images.
+    cache_name=$(echo "$docker_image" | sed 's|/|-|g; s|:|-|g')
     out_file="$OUT_DIR/${cache_name}.img"
+
+    # Also track legacy docker.io- prefixed name for compatibility
+    legacy_file="$OUT_DIR/docker.io-${cache_name}.img"
 
     progress_header "$idx" "$total" "$docker_image"
 
+    # If legacy docker.io- prefixed file already exists, symlink it to the expected Nextflow name
+    if [ ! -f "$out_file" ] && [ -f "$legacy_file" ]; then
+        ln -s "$(basename "$legacy_file")" "$out_file"
+    fi
+
     if [ -f "$out_file" ]; then
         echo "  ✓ Already exists — skipping ($(du -sh "$out_file" | cut -f1))"
+        # Ensure legacy alias exists too
+        [ ! -e "$legacy_file" ] && ln -s "$(basename "$out_file")" "$legacy_file" 2>/dev/null || true
         continue
     fi
 
@@ -181,6 +187,7 @@ for docker_image in "${PUBLIC_IMAGES[@]}"; do
     t0=$(date +%s)
     if "$BUILD_CMD" pull --disable-cache "$out_file" "docker://$docker_image"; then
         echo "  ✓ Done in $(elapsed $t0) — $(du -sh "$out_file" | cut -f1)"
+        [ ! -e "$legacy_file" ] && ln -s "$(basename "$out_file")" "$legacy_file" 2>/dev/null || true
     else
         echo "  ✗ FAILED after $(elapsed $t0)" >&2
         FAILED=1
