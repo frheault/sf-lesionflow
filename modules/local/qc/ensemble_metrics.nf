@@ -1,6 +1,5 @@
 process QC_ENSEMBLE_METRICS {
     tag "$meta.id"
-    label 'process_single'
 
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 

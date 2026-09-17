@@ -1,7 +1,5 @@
 process PREPROC_N4 {
     tag "$meta.id"
-    label 'process_medium'
-    label "process_high_memory"
 
     container "mrtrix3/mrtrix3:3.0.5"
 

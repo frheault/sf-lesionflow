@@ -1,6 +1,5 @@
 process QC_LONGITUDINAL {
     tag "$subject"
-    label 'process_single'
 
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 

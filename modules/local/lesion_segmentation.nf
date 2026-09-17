@@ -6,7 +6,6 @@
 
 process SEGMENTATION_LST_AI {
     tag "$meta.id"
-    label 'process_medium'
     container 'frheault/sf-lesionflow-lst_ai:1.1.0'
 
     when:
@@ -58,7 +57,6 @@ process SEGMENTATION_LST_AI {
 
 process SEGMENTATION_SAMSEG {
     tag "$meta.id"
-    label 'process_high_memory'
     container 'freesurfer/freesurfer:7.4.1'
 
     when:
@@ -113,7 +111,6 @@ process SEGMENTATION_SAMSEG {
 
 process SEGMENTATION_WMH_SYNTHSEG {
     tag "$meta.id"
-    label 'process_high_memory'
     label 'process_gpu'
     container 'frheault/sf-lesionflow-wmh_synthseg:1.0.0'
 
@@ -167,7 +164,6 @@ process SEGMENTATION_WMH_SYNTHSEG {
 
 process SEGMENTATION_FAST_OUTLIER {
     tag "$meta.id"
-    label 'process_single'
     container 'frheault/sf-lesionflow-fast_outlier:1.0.0'
 
     when:
@@ -221,7 +217,6 @@ process SEGMENTATION_FAST_OUTLIER {
 
 process SEGMENTATION_FLAMES {
     tag "$meta.id"
-    label 'process_medium'
     label 'process_gpu'
     container 'frheault/sf-lesionflow-flames:1.0.0'
 
@@ -279,7 +274,6 @@ process SEGMENTATION_FLAMES {
 
 process SEGMENTATION_TRUENET {
     tag "$meta.id"
-    label 'process_medium'
     label 'process_gpu'
     container 'frheault/sf-lesionflow-truenet:1.0.0'
 
@@ -335,7 +329,6 @@ process SEGMENTATION_TRUENET {
 
 process SEGMENTATION_HYPERMAPP3R {
     tag "$meta.id"
-    label 'process_high_memory'
     container 'mgoubran/hypermapper:latest'
 
     when:
@@ -388,7 +381,6 @@ process SEGMENTATION_HYPERMAPP3R {
 
 process SEGMENTATION_SEGCSVD {
     tag "$meta.id"
-    label 'process_medium'
     label 'process_gpu'
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 
@@ -445,7 +437,6 @@ process SEGMENTATION_SEGCSVD {
 
 process SEGMENTATION_EMORY_ROBUST {
     tag "$meta.id"
-    label 'process_high_memory'
     label 'process_gpu'
     container 'emorycn2l/emory_robust_wmh:v1.2'
 
@@ -489,7 +480,6 @@ process SEGMENTATION_EMORY_ROBUST {
 
 process SEGMENTATION_MARS_WMH {
     tag "$meta.id"
-    label 'process_medium'
     label 'process_gpu'
     container 'ghcr.io/miac-research/wmh-nnunet:latest'
 
@@ -545,7 +535,6 @@ process SEGMENTATION_MARS_WMH {
 // verified end-to-end before being wired in here).
 process SEGMENTATION_BAWIL {
     tag "$meta.id"
-    label 'process_medium'
     container 'frheault/sf-lesionflow-bawil:1.0.0'
 
     when:
@@ -593,7 +582,6 @@ process SEGMENTATION_BAWIL {
 // required, and no heuristic proxy involved -- see CITATIONS.md.
 process SEGMENTATION_MIMOSA {
     tag "$meta.id"
-    label 'process_medium'
     container 'frheault/sf-lesionflow-mimosa:1.0.0'
 
     when:
@@ -644,7 +632,6 @@ process SEGMENTATION_MIMOSA {
 // verified end-to-end before being wired in here.
 process SEGMENTATION_SHIVAI {
     tag "$meta.id"
-    label 'process_medium'
     container 'frheault/sf-lesionflow-shivai:1.0.0'
 
     when:
@@ -692,7 +679,6 @@ process SEGMENTATION_SHIVAI {
 
 process CONSENSUS_STAPLE {
     tag "$meta.id"
-    label 'process_single'
     container 'frheault/sf-lesionflow-segcsvd:rc03'
     input:
     tuple val(meta), path(ref_image), path(binary_masks)
@@ -743,7 +729,6 @@ process CONSENSUS_STAPLE {
 
 process HARMONIZATION_STAPLE {
     tag "$subject"
-    label 'process_medium'
     container 'frheault/sf-lesionflow-segcsvd:rc03'
     input:
     tuple val(subject), val(metas), path(staple_masks)

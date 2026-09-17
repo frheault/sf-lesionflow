@@ -1,6 +1,5 @@
 process QC_MULTIQC {
     tag "$meta.id"
-    label 'process_single'
 
     container "gagnonanthony/multiqc-neuroimaging:0.1.4"
     containerOptions((workflow.containerEngine == 'docker') ? '--entrypoint "" --user $(id -u):$(id -g)' : '')

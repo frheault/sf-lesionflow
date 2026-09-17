@@ -43,50 +43,58 @@ def parse_bytes_gb(b_str):
     return 0.0
 
 
-# Canonical label specifications from conf/base.config and conf/local_dev.config.
-TIER_SPECS = {
-    'process_single': {'cpu': 1, 'base_ram': 4.0, 'dev_ram': 4.0},
-    'process_low': {'cpu': 2, 'base_ram': 8.0, 'dev_ram': 6.0},
-    'process_medium': {'cpu': 4, 'base_ram': 12.0, 'dev_ram': 8.0},
-    'process_high': {'cpu': 8, 'base_ram': 16.0, 'dev_ram': 10.0},
-    'process_high_memory': {'cpu': 4, 'base_ram': 24.0, 'dev_ram': 16.0}
+# Canonical per-process specs, mirroring conf/base.config's individual withName
+# blocks directly (CPU-path values where a process has a separate GPU path).
+# There is no generic tier here on purpose -- each entry reflects what that one
+# tool actually needs, not a shared bucket. Keep this in sync with base.config.
+PROCESS_SPECS = {
+    'RESAMPLE_FLAIR': {'cpu': 1, 'ram': 4.0},
+    'RESAMPLE_T1': {'cpu': 1, 'ram': 4.0},
+    'SYNTHSTRIP_T1': {'cpu': 4, 'ram': 6.0},
+    'SYNTHSTRIP_FLAIR': {'cpu': 4, 'ram': 6.0},
+    'CROP_T1_MASK': {'cpu': 1, 'ram': 4.0},
+    'CROP_T1_RAW': {'cpu': 1, 'ram': 4.0},
+    'CROP_FLAIR_MASK': {'cpu': 1, 'ram': 4.0},
+    'CROP_FLAIR_RAW': {'cpu': 1, 'ram': 4.0},
+    'N4_T1': {'cpu': 4, 'ram': 8.0},
+    'N4_FLAIR': {'cpu': 4, 'ram': 8.0},
+    'MASK_FLAIR': {'cpu': 1, 'ram': 4.0},
+    'MASK_T1': {'cpu': 1, 'ram': 4.0},
+    'REGISTER_BASELINE_TO_MNI': {'cpu': 4, 'ram': 8.0},
+    'REGISTER_FLAIR_TO_T1': {'cpu': 4, 'ram': 8.0},
+    'REGISTER_T1_TO_BASELINE': {'cpu': 4, 'ram': 8.0},
+    'TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI': {'cpu': 1, 'ram': 4.0},
+    'TRANSFORM_FLAIR_TO_MNI': {'cpu': 1, 'ram': 4.0},
+    'TRANSFORM_T1W_UNSTRIPPED_TO_MNI': {'cpu': 1, 'ram': 4.0},
+    'TRANSFORM_T1W_TO_MNI': {'cpu': 1, 'ram': 4.0},
+    'SEGMENTATION_FLAMES': {'cpu': 4, 'ram': 16.0},
+    'SEGMENTATION_SAMSEG': {'cpu': 8, 'ram': 20.0},
+    'SEGMENTATION_WMH_SYNTHSEG': {'cpu': 1, 'ram': 24.0},
+    'SEGMENTATION_SEGCSVD': {'cpu': 4, 'ram': 16.0},
+    'SEGMENTATION_BAWIL': {'cpu': 4, 'ram': 10.0},
+    'SEGMENTATION_SHIVAI': {'cpu': 4, 'ram': 10.0},
+    'SEGMENTATION_EMORY_ROBUST': {'cpu': 4, 'ram': 16.0},
+    'SEGMENTATION_LST_AI': {'cpu': 6, 'ram': 10.0},
+    'SEGMENTATION_MIMOSA': {'cpu': 1, 'ram': 10.0},
+    'SEGMENTATION_FAST_OUTLIER': {'cpu': 1, 'ram': 4.0},
+    'SEGMENTATION_HYPERMAPP3R': {'cpu': 2, 'ram': 20.0},
+    'SEGMENTATION_MARS_WMH': {'cpu': 4, 'ram': 16.0},
+    'SEGMENTATION_TRUENET': {'cpu': 4, 'ram': 16.0},
+    'CONSENSUS_STAPLE': {'cpu': 2, 'ram': 6.0},
+    'HARMONIZATION_STAPLE': {'cpu': 2, 'ram': 6.0},
+    'QC_ENSEMBLE_METRICS': {'cpu': 1, 'ram': 4.0},
+    'QC_LONGITUDINAL': {'cpu': 1, 'ram': 4.0},
+    'QC_REGISTRATION_FLAIR_T1': {'cpu': 1, 'ram': 4.0},
+    'QC_REGISTRATION_T1_BASELINE': {'cpu': 1, 'ram': 4.0},
+    'QC_REGISTRATION_BASELINE_MNI': {'cpu': 1, 'ram': 4.0},
+    'QC_LESION_SCREENSHOT': {'cpu': 1, 'ram': 4.0},
+    'MULTIQC_SUBJECT': {'cpu': 1, 'ram': 4.0},
+    'MULTIQC_GLOBAL': {'cpu': 1, 'ram': 4.0},
 }
 
-CURRENT_LABELS = {
-    'RESAMPLE_FLAIR': 'process_high_memory',
-    'RESAMPLE_T1': 'process_high_memory',
-    'SYNTHSTRIP_T1': 'process_single',
-    'SYNTHSTRIP_FLAIR': 'process_single',
-    'CROP_T1_MASK': 'process_single',
-    'CROP_T1_RAW': 'process_single',
-    'CROP_FLAIR_MASK': 'process_single',
-    'CROP_FLAIR_RAW': 'process_single',
-    'N4_T1': 'process_high_memory',
-    'N4_FLAIR': 'process_high_memory',
-    'MASK_FLAIR': 'process_single',
-    'MASK_T1': 'process_single',
-    'REGISTER_BASELINE_TO_MNI': 'process_medium',
-    'REGISTER_FLAIR_TO_T1': 'process_medium',
-    'TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI': 'process_low',
-    'TRANSFORM_FLAIR_TO_MNI': 'process_low',
-    'TRANSFORM_T1W_UNSTRIPPED_TO_MNI': 'process_low',
-    'TRANSFORM_T1W_TO_MNI': 'process_low',
-    'SEGMENTATION_FLAMES': 'process_medium',
-    'SEGMENTATION_SAMSEG': 'process_high_memory',
-    'SEGMENTATION_WMH_SYNTHSEG': 'process_high_memory',
-    'SEGMENTATION_SEGCSVD': 'process_medium',
-    'SEGMENTATION_BAWIL': 'process_medium',
-    'SEGMENTATION_SHIVAI': 'process_medium',
-    'SEGMENTATION_EMORY_ROBUST': 'process_high_memory',
-    'SEGMENTATION_LST_AI': 'process_medium',
-    'SEGMENTATION_MIMOSA': 'process_medium',
-    'SEGMENTATION_FAST_OUTLIER': 'process_single',
-    'SEGMENTATION_HYPERMAPP3R': 'process_high_memory',
-    'SEGMENTATION_MARS_WMH': 'process_medium',
-    'SEGMENTATION_TRUENET': 'process_medium',
-    'CONSENSUS_STAPLE': 'process_single',
-    'HARMONIZATION_STAPLE': 'process_medium'
-}
+# Fallback for any process not yet profiled/added above -- matches base.config's
+# bare top-level default (1 cpu / 4GB), not a guessed "medium" bucket.
+DEFAULT_SPEC = {'cpu': 1, 'ram': 4.0}
 
 
 def analyze_trace(trace_file):
@@ -98,54 +106,46 @@ def analyze_trace(trace_file):
     rows = []
     for _, r in df.iterrows():
         task_name = r['name'].split(' ')[0]
-        label = CURRENT_LABELS.get(task_name, 'process_medium')
-        spec = TIER_SPECS.get(label, {'cpu': 1, 'base_ram': 4.0, 'dev_ram': 4.0})
-        alloc_ram = spec['dev_ram']
+        spec = PROCESS_SPECS.get(task_name, DEFAULT_SPEC)
+        alloc_ram = spec['ram']
         alloc_cpu = spec['cpu']
 
         mem_eff = (r['peak_rss_gb'] / alloc_ram) * 100.0
         cpu_eff = (r['cpu_pct'] / (alloc_cpu * 100.0)) * 100.0
 
-        # Classify process resource utilization.
-        if label == 'process_high_memory' and r['peak_rss_gb'] < 2.0:
+        # Classify process resource utilization against its OWN current allocation
+        # (no tier names involved -- just this process's numbers vs. what it used).
+        if alloc_ram >= 16.0 and r['peak_rss_gb'] < 2.0:
             category = "Phantom High-Memory"
-            rec_label = "process_single" if r['cpu_pct'] < 150 else "process_low"
             rec_cpu = 1 if r['cpu_pct'] < 150 else 2
             rec_ram = "2.GB" if r['cpu_pct'] < 150 else "4.GB"
         elif alloc_cpu >= 4 and r['cpu_pct'] <= 120 and r['realtime_sec'] > 30:
             category = "Pseudo Multi-Threaded"
-            rec_label = "process_single"
             rec_cpu = 1
             rec_ram = f"{max(4, int(r['peak_rss_gb'] * 1.25) + 1)}.GB"
         elif r['peak_rss_gb'] >= 10.0:
             category = "True Memory Monopoly"
-            rec_label = "process_high_memory"
             rec_cpu = alloc_cpu
             rec_ram = "16.GB"
         elif r['cpu_pct'] > 250 and r['peak_rss_gb'] <= 4.0:
             category = "High-Compute Hotspot"
-            rec_label = "process_medium"
             rec_cpu = 4
             rec_ram = "4.GB"
         elif r['realtime_sec'] < 10.0:
             category = "Fast Heuristic / Filter"
-            rec_label = "process_single"
             rec_cpu = 1
             rec_ram = "2.GB"
-        elif r['peak_rss_gb'] <= 8.0 and label == 'process_high_memory':
+        elif r['peak_rss_gb'] <= 8.0 and alloc_ram >= 16.0:
             category = "Over-Allocated RAM"
-            rec_label = "process_medium"
             rec_cpu = 4
             rec_ram = "8.GB"
         else:
             category = "Balanced"
-            rec_label = label
             rec_cpu = alloc_cpu
             rec_ram = f"{int(alloc_ram)}.GB"
 
         rows.append({
             'Task': task_name,
-            'Current Label': label,
             'Alloc CPU': alloc_cpu,
             'Alloc RAM': f"{alloc_ram:.0f} GB",
             'Realtime': r['realtime'],
@@ -154,7 +154,6 @@ def analyze_trace(trace_file):
             'Mem Eff': f"{mem_eff:.1f}%",
             'CPU Eff': f"{cpu_eff:.1f}%",
             'Diagnostic Bucket': category,
-            'Recommended Tier': rec_label,
             'Rec CPU': rec_cpu,
             'Rec RAM': rec_ram
         })

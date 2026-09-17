@@ -1,6 +1,5 @@
 process IMAGE_APPLYMASK {
     tag "$meta.id"
-    label 'process_single'
 
     container "mrtrix3/mrtrix3:3.0.5"
 

@@ -1,6 +1,5 @@
 process QC_LESION_SCREENSHOT {
     tag "$meta.id"
-    label 'process_single'
 
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 
