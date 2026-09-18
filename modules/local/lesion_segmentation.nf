@@ -318,7 +318,7 @@ process SEGMENTATION_TRUENET {
     echo "FLAIR T1" > masterfile.txt
     echo "\$flair_path \$t1_path" >> masterfile.txt
 
-    truenet apply -i \$(realpath masterfile.txt) -m mwsc -o out -cpu ${cpu_arg}
+    truenet apply -i masterfile.txt -m mwsc -o out -cpu ${cpu_arg}
 
     threshold_probmap.py --input_glob 'out/Predicted_probmap_truenet_*.nii.gz' \
                          --output ${meta.id}_truenet_binary.nii.gz \
@@ -437,9 +437,9 @@ process SEGMENTATION_SEGCSVD {
     if [ "${use_gpu}" = "true" ]; then
         sed 's/ -c//' /seg/tools/segment_wmh > ./segment_wmh_device
         chmod +x ./segment_wmh_device
-        ./segment_wmh_device \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+        ./segment_wmh_device ${flair_mni} temp_mask.nii.gz prob.nii.gz 1 "${patch_size}" ${threshold} 1 true true
     else
-        segment_wmh \$(realpath ${flair_mni}) \$(realpath temp_mask.nii.gz) \$(realpath prob.nii.gz) 1 "${patch_size}" ${threshold} 1 true true
+        segment_wmh ${flair_mni} temp_mask.nii.gz prob.nii.gz 1 "${patch_size}" ${threshold} 1 true true
     fi
 
     threshold_probmap.py --input prob.nii.gz \
@@ -533,9 +533,9 @@ process SEGMENTATION_MARS_WMH {
     ${gpu_env}
 
     python /opt/scripts/pipeline_nnunet.py \
-        --flair \$(realpath ${flair_mni}) \
-        --t1 \$(realpath ${t1_mni}) \
-        --fnOut \$(realpath ${meta.id}_mars_wmh_binary.nii.gz) \
+        --flair ${flair_mni} \
+        --t1 ${t1_mni} \
+        --fnOut ${meta.id}_mars_wmh_binary.nii.gz \
         --skipRegistration \
         --overwrite \
         --omitQC
