@@ -364,9 +364,11 @@ process SEGMENTATION_HYPERMAPP3R {
     export OPENBLAS_NUM_THREADS=2
     export MKL_NUM_THREADS=2
 
+    mkdir -p tmp_hyper
+    export TMPDIR="\$(pwd)/tmp_hyper"
+
     create_nonzero_mask.py --input ${t1_mni} --output brain_mask.nii.gz
 
-    mkdir -p tmp_hyper
     set +e
     (
         cd tmp_hyper
