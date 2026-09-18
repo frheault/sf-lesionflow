@@ -37,6 +37,8 @@ process SEGMENTATION_LST_AI {
     export TF_GPU_ALLOCATOR=cuda_malloc_async
     export TF_CPP_MIN_LOG_LEVEL=2
     export OMP_NUM_THREADS=${task.cpus}
+    export PYTHONNOUSERSITE=1
+    unset PYTHONPATH
     export TORCH_HOME="\$(pwd)/.cache/torch"
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
 
@@ -251,6 +253,8 @@ process SEGMENTATION_FLAMES {
     export OMP_NUM_THREADS=${task.cpus}
     export MKL_NUM_THREADS=${task.cpus}
     export OPENBLAS_NUM_THREADS=${task.cpus}
+    export PYTHONNOUSERSITE=1
+    unset PYTHONPATH
     export nnUNet_results=/opt/nnunet_results
     export nnUNet_raw=/opt/nnunet_raw
     export nnUNet_preprocessed=/opt/nnunet_preprocessed
@@ -260,7 +264,7 @@ process SEGMENTATION_FLAMES {
     mkdir -p in_dir out_dir
     ln -s \$(realpath ${flair_mni}) in_dir/${meta.id}_0000.nii.gz
 
-    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device cpu
+    nnUNetv2_predict -i in_dir -o out_dir -d 004 -c 3d_fullres -tr nnUNetTrainer_8000epochs --disable_tta -device cpu -npp 1 -nps 1
 
     if [ -f "out_dir/${meta.id}.nii.gz" ]; then
         mv out_dir/${meta.id}.nii.gz ${meta.id}_flames_binary.nii.gz
@@ -527,6 +531,8 @@ process SEGMENTATION_MARS_WMH {
     def gpu_env = use_gpu ? "export CUDA_VISIBLE_DEVICES=0" : "export CUDA_VISIBLE_DEVICES=\"\""
     """
     export OMP_NUM_THREADS=${task.cpus}
+    export PYTHONNOUSERSITE=1
+    unset PYTHONPATH
     export TORCH_HOME="\$(pwd)/.cache/torch"
     export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
     export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
