@@ -363,17 +363,22 @@ process SEGMENTATION_HYPERMAPP3R {
     export OMP_NUM_THREADS=2
     export OPENBLAS_NUM_THREADS=2
     export MKL_NUM_THREADS=2
+    export TMPDIR="\$(pwd)/tmp_hyper"
+    export APPTAINERENV_TMPDIR="\$(pwd)/tmp_hyper"
+    export SINGULARITYENV_TMPDIR="\$(pwd)/tmp_hyper"
 
     mkdir -p tmp_hyper
-    export TMPDIR="\$(pwd)/tmp_hyper"
-
     create_nonzero_mask.py --input ${t1_mni} --output brain_mask.nii.gz
 
     set +e
-    (
-        cd tmp_hyper
-        hypermapper seg_wmh -s \$(pwd) -t1 \$(realpath ../${t1_mni}) -fl \$(realpath ../${flair_mni}) -m \$(realpath ../brain_mask.nii.gz) -o \$(realpath ../prob.nii.gz) -n ${mc_samples} -f
-    )
+    hypermapper seg_wmh \
+        -s "\$(pwd)/tmp_hyper" \
+        -t1 "\$(realpath ${t1_mni})" \
+        -fl "\$(realpath ${flair_mni})" \
+        -m "\$(realpath brain_mask.nii.gz)" \
+        -o "\$(realpath prob.nii.gz)" \
+        -n ${mc_samples} \
+        -f
     hyper_status=\$?
     set -e
     if [ \$hyper_status -ne 0 ]; then
