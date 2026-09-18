@@ -372,11 +372,11 @@ process SEGMENTATION_HYPERMAPP3R {
 
     set +e
     hypermapper seg_wmh \
-        -s "\$(pwd)/tmp_hyper" \
-        -t1 "\$(realpath ${t1_mni})" \
-        -fl "\$(realpath ${flair_mni})" \
-        -m "\$(realpath brain_mask.nii.gz)" \
-        -o "\$(realpath prob.nii.gz)" \
+        -s tmp_hyper \
+        -t1 ${t1_mni} \
+        -fl ${flair_mni} \
+        -m brain_mask.nii.gz \
+        -o prob.nii.gz \
         -n ${mc_samples} \
         -f
     hyper_status=\$?
