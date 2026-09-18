@@ -7,7 +7,7 @@
 process SEGMENTATION_LST_AI {
     tag "$meta.id"
     label 'process_gpu'
-    container 'frheault/sf-lesionflow-lst_ai:1.2.0'
+    container 'frheault/sf-lesionflow-lst_ai:1.1.0'
 
     when:
     task.ext.when == null || task.ext.when
@@ -248,6 +248,9 @@ process SEGMENTATION_FLAMES {
 
     script:
     """
+    export OMP_NUM_THREADS=${task.cpus}
+    export MKL_NUM_THREADS=${task.cpus}
+    export OPENBLAS_NUM_THREADS=${task.cpus}
     export nnUNet_results=/opt/nnunet_results
     export nnUNet_raw=/opt/nnunet_raw
     export nnUNet_preprocessed=/opt/nnunet_preprocessed

@@ -66,7 +66,7 @@ progress_header() {
 # sif_name:local_docker_image -- keep in sync with conf/offline.config
 # -----------------------------------------------------------------------------
 LOCAL_IMAGES=(
-    "lst_ai.sif:frheault/sf-lesionflow-lst_ai:1.1.0"
+    "lst_ai.sif:frheault/sf-lesionflow-lst_ai:1.2.0"
     "wmh_synthseg.sif:frheault/sf-lesionflow-wmh_synthseg:1.0.0"
     "fast_outlier.sif:frheault/sf-lesionflow-fast_outlier:1.0.0"
     "flames.sif:frheault/sf-lesionflow-flames:1.0.0"
@@ -125,7 +125,7 @@ fi
 # -----------------------------------------------------------------------------
 PUBLIC_IMAGES=(
     # --- sf-lesionflow custom containers (DockerHub: frheault/) ---
-    "frheault/sf-lesionflow-lst_ai:1.1.0"
+    "frheault/sf-lesionflow-lst_ai:1.2.0"
     "frheault/sf-lesionflow-wmh_synthseg:1.0.0"
     "frheault/sf-lesionflow-fast_outlier:1.0.0"
     "frheault/sf-lesionflow-flames:1.0.0"
