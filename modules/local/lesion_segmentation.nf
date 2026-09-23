@@ -495,6 +495,8 @@ process SEGMENTATION_EMORY_ROBUST {
 
     bash /app/main.sh -t \$(realpath ${t1_mni}) -f \$(realpath ${flair_mni}) -o \$(realpath ${meta.id}_emory_robust_binary.nii.gz) --no-n4 --no-coreg ${gpu_flag}
 
+    rm -rf .app_inputs .app_outputs
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         emory_robust_wmh: 1.2
