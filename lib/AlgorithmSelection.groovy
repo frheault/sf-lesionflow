@@ -1,7 +1,8 @@
 class AlgorithmSelection {
     static final List<String> ALL = [
         'lst_ai', 'samseg', 'wmh_synthseg', 'fast_outlier', 'flames', 'truenet',
-        'hypermapp3r', 'segcsvd', 'emory_robust', 'mars_wmh', 'bawil', 'mimosa', 'shivai'
+        'hypermapp3r', 'segcsvd', 'emory_robust', 'mars_wmh', 'bawil', 'mimosa', 'shivai',
+        'mindglide'
     ]
 
     static Set<String> resolveActive(params) {

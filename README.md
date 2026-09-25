@@ -18,7 +18,7 @@ Developed at the **Sherbrooke Connectivity Imaging Lab (SCIL)**, Université de 
 
 ## 1. Overview & Pipeline Architecture
 
-`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a 13-algorithm lesion segmentation ensemble. It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets. Six algorithms (`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`) support optional GPU acceleration, on workstations and Slurm HPC clusters alike.
+`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a 14-algorithm lesion segmentation ensemble. It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets. Seven algorithms (`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `mindGlide`) support optional GPU acceleration, on workstations and Slurm HPC clusters alike.
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ flowchart TD
         H --> I["REGISTRATION_ANTSAPPLYTRANSFORMS (Composite MNI Warps)"]
     end
 
-    subgraph Phase2["Phase 2: Parallel 13-Algorithm Segmentation Ensemble"]
+    subgraph Phase2["Phase 2: Parallel 14-Algorithm Segmentation Ensemble"]
         I --> S1["LST-AI"]
         I --> S2["SAMSEG"]
         I --> S3["WMH-SynthSeg"]
@@ -48,10 +48,11 @@ flowchart TD
         I --> S11["BAWIL"]
         I --> S12["MIMoSA"]
         I --> S13["SHiVAi"]
+        I --> S14["mindGlide"]
     end
 
     subgraph Phase3["Phase 3: Consensus Fusion"]
-        S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9 & S10 & S11 & S12 & S13 --> CF["CONSENSUS_STAPLE<br>(STAPLE EM -> thr >= 0.90 -> CC filter >= 6mm3 -> Watershed Instances)"]
+        S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9 & S10 & S11 & S12 & S13 & S14 --> CF["CONSENSUS_STAPLE<br>(STAPLE EM -> thr >= 0.90 -> CC filter >= 6mm3 -> Watershed Instances)"]
     end
 
     subgraph Phase4["Phase 4: Longitudinal Harmonization"]
@@ -67,9 +68,9 @@ flowchart TD
 
 ## 2. Algorithm Provenance Notice
 
-This pipeline executes an ensemble of 13 lesion segmentation algorithms. Each algorithm runs its published, pretrained model.
+This pipeline executes an ensemble of 14 lesion segmentation algorithms. Each algorithm runs its published, pretrained model.
 
-The algorithms include: `LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `MIMoSA`, `BAWIL`, and `SHiVAi`.
+The algorithms include: `LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `MIMoSA`, `BAWIL`, `SHiVAi`, and `mindGlide`.
 
 Refer to [CITATIONS.md](CITATIONS.md) for complete citations and model provenance.
 
@@ -172,11 +173,11 @@ A sixth label, `process_gpu`, stacks on top of one of the labels above (e.g. `SE
 
 ### GPU Acceleration
 
-`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, and `MARS-WMH` can run on GPU. GPU use is opt-in and off by default:
+`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, and `mindGlide` can run on GPU. GPU use is opt-in and off by default:
 
 * Enable it with `--use_gpu true` or the `gpu` profile (`-profile docker,gpu`). The `gpu` profile also adds the container flags needed to expose the GPU (`--gpus all` for Docker, `--nv` for Apptainer/Singularity).
 * On `docker`/`apptainer`/`singularity`, the GPU comes from the local host. On `hpc` (Slurm), it's requested from the scheduler via `clusterOptions` (default `--gres=gpu:1`, override with `--cluster_gpu_options`).
-* Without `--use_gpu`, all six algorithms run on CPU — no extra configuration needed.
+* Without `--use_gpu`, all seven algorithms run on CPU — no extra configuration needed.
 * Exception: `SEGMENTATION_WMH_SYNTHSEG` always runs on CPU under `local_dev`, even with `--use_gpu`. On an 8 GB workstation GPU, `mri_WMHsynthseg` needs ~9-10 GB VRAM and triggers a CUDA OOM alongside the display server. It uses GPU normally under `hpc`.
 
 ### `-profile local_dev`: single-machine dev/test

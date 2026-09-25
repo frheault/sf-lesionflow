@@ -96,6 +96,7 @@ include {
     SEGMENTATION_BAWIL;
     SEGMENTATION_MIMOSA;
     SEGMENTATION_SHIVAI;
+    SEGMENTATION_MINDGLIDE;
     CONSENSUS_STAPLE;
     HARMONIZATION_STAPLE
 } from './modules/local/lesion_segmentation'
@@ -178,7 +179,7 @@ if (active_algorithms.size() == 1) {
 def ALGORITHM_MEMORY_GB = [
     lst_ai: 8, samseg: 16, wmh_synthseg: 16, fast_outlier: 8, flames: 8,
     truenet: 16, hypermapp3r: 16, segcsvd: 8, emory_robust: 16, mars_wmh: 8,
-    bawil: 8, mimosa: 8, shivai: 8
+    bawil: 8, mimosa: 8, shivai: 8, mindglide: 8
 ]
 assert ALGORITHM_MEMORY_GB.keySet() == AlgorithmSelection.ALL as Set  // fails loudly if the two lists ever diverge
 
@@ -353,6 +354,7 @@ workflow {
     SEGMENTATION_BAWIL(ch_mni_flair_only)
     SEGMENTATION_MIMOSA(ch_mni_paired)
     SEGMENTATION_SHIVAI(ch_mni_paired)
+    SEGMENTATION_MINDGLIDE(ch_mni_flair_only)
 
     // =========================================================================
     // PHASE 3: STAPLE Consensus Fusion (thr90 >= 6mm3 + Watershed)
@@ -371,7 +373,8 @@ workflow {
             SEGMENTATION_MARS_WMH.out.binary_mask,
             SEGMENTATION_BAWIL.out.binary_mask,
             SEGMENTATION_MIMOSA.out.binary_mask,
-            SEGMENTATION_SHIVAI.out.binary_mask
+            SEGMENTATION_SHIVAI.out.binary_mask,
+            SEGMENTATION_MINDGLIDE.out.binary_mask
         )
         .groupTuple(by: 0, size: active_algorithms.size())
 

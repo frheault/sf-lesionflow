@@ -10,7 +10,7 @@ include { QC_MULTIQC as MULTIQC_GLOBAL                     } from '../../modules
 workflow QC_PIPELINE {
     take:
     ch_t1_flair_paired      // channel: [meta, t1, flair]
-    ch_all_binary_masks     // channel: [meta, [masks_13_algos]]
+    ch_all_binary_masks     // channel: [meta, [masks_14_algos]]
     ch_staple_binary        // channel: [meta, thr90_binary]
     ch_reg_flair_to_t1      // channel: [meta, fixed_t1, warped_flair]
     ch_reg_t1_to_baseline   // channel: [meta, fixed_baseline_t1, warped_t1]

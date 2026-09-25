@@ -36,8 +36,12 @@ Cite the following algorithms, foundational tools, and pipeline infrastructure w
     * Uses the Hugging Face model `Bawil/wmh_leverage_normal_abnormal_segmentation`: Bashiri Bawil M, Shamsi M, Shakeri Bavil A. *Adversarial Deep Learning for Simultaneous Segmentation of Ventricular and White Matter Hyperintensities in Clinical MRI*. arXiv:2506.07123, 2025. https://doi.org/10.48550/arXiv.2506.07123. The model is a 3-class U-Net that segments periventricular and white matter hyperintensities on axial FLAIR slices. `SEGMENTATION_BAWIL` executes the pretrained Keras model via `bin/bawil_filter.py`. Consult [`dockerfiles/bawil/README.md`](dockerfiles/bawil/) for implementation details.
 13. **SHIVA-WMH**:
     * Tsuchida A, Boutinaud P, Verrecchia V, Tzourio C, Debette S, Joliot M. *Early detection of white matter hyperintensities using SHIVA-WMH detector*. Human Brain Mapping, 45(1):e26548, 2024. https://doi.org/10.1002/hbm.26548 ([github.com/pboutinaud/SHIVA_WMH](https://github.com/pboutinaud/SHIVA_WMH)). `SEGMENTATION_SHIVAI` executes the pretrained 5-fold ResUnet3D SavedModel ensemble (`v2/T1+FLAIR-WMH`). Model weights use a CC BY-NC-SA license. Consult [`dockerfiles/shivai/README.md`](dockerfiles/shivai/) for setup and execution details.
+14. **mindGlide**:
+    * Goebl P, Wingrove J, Abdelmannan O, Brito Vega B, Stutters J, Ramos SDG, et al. *Enabling new insights from old scans by repurposing clinical MRI archives for multiple sclerosis research*. Nature Communications, 16(1):3149, 2025. https://doi.org/10.1038/s41467-025-58274-8 ([github.com/MS-PINPOINT/mindGlide](https://github.com/MS-PINPOINT/mindGlide)). `SEGMENTATION_MINDGLIDE` executes the pretrained MONAI sliding-window model from Hugging Face (`MS-PINPOINT/mindglide`). Consult [`dockerfiles/mindglide/README.md`](dockerfiles/mindglide/) for implementation details.
 
-All 13 lesion segmentation algorithms execute published, pretrained models.
+All 14 lesion segmentation algorithms execute published, pretrained models.
+
+> **Note on BIANCA (FSL)**: BIANCA was evaluated for inclusion but excluded because it requires user-provided or cohort-restricted training data (k-NN classifier) rather than shipping a redistributable, pretrained model. FSL's official deep-learning successor, TrueNet (Sundaresan et al. 2021), is already included as algorithm #6. See [`dockerfiles/bianca/README.md`](dockerfiles/bianca/README.md) for full architectural analysis and provenance rationale.
 
 ---
 

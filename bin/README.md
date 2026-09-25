@@ -17,7 +17,7 @@ pip install -r bin/requirements.txt
 | **`create_nonzero_mask.py`** | Creates binary mask from non-zero voxels ($x > 0$) | `numpy`, `nibabel` | `SEGMENTATION_HYPERMAPP3R`<br>`SEGMENTATION_SEGCSVD` | `mgoubran/hypermapper:latest`<br>`segcsvd_rc03:latest` |
 | **`threshold_probmap.py`** | Thresholds probability maps ($\ge \tau$) into binary masks | `numpy`, `nibabel` | `SEGMENTATION_TRUENET`<br>`SEGMENTATION_HYPERMAPP3R`<br>`SEGMENTATION_SEGCSVD` | `ms_chus/truenet:latest`<br>`mgoubran/hypermapper:latest`<br>`segcsvd_rc03:latest` |
 | **`fast_outlier.py`** | DWM mask generation & intensity $z$-score outlier filter | `numpy`, `nibabel` | `SEGMENTATION_FAST_OUTLIER` | `ms_chus/fast_outlier:latest` |
-| **`conform_synthseg.py`** | Extracts label 77 & conforms geometry to reference | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_WMH_SYNTHSEG` | `ms_chus/wmh_synthseg:latest` |
+| **`conform_synthseg.py`** | Extracts target label (77 for WMH-SynthSeg, 18 for mindGlide) & conforms geometry to reference | `numpy`, `nibabel`, `scipy` | `SEGMENTATION_WMH_SYNTHSEG`<br>`SEGMENTATION_MINDGLIDE` | `frheault/sf-lesionflow-wmh_synthseg:1.0.0`<br>`frheault/sf-lesionflow-mindglide:1.0.0` |
 | **`bawil_filter.py`** | Pretrained 3-class Keras U-Net for axial FLAIR lesion segmentation | `tensorflow`, `numpy`, `nibabel`, `opencv`, `scipy`, `scikit-image` | `SEGMENTATION_BAWIL` | `ms_chus/bawil:latest` |
 | **`mimosa_predict.R`** | Pretrained MIMoSA logistic regression model execution | R (`mimosa`, `fslr`, `neurobase`, `mmand`, `optparse`) | `SEGMENTATION_MIMOSA` | `ms_chus/mimosa:latest` |
 | **`shivai_predict.py`** | Pretrained 5-fold ResUnet3D SavedModel ensemble execution | `tensorflow`, `nibabel` | `SEGMENTATION_SHIVAI` | `ms_chus/shivai:latest` |

@@ -74,6 +74,7 @@ LOCAL_IMAGES=(
     "bawil.sif:frheault/sf-lesionflow-bawil:1.0.0"
     "mimosa.sif:frheault/sf-lesionflow-mimosa:1.0.0"
     "shivai.sif:frheault/sf-lesionflow-shivai:1.0.0"
+    "mindglide.sif:frheault/sf-lesionflow-mindglide:1.0.0"
     "segcsvd.sif:frheault/sf-lesionflow-segcsvd:rc03"
 )
 
@@ -134,6 +135,7 @@ PUBLIC_IMAGES=(
     "frheault/sf-lesionflow-mimosa:1.0.0"
     "frheault/sf-lesionflow-shivai:1.0.0"
     "frheault/sf-lesionflow-segcsvd:rc03"
+    "frheault/sf-lesionflow-mindglide:1.0.0"
     # --- nf-neuro standard modules ---
     "scilus/scilpy:2.2.2_cpu"
     "scilus/scilus:2.2.2"

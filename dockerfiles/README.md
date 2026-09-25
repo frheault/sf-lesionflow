@@ -1,6 +1,6 @@
 # Container Recipes & Build Registry for sf-lesionflow
 
-This directory contains Dockerfiles, build instructions, and provenance records for the 13 lesion segmentation algorithms integrated into `sf-lesionflow`.
+This directory contains Dockerfiles, build instructions, and provenance records for the 14 lesion segmentation algorithms integrated into `sf-lesionflow`.
 
 ---
 
@@ -21,6 +21,7 @@ This directory contains Dockerfiles, build instructions, and provenance records 
 | `SEGMENTATION_BAWIL` | [`bawil/`](bawil/) | `frheault/sf-lesionflow-bawil:1.0.0` | Custom Dockerfile | Auto-fetched from [Hugging Face](https://huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation) |
 | `SEGMENTATION_MIMOSA` | [`mimosa/`](mimosa/) | `frheault/sf-lesionflow-mimosa:1.0.0` | Custom Dockerfile | Pretrained model (`mimosa_model_No_PD_T2`) bundled in `mimosa` R package, on `adigherman/neuroconductor-release` |
 | `SEGMENTATION_SHIVAI` | [`shivai/`](shivai/) | `frheault/sf-lesionflow-shivai:1.0.0` | Custom Dockerfile | **Manual download required** ([cloud.efixia.com](https://cloud.efixia.com/sharing/cpb3eUvMa)) |
+| `SEGMENTATION_MINDGLIDE` | [`mindglide/`](mindglide/) | `frheault/sf-lesionflow-mindglide:1.0.0` | Custom Dockerfile | Auto-fetched from [Hugging Face](https://huggingface.co/MS-PINPOINT/mindglide), baked in at build time |
 
 ---
 
@@ -32,7 +33,7 @@ All custom images are pushed (and re-pushed after rebuilds) using:
 # One-time: login to DockerHub
 docker login -u frheault
 
-# Push all 9 custom images
+# Push all 10 custom images
 dockerfiles/push_to_dockerhub.sh
 
 # Dry-run (print commands without executing)
@@ -109,6 +110,12 @@ SegCSVD is a pre-existing image sourced from a local Docker daemon. Once availab
 # Retag and push to DockerHub
 docker tag segcsvd_rc03:latest frheault/sf-lesionflow-segcsvd:rc03
 docker push frheault/sf-lesionflow-segcsvd:rc03
+```
+
+### J. mindGlide (`frheault/sf-lesionflow-mindglide:1.0.0`)
+Build the mindGlide container. The build process installs PyTorch with CUDA 11.8 support, MONAI, mindGlide v1.3.0, and bakes in model weights from Hugging Face (`MS-PINPOINT/mindglide`). Consult [`mindglide/README.md`](mindglide/) for architecture and validation details:
+```bash
+docker build -t frheault/sf-lesionflow-mindglide:1.0.0 dockerfiles/mindglide/
 ```
 
 ---

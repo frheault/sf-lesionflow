@@ -705,6 +705,51 @@ process SEGMENTATION_SHIVAI {
     """
 }
 
+process SEGMENTATION_MINDGLIDE {
+    tag "$meta.id"
+    label 'process_gpu'
+    container 'frheault/sf-lesionflow-mindglide:1.0.0'
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    input:
+    tuple val(meta), path(flair_mni)
+
+    output:
+    tuple val(meta), path("${meta.id}_mindglide_binary.nii.gz"), emit: binary_mask
+    path "versions.yml"                                        , emit: versions
+
+    stub:
+    """
+    touch ${meta.id}_mindglide_binary.nii.gz
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mindglide: 1.3.0
+    END_VERSIONS
+    """
+
+    script:
+    def label_id = task.ext.label_id ?: 18
+    def device   = task.ext.gpu ? "cuda" : "cpu"
+    """
+    export HF_HUB_OFFLINE=1
+    export TORCH_HOME="\$(pwd)/.cache/torch"
+    export MPLCONFIGDIR="\$(pwd)/.cache/matplotlib"
+
+    mindglide -i ${flair_mni} -o multiclass.nii.gz --device ${device}
+
+    conform_synthseg.py --input multiclass.nii.gz --ref ${flair_mni} --output ${meta.id}_mindglide_binary.nii.gz --label_id ${label_id}
+    rm -f multiclass.nii.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mindglide: 1.3.0
+    END_VERSIONS
+    """
+}
+
+
 // -----------------------------------------------------------------------------
 // Phase 3: STAPLE Consensus Fusion (thr90 >= 6mm3 + Watershed)
 // -----------------------------------------------------------------------------
