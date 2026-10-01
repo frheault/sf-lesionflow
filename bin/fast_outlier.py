@@ -19,6 +19,11 @@ def build_arg_parser():
     parser.add_argument("--sigma", type=float, default=2.5, help="Standard deviation multiplier for thresholding (default: 2.5)")
     parser.add_argument("--pve_threshold", type=float, default=0.95, help="PVE threshold for healthy white matter (default: 0.95)")
     parser.add_argument("--dwm_threshold", type=float, default=0.50, help="Deep white matter mask threshold (default: 0.50)")
+    parser.add_argument(
+        "--output_zscore", default=None,
+        help="Optional: also save the continuous FLAIR z-score map (this method's actual decision "
+             "variable -- not a true model probability, but the closest continuous surrogate available)"
+    )
     return parser
 
 
@@ -51,6 +56,12 @@ def main():
     out_img = nib.Nifti1Image(lesion_mask.astype(np.uint8), flair_img.affine, flair_img.header)
     out_img.set_data_dtype(np.uint8)
     nib.save(out_img, args.output)
+
+    if args.output_zscore:
+        zscore_map = ((flair_data - mean_wm) / (std_wm if std_wm > 0 else 1.0)).astype(np.float32)
+        zscore_img = nib.Nifti1Image(zscore_map, flair_img.affine, flair_img.header)
+        zscore_img.set_data_dtype(np.float32)
+        nib.save(zscore_img, args.output_zscore)
 
 
 if __name__ == "__main__":

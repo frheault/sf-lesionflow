@@ -4,12 +4,13 @@ process QC_ENSEMBLE_METRICS {
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 
     input:
-    tuple val(meta), path(consensus), path(masks)
+    tuple val(meta), path(consensus), path(masks), path(sidecars)
 
     output:
     tuple val(meta), path("${meta.id}_ensemble_volumes_mqc.tsv"), emit: volumes_tsv
     tuple val(meta), path("${meta.id}_pairwise_dice_mqc.tsv")    , emit: dice_tsv
     tuple val(meta), path("${meta.id}_staple_summary_mqc.tsv")   , emit: summary_tsv
+    tuple val(meta), path("${meta.id}_lesion_brainmask_mqc.tsv") , emit: brainmask_tsv
     tuple val(meta), path("*.tsv")                              , emit: files
     path "versions.yml"                                         , emit: versions
 
@@ -26,6 +27,8 @@ process QC_ENSEMBLE_METRICS {
         --out_volumes ${meta.id}_ensemble_volumes_mqc.tsv \\
         --out_dice ${meta.id}_pairwise_dice_mqc.tsv \\
         --out_summary ${meta.id}_staple_summary_mqc.tsv \\
+        --sidecars ${sidecars} \\
+        --out_brainmask ${meta.id}_lesion_brainmask_mqc.tsv \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -41,6 +44,7 @@ process QC_ENSEMBLE_METRICS {
     touch ${meta.id}_ensemble_volumes_mqc.tsv
     touch ${meta.id}_pairwise_dice_mqc.tsv
     touch ${meta.id}_staple_summary_mqc.tsv
+    touch ${meta.id}_lesion_brainmask_mqc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

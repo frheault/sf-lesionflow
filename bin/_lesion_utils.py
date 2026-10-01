@@ -11,6 +11,15 @@ import scipy.ndimage as ndi
 from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 
+# Algorithm key -> BIDS `desc-` label. Mirror of AlgorithmSelection.BIDS_LABEL (lib/AlgorithmSelection.groovy).
+BIDS_LABEL = {
+    "lst_ai": "lstai", "samseg": "samseg", "wmh_synthseg": "wmhsynthseg", "fast_outlier": "fastoutlier",
+    "flames": "flames", "truenet": "truenet", "hypermapp3r": "hypermapp3r", "segcsvd": "segcsvd",
+    "emory_robust": "emoryrobust", "mars_wmh": "marswmh", "bawil": "bawil", "mimosa": "mimosa",
+    "shivai": "shivai", "mindglide": "mindglide",
+}
+LABEL_TO_KEY = {v: k for k, v in BIDS_LABEL.items()}
+
 
 def filter_small_components(binary_mask, min_size):
     """Filter connected components smaller than min_size voxels from binary mask."""

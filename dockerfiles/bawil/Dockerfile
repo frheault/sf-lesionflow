@@ -1,7 +1,8 @@
 # =============================================================================
 # Docker image: BAWIL
 # Tool:   BAWIL -- 3-class WMH segmentation (normal vs abnormal periventricular)
-# Paper:  Bashiri Bawil M, Shamsi M, Shakeri Bavil A, arXiv:2506.07123
+# Paper:  Bashiri Bawil M, et al., Biomedical Engineering Online 2026, PMC13202883
+#         (related: arXiv:2506.07123)
 # Model:  huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation
 # Runtime: SEGMENTATION_BAWIL in modules/local/lesion_segmentation.nf
 # =============================================================================
@@ -47,7 +48,8 @@ FROM python:3.10-slim
 LABEL maintainer="ms_chus_pipeline"
 LABEL tool="BAWIL"
 LABEL source="https://huggingface.co/Bawil/wmh_leverage_normal_abnormal_segmentation"
-LABEL paper_doi="10.48550/arXiv.2506.07123"
+LABEL paper_pmc="PMC13202883"
+LABEL paper_related_doi="10.48550/arXiv.2506.07123"
 
 # 1. System dependencies (opencv needs libgl/libglib at runtime)
 RUN apt-get update && apt-get install -y --no-install-recommends \

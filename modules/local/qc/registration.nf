@@ -4,7 +4,7 @@ process QC_REGISTRATION {
     container 'frheault/sf-lesionflow-segcsvd:rc03'
 
     input:
-    tuple val(meta), path(fixed), path(moving_warped)
+    tuple val(meta), path(fixed), path(moving_warped), path(transform)
 
     output:
     tuple val(meta), path("*_registration_metrics_mqc.tsv"), emit: metrics_tsv
@@ -19,11 +19,13 @@ process QC_REGISTRATION {
     def stage = task.ext.stage ?: 'flair_to_t1'
     def args = task.ext.args ?: ''
     """
+    # metrics v2: image-based NCC/NMI/Mask_Dice + Affine_Scale_Factor = 1/|det| of the forward affine
     qc_registration.py \\
         --meta_id ${meta.id} \\
         --stage ${stage} \\
         --fixed ${fixed} \\
         --moving_warped ${moving_warped} \\
+        ${transform ? "--transform ${transform}" : ''} \\
         --out_metrics ${meta.id}_${stage}_registration_metrics_mqc.tsv \\
         --out_png ${meta.id}_registration_${stage}_mqc.png \\
         ${args}
@@ -33,6 +35,7 @@ process QC_REGISTRATION {
         python: "\$(python3 --version 2>&1 | awk '{print \$2}')"
         nibabel: "\$(python3 -c "import nibabel; print(nibabel.__version__)")"
         matplotlib: "\$(python3 -c "import matplotlib; print(matplotlib.__version__)")"
+        scipy: "\$(python3 -c "import scipy; print(scipy.__version__)")"
     END_VERSIONS
     """
 

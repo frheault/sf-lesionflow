@@ -146,7 +146,7 @@ PUBLIC_IMAGES=(
     "freesurfer/synthstrip:1.8-gpu"
     "mgoubran/hypermapper:latest"
     "emorycn2l/emory_robust_wmh:v1.2"
-    "ghcr.io/miac-research/wmh-nnunet:latest"
+    "ghcr.io/miac-research/wmh-nnunet:1.0.2"
     # --- QC & Reporting ---
     # multiqc-neuroimaging provides MultiQC >= 1.25 plus the custom
     # --single-subject-report flag required by the QC_PIPELINE subworkflow.

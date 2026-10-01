@@ -5,6 +5,7 @@
 Constructs a 4D spatio-temporal lesion volume across longitudinal sessions.
 Generates consistent lesion instance labels via watershed segmentation.
 Computes per-lesion volume evolution, trajectory status, and centroid coordinates.
+Volumes are MNI-normalized (template grid after affine normalization of the baseline T1w).
 """
 
 import argparse
@@ -74,7 +75,7 @@ def main():
         vols = []
         for idx, ses in enumerate(session_names):
             v = int(np.sum(roi & stack[..., idx])) * voxel_vol
-            row[f"Vol_mm3_{ses}"] = round(v, 2)
+            row[f"Vol_MNI_mm3_{ses}"] = round(v, 2)
             vols.append(v)
 
         if len(session_names) == 1:
@@ -99,7 +100,7 @@ def main():
 
         row.update({
             "Status": status,
-            "Delta_Vol_mm3": round(delta_v, 2),
+            "Delta_Vol_MNI_mm3": round(delta_v, 2),
             "Pct_Change": round(pct, 2),
             "Centroid_X_mm": round(centroid[0], 2),
             "Centroid_Y_mm": round(centroid[1], 2),
@@ -107,8 +108,8 @@ def main():
         })
         records.append(row)
 
-    expected_cols = ["Lesion_ID"] + [f"Vol_mm3_{ses}" for ses in session_names] + [
-        "Status", "Delta_Vol_mm3", "Pct_Change", "Centroid_X_mm", "Centroid_Y_mm", "Centroid_Z_mm"
+    expected_cols = ["Lesion_ID"] + [f"Vol_MNI_mm3_{ses}" for ses in session_names] + [
+        "Status", "Delta_Vol_MNI_mm3", "Pct_Change", "Centroid_X_mm", "Centroid_Y_mm", "Centroid_Z_mm"
     ]
     pd.DataFrame(records, columns=expected_cols).to_csv(args.out_csv, index=False)
 

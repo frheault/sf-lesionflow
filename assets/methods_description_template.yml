@@ -6,11 +6,17 @@ data: |
   <h4>Pipeline Processing & Consensus Fusion</h4>
   <p>
     Automated Multiple Sclerosis lesion segmentation was performed using <em>sf-lesionflow</em>.
-    Structural T1-weighted and FLAIR images were preprocessed including skull-stripping with SynthStrip,
-    N4 bias-field correction, and rigid coregistration via ANTs. Lesion candidates were segmented using an
-    ensemble of deep-learning and statistical algorithms. Probability consensus was fused via the
-    Simultaneous Truth and Performance Level Estimation (STAPLE) algorithm with Expectation-Maximization
-    and thresholded at 0.90 with connected component minimum size filtering.
+    Structural T1-weighted and FLAIR images were resampled to 1 mm isotropic, skull-stripped with SynthStrip
+    and N4 bias-field corrected. Using ANTs, each FLAIR was rigidly registered to its session T1w, each
+    follow-up T1w rigidly to the baseline T1w, and the baseline T1w <strong>affinely</strong> to an MNI template;
+    the composed transforms bring every session into MNI space. Lesions were segmented by an ensemble of
+    published deep-learning and statistical algorithms, each run in the input space it was trained for;
+    all predictions (binary masks and probability maps) were brought to the MNI template grid, and
+    predictions of algorithms fed unstripped images were restricted to the dilated brain mask.
+    The binary masks were fused with the Simultaneous Truth and Performance Level Estimation (STAPLE)
+    algorithm (Expectation-Maximization), thresholded at 0.90 and filtered by a minimum connected-component size.
+    All lesion volumes are MNI-normalized: measured on the template grid after the affine normalization
+    of the baseline T1w, i.e. head-size normalized; the per-subject affine scale factor is reported.
   </p>
   <h4>Longitudinal Harmonization & Quality Control</h4>
   <p>

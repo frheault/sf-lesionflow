@@ -12,6 +12,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "bin"))
+REPO = str(REPO_ROOT)
 
 # ── compute_dice ──────────────────────────────────────────────────────────────
 def test_dice_identical():
@@ -108,7 +109,7 @@ def test_ensemble_metrics_cli(tmp_path):
 
     # Scalar summary
     df_sum = pd.read_csv(out_sum, sep="\t", comment="#")
-    assert df_sum["Consensus_TLV_mL"].iloc[0] == pytest.approx(1.000, rel=1e-2)
+    assert df_sum["TLV_MNI_mL"].iloc[0] == pytest.approx(1.000, rel=1e-2)
     assert df_sum["Consensus_Lesion_Count"].iloc[0] == 1
     assert df_sum["Active_Algos"].iloc[0] == 3
 
@@ -150,7 +151,7 @@ def test_ensemble_metrics_zero_lesions(tmp_path):
     assert ret.returncode == 0, ret.stderr.decode()
 
     df_sum = pd.read_csv(out_sum, sep="\t", comment="#")
-    assert df_sum["Consensus_TLV_mL"].iloc[0] == 0.0
+    assert df_sum["TLV_MNI_mL"].iloc[0] == 0.0
     assert df_sum["Consensus_Lesion_Count"].iloc[0] == 0
 
 
@@ -195,7 +196,12 @@ def test_registration_cli(tmp_path, stage):
     df = pd.read_csv(out_metrics, sep="\t", comment="#", keep_default_na=False)
     assert df["Sample"].iloc[0] == f"sub-001_ses-1_{stage}"
     assert df["Stage"].iloc[0] == stage
-    assert df["Final_Metric_Value"].iloc[0] == "N/A"
+    # Independent random volumes: metrics are computed (never N/A) and correlation is ~0.
+    assert df["NCC"].iloc[0] != "N/A"
+    assert abs(float(df["NCC"].iloc[0])) < 0.1
+    assert 0.8 < float(df["Mask_Dice"].iloc[0]) <= 1.0
+    assert df["Affine_Scale_Factor"].iloc[0] == "N/A"  # no --transform given
+    assert "ANTs_Final_Metric" not in df.columns
 
 
 def test_registration_with_log(tmp_path):
@@ -238,7 +244,7 @@ def test_registration_with_log(tmp_path):
     )
     assert ret.returncode == 0, ret.stderr.decode()
     df = pd.read_csv(out_metrics, sep="\t", comment="#")
-    assert df["Final_Metric_Value"].iloc[0] == pytest.approx(-0.8765, abs=1e-3)
+    assert df["ANTs_Final_Metric"].iloc[0] == pytest.approx(-0.8765, abs=1e-3)
 
 
 # ── qc_lesion_screenshot.py ───────────────────────────────────────────────────
@@ -314,9 +320,9 @@ def test_longitudinal_single_session(tmp_path):
     df = pd.DataFrame(
         {
             "Lesion_ID": [1, 2],
-            "Vol_mm3_ses-1": [500.0, 300.0],
+            "Vol_MNI_mm3_ses-1": [500.0, 300.0],
             "Status": ["Baseline", "Baseline"],
-            "Delta_Vol_mm3": [0.0, 0.0],
+            "Delta_Vol_MNI_mm3": [0.0, 0.0],
             "Pct_Change": [0.0, 0.0],
             "Centroid_X_mm": [0, 0],
             "Centroid_Y_mm": [0, 0],
@@ -349,11 +355,11 @@ def test_longitudinal_single_session(tmp_path):
     assert ret.returncode == 0, ret.stderr.decode()
 
     row = pd.read_csv(out_sum, sep="\t", comment="#").iloc[0]
-    assert row["Net_Delta_TLV_mL"] == 0.0
+    assert row["Net_Delta_TLV_MNI_mL"] == 0.0
     assert row["Percent_Change"] == 0.0
     assert row["No_Lesions_Flag"] == 0  # lesions exist, just single session
-    assert row["Baseline_TLV_mL"] == 0.8  # (500 + 300) / 1000 mL
-    assert row["Followup_TLV_mL"] == 0.8
+    assert row["Baseline_TLV_MNI_mL"] == 0.8  # (500 + 300) / 1000 mL
+    assert row["Followup_TLV_MNI_mL"] == 0.8
 
 
 def test_longitudinal_zero_lesions(tmp_path):
@@ -362,9 +368,9 @@ def test_longitudinal_zero_lesions(tmp_path):
     df = pd.DataFrame(
         {
             "Lesion_ID": [],
-            "Vol_mm3_ses-1": [],
+            "Vol_MNI_mm3_ses-1": [],
             "Status": [],
-            "Delta_Vol_mm3": [],
+            "Delta_Vol_MNI_mm3": [],
             "Pct_Change": [],
             "Centroid_X_mm": [],
             "Centroid_Y_mm": [],
@@ -394,8 +400,8 @@ def test_longitudinal_zero_lesions(tmp_path):
     assert ret.returncode == 0, ret.stderr.decode()
     row = pd.read_csv(out_sum, sep="\t", comment="#").iloc[0]
     assert row["No_Lesions_Flag"] == 1
-    assert row["Baseline_TLV_mL"] == 0.0
-    assert row["Followup_TLV_mL"] == 0.0
+    assert row["Baseline_TLV_MNI_mL"] == 0.0
+    assert row["Followup_TLV_MNI_mL"] == 0.0
 
 
 def test_longitudinal_many_sessions_numeric_sort(tmp_path):
@@ -408,7 +414,7 @@ def test_longitudinal_many_sessions_numeric_sort(tmp_path):
     n_sessions = 11
     data = {"Lesion_ID": [1], "Status": ["Enlarging"]}
     for i in range(1, n_sessions + 1):
-        data[f"Vol_mm3_ses-{i}"] = [100.0 + (i - 1) * 50.0]
+        data[f"Vol_MNI_mm3_ses-{i}"] = [100.0 + (i - 1) * 50.0]
     df = pd.DataFrame(data)
     df.to_csv(csv_path, index=False)
 
@@ -433,9 +439,9 @@ def test_longitudinal_many_sessions_numeric_sort(tmp_path):
     assert ret.returncode == 0, ret.stderr.decode()
 
     row = pd.read_csv(out_sum, sep="\t", comment="#").iloc[0]
-    assert row["Baseline_TLV_mL"] == pytest.approx(0.1, rel=1e-3)
-    assert row["Followup_TLV_mL"] == pytest.approx(0.6, rel=1e-3)
-    assert row["Net_Delta_TLV_mL"] == pytest.approx(0.5, rel=1e-3)
+    assert row["Baseline_TLV_MNI_mL"] == pytest.approx(0.1, rel=1e-3)
+    assert row["Followup_TLV_MNI_mL"] == pytest.approx(0.6, rel=1e-3)
+    assert row["Net_Delta_TLV_MNI_mL"] == pytest.approx(0.5, rel=1e-3)
 
 
 def test_longitudinal_new_lesions_from_zero_baseline(tmp_path):
@@ -446,8 +452,8 @@ def test_longitudinal_new_lesions_from_zero_baseline(tmp_path):
     df = pd.DataFrame(
         {
             "Lesion_ID": [1],
-            "Vol_mm3_ses-1": [0.0],
-            "Vol_mm3_ses-2": [400.0],
+            "Vol_MNI_mm3_ses-1": [0.0],
+            "Vol_MNI_mm3_ses-2": [400.0],
             "Status": ["New"],
         }
     )
@@ -520,7 +526,7 @@ def test_ensemble_metrics_multiple_components(tmp_path):
     df_sum = pd.read_csv(out_sum, sep="\t", comment="#")
     assert df_sum["Consensus_Lesion_Count"].iloc[0] == 3
     total_vox = 27 + 64 + 125  # 216 voxels = 0.216 mL
-    assert df_sum["Consensus_TLV_mL"].iloc[0] == pytest.approx(0.216, rel=1e-2)
+    assert df_sum["TLV_MNI_mL"].iloc[0] == pytest.approx(0.216, rel=1e-2)
 
 
 def test_registration_non_canonical_orientation(tmp_path):
@@ -718,8 +724,8 @@ def test_longitudinal_empty_csv(tmp_path):
     assert ret.returncode == 0, ret.stderr.decode()
     df_sum = pd.read_csv(out_sum, sep="\t", comment="#")
     assert df_sum["No_Lesions_Flag"].iloc[0] == 1
-    assert df_sum["Baseline_TLV_mL"].iloc[0] == 0.0
-    assert df_sum["Followup_TLV_mL"].iloc[0] == 0.0
+    assert df_sum["Baseline_TLV_MNI_mL"].iloc[0] == 0.0
+    assert df_sum["Followup_TLV_MNI_mL"].iloc[0] == 0.0
 
 
 def test_ensemble_metrics_las_orientation(tmp_path):
@@ -846,7 +852,7 @@ def test_registration_scientific_notation(tmp_path):
     )
     assert ret.returncode == 0, ret.stderr.decode()
     df = pd.read_csv(out_metrics, sep="\t", comment="#")
-    assert df["Final_Metric_Value"].iloc[0] == pytest.approx(-0.0123, abs=1e-4)
+    assert df["ANTs_Final_Metric"].iloc[0] == pytest.approx(-0.0123, abs=1e-4)
 
 
 def test_longitudinal_zero_lesions_instance_table(tmp_path):
@@ -855,9 +861,9 @@ def test_longitudinal_zero_lesions_instance_table(tmp_path):
     df = pd.DataFrame(
         {
             "Lesion_ID": [],
-            "Vol_mm3_ses-1": [],
+            "Vol_MNI_mm3_ses-1": [],
             "Status": [],
-            "Delta_Vol_mm3": [],
+            "Delta_Vol_MNI_mm3": [],
             "Pct_Change": [],
             "Centroid_X_mm": [],
             "Centroid_Y_mm": [],
@@ -1056,5 +1062,177 @@ def test_ensemble_metrics_2d_input(tmp_path):
     assert df_sum["Consensus_Lesion_Count"].iloc[0] == 1
 
 
+# ── create_nonzero_mask.py ────────────────────────────────────────────────────
+def test_create_nonzero_mask_dilation(tmp_path):
+    """Test create_nonzero_mask.py both with and without dilation."""
+    affine = np.eye(4)
+    vol = np.zeros((20, 20, 20), dtype=np.float32)
+    vol[9:12, 9:12, 9:12] = 100.0  # 3x3x3 = 27 voxels
+    in_path = str(tmp_path / "input.nii.gz")
+    nib.save(nib.Nifti1Image(vol, affine), in_path)
+
+    # 1. No dilation
+    out_raw = str(tmp_path / "mask_raw.nii.gz")
+    ret = subprocess.run(
+        [sys.executable, "bin/create_nonzero_mask.py", "--input", in_path, "--output", out_raw],
+        capture_output=True,
+        check=False,
+    )
+    assert ret.returncode == 0, ret.stderr.decode()
+    raw_data = nib.load(out_raw).get_fdata()
+    assert (raw_data > 0).sum() == 27
+
+    # 2. With dilation=2
+    out_dil = str(tmp_path / "mask_dilated.nii.gz")
+    ret_dil = subprocess.run(
+        [sys.executable, "bin/create_nonzero_mask.py", "--input", in_path, "--output", out_dil, "--dilate", "2"],
+        capture_output=True,
+        check=False,
+    )
+    assert ret_dil.returncode == 0, ret_dil.stderr.decode()
+    dil_data = nib.load(out_dil).get_fdata()
+    # Dilating a 3x3x3 cube by 2 voxels with 6-connectivity (connectivity 1) or full connectivity
+    assert (dil_data > 0).sum() > 27
+    # Ensure raw mask is a strict subset of dilated mask
+    assert np.all(dil_data[raw_data > 0] == 1)
 
 
+# ── registration metrics & affine scale factor ───────────────────────────────
+def _write_itk_affine(path, linear, offset=(0.0, 0.0, 0.0)):
+    from scipy.io import savemat
+
+    params = np.concatenate([np.asarray(linear, dtype=np.float64).ravel(), np.asarray(offset, dtype=np.float64)])
+    savemat(path, {"AffineTransform_double_3_3": params.reshape(12, 1), "fixed": np.zeros((3, 1))}, format="4")
+
+
+def test_registration_metric_functions():
+    sys.path.insert(0, "bin")
+    from qc_registration import ncc, nmi, mask_dice, affine_scale_factor  # noqa: F401
+
+    rng = np.random.RandomState(0)
+    a = rng.rand(16, 16, 16)
+    m = np.ones_like(a, dtype=bool)
+    assert ncc(a, a, m) == pytest.approx(1.0)
+    assert nmi(a, a, m) == pytest.approx(2.0, abs=1e-6)
+    assert ncc(a, np.roll(a, 3, axis=0), m) < 0.2
+    assert mask_dice(a > 0.5, a > 0.5) == pytest.approx(1.0)
+
+
+def test_registration_affine_scale_factor(tmp_path):
+    sys.path.insert(0, "bin")
+    from qc_registration import affine_scale_factor
+
+    p_scaled = str(tmp_path / "scaled.mat")
+    _write_itk_affine(p_scaled, np.eye(3) * 1.2)
+    # forward transform maps fixed -> moving: scaling points by 1.2 shrinks the moving image
+    assert affine_scale_factor(p_scaled) == pytest.approx(1 / 1.728, rel=1e-6)
+
+    theta = 0.3
+    rot = [[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]
+    p_rigid = str(tmp_path / "rigid.mat")
+    _write_itk_affine(p_rigid, rot, offset=(4.0, -2.0, 1.0))
+    assert affine_scale_factor(p_rigid) == pytest.approx(1.0, abs=1e-9)
+    assert affine_scale_factor(None) is None
+
+
+def test_registration_cli_with_transform(tmp_path):
+    affine = np.eye(4)
+    img = np.random.RandomState(1).rand(20, 20, 20).astype(np.float32)
+    fixed_p, warped_p = str(tmp_path / "f.nii.gz"), str(tmp_path / "w.nii.gz")
+    nib.save(nib.Nifti1Image(img, affine), fixed_p)
+    nib.save(nib.Nifti1Image(img, affine), warped_p)
+    mat = str(tmp_path / "fwd.mat")
+    _write_itk_affine(mat, np.diag([1 / 1.2, 1 / 1.1, 1 / 1.3]))  # template ~1.716x the head volume
+    out_metrics = str(tmp_path / "m.tsv")
+    ret = subprocess.run(
+        [sys.executable, "bin/qc_registration.py", "--meta_id", "sub-001_ses-1", "--stage", "baseline_to_mni",
+         "--fixed", fixed_p, "--moving_warped", warped_p, "--transform", mat,
+         "--out_metrics", out_metrics, "--out_png", str(tmp_path / "o.png")],
+        capture_output=True,
+    )
+    assert ret.returncode == 0, ret.stderr.decode()
+    df = pd.read_csv(out_metrics, sep="\t", comment="#")
+    assert df["NCC"].iloc[0] == pytest.approx(1.0, abs=1e-6)
+    assert df["Affine_Scale_Factor"].iloc[0] == pytest.approx(1.716, abs=1e-3)
+    assert df["Status"].iloc[0] == "PASS"
+
+
+# ── finalize_lesion.py ────────────────────────────────────────────────────────
+def _finalize(tmp_path, binary, prob, brain, extra=()):
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])
+    affine[:3, 3] = [-10, -10, -10]
+    tpl = str(tmp_path / "tpl.nii.gz")
+    nib.save(nib.Nifti1Image(np.zeros(binary.shape, np.float32), affine), tpl)
+    paths = {}
+    for name, data in (("bin", binary), ("prob", prob), ("brain", brain)):
+        paths[name] = str(tmp_path / f"{name}.nii.gz")
+        nib.save(nib.Nifti1Image(data.astype(np.float32), affine), paths[name])
+    cmd = [sys.executable, os.path.join(REPO, "bin", "finalize_lesion.py"), "--prefix", "sub-01_ses-1", "--algo", "bawil", "--label", "bawil",
+           "--binary", paths["bin"], "--prob", paths["prob"], "--template", tpl, "--brainmask", paths["brain"], *extra]
+    return subprocess.run(cmd, capture_output=True), tmp_path
+
+
+def test_finalize_brainmask_and_naming(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    shape = (12, 12, 12)
+    binary = np.zeros(shape); binary[2:4, 2:4, 2:4] = 1; binary[8:10, 8:10, 8:10] = 1
+    prob = binary * 0.8 + 0.05
+    brain = np.zeros(shape); brain[1:6, 1:6, 1:6] = 1
+    ret, _ = _finalize(tmp_path, binary, prob, brain, extra=("--apply_brainmask", "--dilation", "0"))
+    assert ret.returncode == 0, ret.stderr.decode()
+    m = nib.load("sub-01_ses-1_space-MNI_desc-bawil_mask.nii.gz")
+    p = nib.load("sub-01_ses-1_space-MNI_desc-bawil_probseg.nii.gz")
+    assert m.get_data_dtype() == np.uint8 and p.get_data_dtype() == np.float32
+    assert int(m.get_fdata().sum()) == 8  # the lesion outside the brain is gone
+    assert p.get_fdata()[9, 9, 9] == 0.0 and p.get_fdata()[2, 2, 2] == pytest.approx(0.85)
+    import json
+    sc = json.load(open("sub-01_ses-1_space-MNI_desc-bawil_mask.json"))
+    assert sc["BrainMaskApplied"] and sc["VoxelsRemovedByBrainMask"] == 8
+    assert sc["Volume_MNI_mL"] == pytest.approx(0.008)
+
+
+def test_finalize_rejects_off_grid(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    tpl = str(tmp_path / "tpl.nii.gz")
+    nib.save(nib.Nifti1Image(np.zeros((10, 10, 10), np.float32), np.eye(4)), tpl)
+    b = str(tmp_path / "b.nii.gz")
+    nib.save(nib.Nifti1Image(np.zeros((8, 10, 10), np.float32), np.eye(4)), b)
+    ret = subprocess.run([sys.executable, os.path.join(REPO, "bin", "finalize_lesion.py"), "--prefix", "x", "--algo", "lst_ai", "--label", "lstai",
+                          "--binary", b, "--template", tpl], capture_output=True)
+    assert ret.returncode != 0 and b"template grid" in ret.stderr
+
+
+def test_ensemble_metrics_parses_bids_names(tmp_path):
+    affine = np.eye(4)
+    cons = np.zeros((10, 10, 10), np.uint8); cons[2:5, 2:5, 2:5] = 1
+    cons_p = str(tmp_path / "sub-01_ses-1_space-MNI_desc-staple_mask.nii.gz")
+    nib.save(nib.Nifti1Image(cons, affine), cons_p)
+    masks = []
+    for label in ("lstai", "wmhsynthseg"):
+        p = str(tmp_path / f"sub-01_ses-1_space-MNI_desc-{label}_mask.nii.gz")
+        nib.save(nib.Nifti1Image(cons, affine), p)
+        masks.append(p)
+    sc = str(tmp_path / "sub-01_ses-1_space-MNI_desc-wmhsynthseg_mask.json")
+    with open(sc, "w") as f:
+        f.write('{"Algorithm": "wmh_synthseg", "BrainMaskApplied": true, "VolumeRemovedByBrainMask_MNI_mL": 0.5}')
+    out = {k: str(tmp_path / f"{k}.tsv") for k in ("vol", "dice", "sum", "bm")}
+    ret = subprocess.run([sys.executable, "bin/qc_ensemble_metrics.py", "--meta_id", "sub-01_ses-1", "--consensus", cons_p,
+                          "--masks", *masks, "--out_volumes", out["vol"], "--out_dice", out["dice"], "--out_summary", out["sum"],
+                          "--sidecars", sc, "--out_brainmask", out["bm"]], capture_output=True)
+    assert ret.returncode == 0, ret.stderr.decode()
+    vol = pd.read_csv(out["vol"], sep="\t", comment="#")
+    assert {"lst_ai", "wmh_synthseg", "STAPLE_Consensus"} <= set(vol.columns)
+    bm = pd.read_csv(out["bm"], sep="\t", comment="#")
+    assert bm["wmh_synthseg_removed_mL"].iloc[0] == pytest.approx(0.5)
+
+
+def test_bids_label_maps_match():
+    sys.path.insert(0, "bin")
+    from _lesion_utils import BIDS_LABEL
+
+    groovy = open(os.path.join(REPO, "lib", "AlgorithmSelection.groovy")).read()
+    block = groovy[groovy.index("BIDS_LABEL = ["):]
+    block = block[: block.index("]")]
+    import re as _re
+    pairs = dict(_re.findall(r"(\w+):\s*'(\w+)'", block))
+    assert pairs == BIDS_LABEL

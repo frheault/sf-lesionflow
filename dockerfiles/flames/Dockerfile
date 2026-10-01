@@ -56,8 +56,8 @@
 # OUTPUT: /output/<CASE_ID>.nii.gz (binary mask, copy to flames/<SUBJECT>_flames_binary.nii.gz)
 #
 # NOTES
-# - CPU-only image. Add `-device cuda` and use a CUDA base image for GPU.
-# - --disable_tta is mandatory on CPU (test-time augmentation is GPU-only).
+# - CPU-only image. Running CPU-only deviates from the authors' recommended GPU path.
+# - Test-time augmentation (TTA mirroring) is supported on CPU (slower, but functional).
 # - RAM: ~8 GB needed for 3d_fullres inference.
 # =============================================================================
 

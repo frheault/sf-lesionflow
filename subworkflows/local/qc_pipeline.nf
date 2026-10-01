@@ -10,11 +10,12 @@ include { QC_MULTIQC as MULTIQC_GLOBAL                     } from '../../modules
 workflow QC_PIPELINE {
     take:
     ch_t1_flair_paired      // channel: [meta, t1, flair]
-    ch_all_binary_masks     // channel: [meta, [masks_14_algos]]
+    ch_all_binary_masks     // channel: [meta, [finalized MNI masks, one per active algorithm]]
+    ch_all_sidecars         // channel: [meta, [LESION_FINALIZE JSON sidecars]]
     ch_staple_binary        // channel: [meta, thr90_binary]
-    ch_reg_flair_to_t1      // channel: [meta, fixed_t1, warped_flair]
-    ch_reg_t1_to_baseline   // channel: [meta, fixed_baseline_t1, warped_t1]
-    ch_reg_t1_to_mni        // channel: [meta, fixed_mni, warped_t1]
+    ch_reg_flair_to_t1      // channel: [meta, fixed_t1, warped_flair, forward_affine]
+    ch_reg_t1_to_baseline   // channel: [meta, fixed_baseline_t1, warped_t1, forward_affine]
+    ch_reg_t1_to_mni        // channel: [meta, fixed_mni, warped_t1, forward_affine]
     ch_harmonize_audit      // channel: [subject, audit_csv]
     ch_collated_versions    // path: versions.yml
     ch_workflow_summary     // path: workflow_summary_mqc.yaml
@@ -26,6 +27,7 @@ workflow QC_PIPELINE {
     // 1. Ensemble Metrics (Volumes, Pairwise Dice, Consensus Summary)
     ch_ens_input = ch_staple_binary
         .join(ch_all_binary_masks)
+        .join(ch_all_sidecars)
     QC_ENSEMBLE_METRICS(ch_ens_input)
     ch_versions = ch_versions.mix(QC_ENSEMBLE_METRICS.out.versions)
 
@@ -108,6 +110,7 @@ workflow QC_PIPELINE {
     // 7. Global Cohort Report (Population Wide)
     ch_global_qc_files = QC_ENSEMBLE_METRICS.out.summary_tsv.map { meta, tsv -> tsv }
         .mix(QC_ENSEMBLE_METRICS.out.volumes_tsv.map { meta, tsv -> tsv })
+        .mix(QC_ENSEMBLE_METRICS.out.brainmask_tsv.map { meta, tsv -> tsv })
         .mix(QC_LONGITUDINAL.out.summary_tsv.map { subj, tsv -> tsv })
         .mix(QC_LONGITUDINAL.out.trajectories_tsv.map { subj, tsv -> tsv })
         .mix(ch_reg_metrics_tsv_all.map { meta, tsv -> tsv })

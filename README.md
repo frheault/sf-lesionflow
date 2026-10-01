@@ -18,7 +18,7 @@ Developed at the **Sherbrooke Connectivity Imaging Lab (SCIL)**, Université de 
 
 ## 1. Overview & Pipeline Architecture
 
-`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a 14-algorithm lesion segmentation ensemble. It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets. Seven algorithms (`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `mindGlide`) support optional GPU acceleration, on workstations and Slurm HPC clusters alike.
+`sf-lesionflow` is a reproducible, containerized Nextflow DSL2 pipeline. It uses the [nf-neuro](https://github.com/scilus/nf-neuro) module repository and [nf-core](https://nf-co.re) framework standards. The pipeline provides automated brain extraction, multimodal registration, and a multi-algorithm lesion segmentation ensemble (12 active by default, 14 total). It performs STAPLE consensus fusion and 4D longitudinal lesion tracking across multisession MRI datasets. Seven algorithms (`WMH-SynthSeg`, `FLAMeS`, `TrueNet`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `mindGlide`) support optional GPU acceleration, on workstations and Slurm HPC clusters alike.
 
 ```mermaid
 flowchart TD
@@ -34,33 +34,34 @@ flowchart TD
         H --> I["REGISTRATION_ANTSAPPLYTRANSFORMS (Composite MNI Warps)"]
     end
 
-    subgraph Phase2["Phase 2: Parallel 14-Algorithm Segmentation Ensemble"]
-        I --> S1["LST-AI"]
+    subgraph Phase2["Phase 2: Parallel Segmentation Ensemble (12 Active by Default, 14 Total)"]
+        I --> S1["LST-AI (Native pre-N4 -> MNI warp)"]
         I --> S2["SAMSEG"]
         I --> S3["WMH-SynthSeg"]
-        I --> S4["FAST Outlier"]
+        I -.-> S4["FAST Outlier (Optional, off by default)"]
         I --> S5["FLAMeS"]
-        I --> S6["TrueNet"]
+        I -.-> S6["TrueNet (Optional, off by default)"]
         I --> S7["HyperMapp3r"]
-        I --> S8["SegCSVD"]
+        I --> S8["SegCSVD (SynthSeg Parcellation)"]
         I --> S9["Emory Robust WMH"]
-        I --> S10["MARS-WMH"]
-        I --> S11["BAWIL"]
+        CR --> S10["MARS-WMH (Native unstripped -> MNI warp)"]
+        B --> S11["BAWIL (Native full-FOV unstripped FLAIR -> MNI warp)"]
         I --> S12["MIMoSA"]
         I --> S13["SHiVAi"]
-        I --> S14["mindGlide"]
+        CR --> S14["mindGlide (Native unstripped/un-N4 -> MNI warp)"]
     end
 
-    subgraph Phase3["Phase 3: Consensus Fusion"]
-        S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9 & S10 & S11 & S12 & S13 & S14 --> CF["CONSENSUS_STAPLE<br>(STAPLE EM -> thr >= 0.90 -> CC filter >= 6mm3 -> Watershed Instances)"]
+    subgraph Phase3["Phase 3: MNI Finalization & Consensus Fusion"]
+        S1 & S2 & S3 & S5 & S7 & S8 & S9 & S10 & S11 & S12 & S13 & S14 --> LF["LESION_FINALIZE (per algorithm)<br>(MNI mask + MNI probseg, grid check,<br>brain mask for unstripped inputs, BIDS names)"]
+        LF --> CF["CONSENSUS_STAPLE<br>(STAPLE EM -> thr >= 0.90 -> CC filter >= 6mm3 -> Watershed Instances)"]
     end
 
     subgraph Phase4["Phase 4: Longitudinal Harmonization"]
         CF --> LH["HARMONIZATION_STAPLE<br>(4D Spatiotemporal Union -> Tracking CSV Audit Trail)"]
     end
 
-    subgraph Phase5["Phase 5: Consolidated Export"]
-        LH --> EXP["EXPORT_SESSION<br>(Standardized BIDS Organization: sub-XXX/ses-YYY/)"]
+    subgraph Phase5["Phase 5: QC & Reporting"]
+        LH --> QC["QC_PIPELINE + MultiQC<br>(registration metrics, ensemble agreement, versions)"]
     end
 ```
 
@@ -68,11 +69,15 @@ flowchart TD
 
 ## 2. Algorithm Provenance Notice
 
-This pipeline executes an ensemble of 14 lesion segmentation algorithms. Each algorithm runs its published, pretrained model.
+This pipeline integrates an ensemble of 14 lesion segmentation algorithms, with **12 active by default**. Eleven of the default algorithms execute published, pretrained models (`LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FLAMeS`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `MIMoSA`, `BAWIL`, `SHiVAi`, and `mindGlide`). 
 
-The algorithms include: `LST-AI`, `SAMSEG`, `WMH-SynthSeg`, `FAST Outlier`, `FLAMeS`, `TrueNet`, `HyperMapp3r`, `SegCSVD`, `Emory Robust WMH`, `MARS-WMH`, `MIMoSA`, `BAWIL`, `SHiVAi`, and `mindGlide`.
+Two algorithms are **disabled by default** and opt-in:
+* `TrueNet`: Off by default due to domain shift (trained on small-vessel-disease/aging cohorts rather than MS). Enable via `--algorithms truenet,...` or `--algorithms all`.
+* `FAST Outlier`: Off by default because it is an in-house unsupervised z-score heuristic based on FSL FAST tissue segmentation rather than a published/pretrained lesion model. Enable via `--algorithms fast_outlier,...` or `--algorithms all`.
 
-Refer to [CITATIONS.md](CITATIONS.md) for complete citations and model provenance.
+To run with all 14 algorithms active, supply `--algorithms all`.
+
+Refer to [CITATIONS.md](CITATIONS.md) for complete citations, architectural notes, and model provenance.
 
 ---
 
@@ -150,10 +155,77 @@ bids_data/
 | `--use_gpu` | No | Run GPU-capable algorithms on GPU (also set by the `gpu` profile) | `false` |
 | `--cluster_gpu_options` | No | Slurm GPU request string for the `hpc` profile, overrides default `--gres=gpu:1` | `false` |
 | `--sif_cache` | No | Cache directory for pulled Apptainer/Singularity images | `false` |
+| `--algorithms` / `--skip_algorithms` | No | Allow-list / deny-list of algorithms (`all` = all 14) | 12 defaults |
+| `--lesion_brainmask` | No | Restrict predictions to the MNI brain mask: `unstripped` (algorithms whose input contains the skull: SAMSEG, WMH-SynthSeg, MARS-WMH, BAWIL, mindGlide), `all`, or `none` | `unstripped` |
+| `--lesion_brainmask_dilation` | No | Dilation (voxels) of the brain mask before masking | `1` |
+| `--template_space` | No | BIDS `space-` label of the template grid used in output names | `MNI` |
+| `--publish_dir_mode` | No | Nextflow publish mode. `symlink` links `results/` into `work/`; use `copy` to archive | `symlink` |
+| `--publish_intermediates` | No | Publish native preprocessing (`ses-*/preproc/`) | `true` |
+| `--publish_native` | No | Also publish native-space outputs of LST-AI/TrueNet/MARS-WMH/BAWIL/mindGlide (`ses-*/native/`) | `false` |
+| `--staple_threshold` | No | STAPLE consensus threshold | `0.90` |
+| `--staple_min_cluster_size` | No | Minimum lesion size (voxels = mm³ on the 1 mm template grid) | `6` |
+| `--pct_change_threshold` | No | % volume change separating Stable from Enlarging/Shrinking | `20.0` |
 
 ---
 
-## 5. Hardware & System Requirements
+## 5. Outputs
+
+All lesion outputs are on the **MNI template grid** and follow BIDS-derivatives naming. The
+layout is defined in one place, [`conf/output.config`](conf/output.config) (names from
+[`lib/OutputNaming.groovy`](lib/OutputNaming.groovy)):
+
+```
+results/
+├── pipeline_info/            execution_{report,timeline,trace}_<date>, software_versions.yml
+├── multiqc/                  cohort_multiqc_report.html (+ _data/)
+└── sub-007/
+    ├── ses-1/
+    │   ├── anat/             sub-007_ses-1_space-MNI_desc-{brain,head}_{T1w,FLAIR}.nii.gz,
+    │   │                     _desc-brain_mask.nii.gz, _desc-synthseg_dseg.nii.gz
+    │   ├── lesions/          sub-007_ses-1_space-MNI_desc-<algo>_{mask.nii.gz,probseg.nii.gz,mask.json}
+    │   ├── consensus/        sub-007_ses-1_space-MNI_desc-staple_{probseg,mask,dseg}.nii.gz
+    │   ├── xfm/              sub-007_ses-1_from-<A>_to-<B>_mode-image_xfm.mat (ANTs)
+    │   ├── qc/               QC tables/images (_desc-<kind>_qc.{tsv,png}), MARS-WMH's own report
+    │   ├── multiqc/          sub-007_ses-1_multiqc_report.html
+    │   ├── preproc/          native preprocessing, space-T1w / space-FLAIR (--publish_intermediates)
+    │   └── native/           native-space lesion outputs (--publish_native)
+    ├── ses-2/ …
+    └── longitudinal/         sub-007_ses-N_space-MNI_desc-harmonized_{mask,dseg}.nii.gz,
+                              sub-007_space-MNI_desc-lesiontracking.csv, qc/
+```
+
+| Entity / suffix | Meaning |
+|---|---|
+| `space-MNI` | MNI template grid (`--mni_template`) |
+| `space-T1w` / `space-FLAIR` | native 1 mm grid of that session's T1w / FLAIR |
+| `desc-<algo>` | `lstai`, `samseg`, `wmhsynthseg`, `flames`, `hypermapp3r`, `segcsvd`, `emoryrobust`, `marswmh`, `bawil`, `mimosa`, `shivai`, `mindglide` (+ `truenet`, `fastoutlier`) |
+| `_mask` / `_probseg` / `_dseg` | binary lesion mask (uint8) / probability map in [0,1] (float32; FAST-outlier: `_zscore`) / lesion instance labels |
+| `_mask.json` | sidecar: input space, whether the brain mask was applied, volume removed, MNI volume |
+
+**Volumes are MNI-normalized.** Every lesion volume (per-algorithm masks, STAPLE, the
+longitudinal CSV `Vol_MNI_mm3_*` columns, MultiQC `TLV_MNI_mL`) is measured on the template
+grid after the *affine* normalization of the baseline T1w, i.e. head-size normalized, so
+values are comparable across algorithms, sessions and subjects. All sessions of a subject
+share the baseline normalization, so longitudinal changes are unaffected. The per-subject
+volume scale factor (`Affine_Scale_Factor` = |det A| of the baseline→MNI affine, typically
+1.5–1.8 with a 1 mm MNI template) is reported in the registration QC; native volume ≈ MNI
+volume / `Affine_Scale_Factor`.
+
+**Brain masking.** Algorithms fed images that still contain the skull (SAMSEG, WMH-SynthSeg,
+MARS-WMH, BAWIL, mindGlide) have their MNI mask and probability map multiplied by the
+1-voxel-dilated MNI brain mask (T1 SynthStrip mask warped to MNI) before STAPLE; the removed
+volume is reported per algorithm (MultiQC "Out-of-Brain Predictions Removed", `_mask.json`).
+
+**Symlinks.** By default (`--publish_dir_mode symlink`) `results/` holds symlinks into
+`work/`: deleting `work/` or running `nextflow clean` breaks it. Re-publish with
+`-resume --publish_dir_mode copy` (no recomputation) to obtain a self-contained copy.
+
+**Upgrading from the pre-2026-09-30 layout** (process-named folders, `ses-single/`,
+`staple_classical/`): use a new `--output` directory; publishing into an old tree would leave
+stale links next to the new names.
+---
+
+## 6. Hardware & System Requirements
 
 ### Memory: resource labels
 
@@ -191,6 +263,12 @@ A sixth label, `process_gpu`, stacks on top of one of the labels above (e.g. `SE
 
 Cluster profiles don't enforce these caps; jobs scale across nodes according to scheduler capacity.
 
+### `-profile no_parallel`: strictly one task at a time
+
+`conf/no_parallel.config` sets `executor.queueSize = 1` (and `process.maxForks = 1`), so the whole pipeline runs serially: no two tasks ever coexist. Use it on memory-bound hosts where even `local_dev`'s `queueSize = 2` lets a heavy task (e.g. `SEGMENTATION_WMH_SYNTHSEG` on CPU, ~28 GB peak) overlap with another one: `-profile docker,local_dev,no_parallel`. Slowest option; expect several hours per subject on CPU.
+
+After a run, `tests/validate_outputs.py results --input data` checks every session's binary masks, probability maps (range, and agreement with their own binary), STAPLE, harmonization, and QC/MultiQC outputs, and exits non-zero on any failure.
+
 * **Disk Space**: Allocate ~165 GB for all container images combined. The `emorycn2l/emory_robust_wmh` image alone needs ~43 GB. See [dockerfiles/](dockerfiles/) for recipes, sizes, and build instructions.
 * **CPU / GPU**: Defaults to CPU. Pass `--use_gpu true` (or the `gpu` profile) to enable GPU acceleration where supported — see [GPU Acceleration](#gpu-acceleration).
 
@@ -226,7 +304,7 @@ nextflow run frheault/sf-lesionflow -r main \
 
 ---
 
-## 6. Testing
+## 7. Testing
 
 ### Fast Stub Run (DAG & Syntax Verification)
 Execute a fast stub run to verify pipeline topology without data processing or model downloads:
@@ -240,9 +318,18 @@ nextflow run main.nf \
     -stub-run
 ```
 
+### Unit tests and output validation
+```bash
+python3 -m pytest -q tests/                         # QC, finalize, registration-metric and BAWIL geometry tests
+python3 tests/validate_outputs.py results --input data   # end-to-end check of a finished results/ tree
+```
+`validate_outputs.py` checks the layout (no broken links, no unprefixed files), grids, mask/probseg
+consistency, soft probability maps, brain containment, inter-algorithm agreement outliers,
+registration metrics and software versions; it exits non-zero on any FAIL.
+
 ---
 
-## 7. Citations & Acknowledgements
+## 8. Citations & Acknowledgements
 
 * **Scientific Citations**: Refer to [CITATIONS.md](CITATIONS.md) for full citations of all segmentation models, foundational tools, and pipeline infrastructure.
 * **SCIL & nf-neuro**: This pipeline is part of the SCIL Flow family. The [Sherbrooke Connectivity Imaging Lab (SCIL)](https://scil.usherbrooke.ca/) at Université de Sherbrooke develops and maintains this pipeline. It incorporates neuroimaging modules from [nf-neuro](https://github.com/scilus/nf-neuro) and architecture standards from the [nf-core](https://nf-co.re) community.

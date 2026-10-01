@@ -7,9 +7,10 @@ https://fsl.fmrib.ox.ac.uk/fsl/docs/structural/bianca.html
 
 ## Why it is not wired into sf-lesionflow
 
-Every one of the 14 ensemble members in this pipeline runs a published, pretrained
-model out of the box (see the Algorithm Provenance Notice in the top-level README and
-the closing line of CITATIONS.md). BIANCA cannot meet that bar as shipped:
+Thirteen of the 14 ensemble members in this pipeline run published, pretrained
+models out of the box (with FAST Outlier running an in-house unsupervised heuristic;
+see the Algorithm Provenance Notice in the top-level README and CITATIONS.md).
+BIANCA cannot meet that bar as shipped:
 
 - BIANCA is a k-NN classifier, not a model with fixed learned weights — it requires a
   training set of manually-labeled lesion masks (via `--trainingnums`/

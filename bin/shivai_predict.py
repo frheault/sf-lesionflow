@@ -37,6 +37,10 @@ def build_arg_parser():
         "--min_cluster_size", type=int, default=3,
         help="Minimum connected component size (default: 3), matching bawil_filter.py/mimosa_predict.R"
     )
+    parser.add_argument(
+        "--output_prob", default=None,
+        help="Optional: also save the averaged 5-fold probability map, pasted back into native space"
+    )
     return parser
 
 
@@ -143,6 +147,12 @@ def main():
     out_img = nib.Nifti1Image(binary_native, affine, header)
     out_img.set_data_dtype(np.uint8)
     nib.save(out_img, args.output)
+
+    if args.output_prob:
+        prob_native = paste_back(mean_prob.astype(np.float32), dst_slices, original_shape)
+        prob_img = nib.Nifti1Image(prob_native, affine, header)
+        prob_img.set_data_dtype(np.float32)
+        nib.save(prob_img, args.output_prob)
 
 
 if __name__ == "__main__":

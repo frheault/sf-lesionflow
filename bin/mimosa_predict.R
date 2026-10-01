@@ -19,7 +19,9 @@ option_list <- list(
   make_option("--smooth_sigma", type = "double", default = 1.25,
               help = "Gaussian smoothing sigma in voxels for probability map (default: 1.25)"),
   make_option("--min_cluster_size", type = "integer", default = 3,
-              help = "Minimum connected-component size in voxels (default: 3)")
+              help = "Minimum connected-component size in voxels (default: 3)"),
+  make_option("--output_prob", type = "character", default = NULL,
+              help = "Optional: also save the smoothed probability map")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 
@@ -32,6 +34,9 @@ brain_mask <- niftiarr(FLAIR, as.numeric((T1 > 0) | (FLAIR > 0)))
 # Return empty mask if brain mask contains zero foreground voxels.
 if (sum(brain_mask) == 0) {
   writenii(niftiarr(FLAIR, 0), filename = opt$output)
+  if (!is.null(opt$output_prob)) {
+    writenii(niftiarr(FLAIR, 0), filename = opt$output_prob)
+  }
   quit(save = "no", status = 0)
 }
 
@@ -71,3 +76,7 @@ if (opt$min_cluster_size > 1) {
 }
 
 writenii(segmentation_mask, filename = opt$output)
+
+if (!is.null(opt$output_prob)) {
+  writenii(probability_map, filename = opt$output_prob)
+}

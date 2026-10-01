@@ -118,6 +118,7 @@ process REGISTRATION_ANTSAPPLYTRANSFORMS {
     for image in $images; do
         ext=\${image#*.}
         bname=\$(basename \${image} .\${ext})
+        bname=\${bname#${prefix}_*}
 
         touch ${prefix}_\${bname}_${suffix}.nii.gz
 

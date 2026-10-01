@@ -5,12 +5,34 @@ and STAPLE consensus statistics for MultiQC reporting.
 """
 
 import argparse
+import json
 import os
+import re
 import sys
 import numpy as np
 import nibabel as nib
 import pandas as pd
 from scipy.ndimage import label
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _lesion_utils import LABEL_TO_KEY  # noqa: E402
+
+BIDS_MASK_RE = re.compile(r"_desc-([A-Za-z0-9]+)_mask\.nii(\.gz)?$")
+
+
+def algorithm_name(fname, meta_id):
+    """Algorithm key from a finalized BIDS name (`..._desc-<label>_mask.nii.gz`), or from the
+    legacy `{meta_id}_{algo}_binary.nii.gz` pattern."""
+    m = BIDS_MASK_RE.search(fname)
+    if m:
+        return LABEL_TO_KEY.get(m.group(1), m.group(1))
+    clean_name = fname
+    if clean_name.startswith(f"{meta_id}_"):
+        clean_name = clean_name[len(meta_id) + 1 :]
+    for suffix in ("_binary.nii.gz", ".nii.gz"):
+        if clean_name.endswith(suffix):
+            return clean_name[: -len(suffix)]
+    return clean_name
 
 
 def compute_dice(im1, im2):
@@ -34,6 +56,8 @@ def main():
     parser.add_argument("--out_volumes", required=True, help="Output volumes TSV for MultiQC bar chart")
     parser.add_argument("--out_dice", required=True, help="Output pairwise Dice TSV for MultiQC heatmap")
     parser.add_argument("--out_summary", required=True, help="Output summary scalar metrics TSV")
+    parser.add_argument("--sidecars", nargs="*", default=[], help="LESION_FINALIZE JSON sidecars (brain-mask removal)")
+    parser.add_argument("--out_brainmask", default=None, help="Output brain-mask removal TSV")
     args = parser.parse_args()
 
     # 1. Load STAPLE Consensus Mask
@@ -59,15 +83,7 @@ def main():
     algo_dice_vs_cons = {}
 
     for mask_path in sorted(args.masks):
-        fname = os.path.basename(mask_path)
-        # Extract algorithm name from filename pattern: {meta.id}_{algo}_binary.nii.gz
-        clean_name = fname
-        if clean_name.startswith(f"{args.meta_id}_"):
-            clean_name = clean_name[len(args.meta_id) + 1 :]
-        if clean_name.endswith("_binary.nii.gz"):
-            clean_name = clean_name[:-len("_binary.nii.gz")]
-        elif clean_name.endswith(".nii.gz"):
-            clean_name = clean_name[:-len(".nii.gz")]
+        clean_name = algorithm_name(os.path.basename(mask_path), args.meta_id)
 
         img = nib.as_closest_canonical(nib.load(mask_path))
         data = np.squeeze(img.get_fdata()) > 0
@@ -104,12 +120,12 @@ def main():
     with open(args.out_volumes, "w") as f:
         f.write("# id: 'lesion_ensemble_volumes'\n")
         f.write("# section_name: 'Ensemble Lesion Volumes'\n")
-        f.write("# description: 'Comparison of total lesion volume (mL) across active algorithms and STAPLE consensus.'\n")
+        f.write("# description: 'MNI-normalized lesion volume (mL on the template grid after affine normalization of the baseline T1w) per algorithm and for the STAPLE consensus.'\n")
         f.write("# plot_type: 'bargraph'\n")
         f.write("# pconfig:\n")
         f.write("#   id: 'lesion_ensemble_volumes_plot'\n")
-        f.write("#   title: 'Ensemble Lesion Volume by Algorithm (mL)'\n")
-        f.write("#   ylab: 'Volume (mL)'\n")
+        f.write("#   title: 'Ensemble Lesion Volume by Algorithm (MNI-normalized mL)'\n")
+        f.write("#   ylab: 'MNI-normalized volume (mL)'\n")
 
         headers = ["Sample"] + algo_names + ["STAPLE_Consensus"]
         f.write("\t".join(headers) + "\n")
@@ -139,8 +155,26 @@ def main():
         f.write("# id: 'lesion_consensus_summary'\n")
         f.write("# section_name: 'STAPLE Consensus Lesion Metrics'\n")
         f.write("# plot_type: 'table'\n")
-        f.write("Sample\tConsensus_TLV_mL\tConsensus_Lesion_Count\tMean_Inter_Algo_Dice\tActive_Algos\n")
+        f.write("Sample\tTLV_MNI_mL\tConsensus_Lesion_Count\tMean_Inter_Algo_Dice\tActive_Algos\n")
         f.write(f"{args.meta_id}\t{cons_vol_ml:.3f}\t{cons_num_lesions}\t{mean_pairwise_dice:.3f}\t{n_algos}\n")
+
+    # 7. Brain-mask removal table (volume LESION_FINALIZE removed outside the brain, per algorithm)
+    if args.out_brainmask:
+        removed = {}
+        for sc in sorted(args.sidecars):
+            with open(sc) as fh:
+                meta = json.load(fh)
+            if meta.get("BrainMaskApplied"):
+                removed[meta.get("Algorithm", os.path.basename(sc))] = float(meta.get("VolumeRemovedByBrainMask_MNI_mL", 0.0))
+        with open(args.out_brainmask, "w") as f:
+            f.write("# id: 'lesion_brainmask_removal'\n")
+            f.write("# section_name: 'Out-of-Brain Predictions Removed'\n")
+            f.write("# description: 'MNI-normalized lesion volume (mL) removed by the brain mask, for algorithms whose input "
+                    "still contained the skull (--lesion_brainmask). Large values flag an algorithm segmenting extra-cerebral tissue.'\n")
+            f.write("# plot_type: 'table'\n")
+            names = sorted(removed)
+            f.write("\t".join(["Sample"] + [f"{n}_removed_mL" for n in names]) + "\n")
+            f.write("\t".join([args.meta_id] + [f"{removed[n]:.3f}" for n in names]) + "\n")
 
 
 if __name__ == "__main__":

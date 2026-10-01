@@ -14,6 +14,13 @@ nextflow_pipeline {
         }
         then {
             assert workflow.success
+            def ses = "${params.output}/sub-007/ses-1"
+            assert file("${ses}/anat/sub-007_ses-1_space-MNI_desc-brain_mask.nii.gz").exists()
+            assert file("${ses}/lesions").list().findAll { it.endsWith('_mask.nii.gz') }.size() == 12
+            assert file("${ses}/consensus/sub-007_ses-1_space-MNI_desc-staple_mask.nii.gz").exists()
+            assert file("${params.output}/sub-007/longitudinal/sub-007_space-MNI_desc-lesiontracking.csv").exists()
+            assert file("${params.output}/pipeline_info/software_versions.yml").exists()
+            assert !file("${params.output}/sub-007/ses-single").exists()
         }
     }
 
@@ -29,7 +36,7 @@ nextflow_pipeline {
         }
         then {
             assert workflow.success
-            assert file("${params.output}/sub-007/sub-007_staple_harmonized_lesion_tracking.csv").exists()
+            assert file("${params.output}/sub-007/longitudinal/sub-007_space-MNI_desc-lesiontracking.csv").exists()
         }
     }
 }

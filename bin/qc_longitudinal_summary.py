@@ -30,7 +30,7 @@ def main():
         df = pd.DataFrame()
 
     vol_cols = sorted(
-        [c for c in df.columns if c.startswith("Vol_mm3_")],
+        [c for c in df.columns if c.startswith(("Vol_MNI_mm3_", "Vol_mm3_"))],
         key=_session_sort_key,
     )
     num_sessions = len(vol_cols)
@@ -65,7 +65,7 @@ def main():
         f.write("# id: 'longitudinal_summary'\n")
         f.write("# section_name: 'Longitudinal Trajectory Summary'\n")
         f.write("# plot_type: 'table'\n")
-        f.write("Sample\tBaseline_TLV_mL\tFollowup_TLV_mL\tNet_Delta_TLV_mL\tPercent_Change\tNew_Lesions\tNo_Lesions_Flag\n")
+        f.write("Sample\tBaseline_TLV_MNI_mL\tFollowup_TLV_MNI_mL\tNet_Delta_TLV_MNI_mL\tPercent_Change\tNew_Lesions\tNo_Lesions_Flag\n")
         f.write(
             f"{args.subject}\t{total_vol_bl:.3f}\t{total_vol_fu:.3f}\t{net_delta_ml:.3f}\t{pct_change_str}\t{new_count}\t{int(no_lesions)}\n"
         )
@@ -101,7 +101,7 @@ def main():
         if len(df) == 0:
             empty_cols = ["Lesion_ID"] + vol_cols + [
                 "Status",
-                "Delta_Vol_mm3",
+                "Delta_Vol_MNI_mm3",
                 "Pct_Change",
                 "Centroid_X_mm",
                 "Centroid_Y_mm",
@@ -110,7 +110,7 @@ def main():
             empty_row = {c: "N/A" for c in empty_cols}
             empty_row["Lesion_ID"] = "None"
             empty_row["Status"] = "No lesions detected"
-            empty_row["Delta_Vol_mm3"] = 0.0
+            empty_row["Delta_Vol_MNI_mm3"] = 0.0
             empty_row["Pct_Change"] = "0.0"
             for c in vol_cols:
                 empty_row[c] = 0.0

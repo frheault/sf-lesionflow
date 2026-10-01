@@ -1,0 +1,1444 @@
+[33mNextflow 26.04.6 is available - Please consider updating your version to it(B[m
+
+ N E X T F L O W   ~  version 25.04.3
+
+Launching `main.nf` [sleepy_banach] DSL2 - revision: 63cdc4d353
+
+Active segmentation algorithms (12/14): lst_ai, samseg, wmh_synthseg, flames, hypermapp3r, segcsvd, emory_robust, mars_wmh, bawil, mimosa, shivai, mindglide
+Lesion brain masking (--lesion_brainmask unstripped): samseg, wmh_synthseg, mars_wmh, bawil, mindglide
+[-        ] RESAMPLE_T1      -
+[-        ] RESAMPLE_FLAIR   -
+[-        ] SYNTHSTRIP_T1    -
+[-        ] SYNTHSTRIP_FLAIR -
+[-        ] CROP_T1_MASK     -
+[-        ] CROP_T1_RAW      -
+[-        ] CROP_FLAIR_MASK  -
+[-        ] CROP_FLAIR_RAW   -
+
+[-        ] RESAMPLE_T1                    -
+[-        ] RESAMPLE_FLAIR                 -
+[-        ] SYNTHSTRIP_T1                  -
+[-        ] SYNTHSTRIP_FLAIR               -
+[-        ] CROP_T1_MASK                   -
+[-        ] CROP_T1_RAW                    -
+[-        ] CROP_FLAIR_MASK                -
+[-        ] CROP_FLAIR_RAW                 -
+[-        ] N4_T1                          -
+[-        ] N4_FLAIR                       -
+[-        ] MASK_T1                        -
+[-        ] MASK_FLAIR                     -
+[-        ] MASK_T1_PRE_N4                 -
+[-        ] MASK_FLAIR_PRE_N4              -
+[-        ] REGISTER_FLAIR_TO_T1           -
+[-        ] REGISTER_T1_TO_BASELINE        -
+[-        ] REGISTER_BASELINE_TO_MNI       -
+[-        ] TRANSFORM_T1W_TO_MNI           -
+[-        ] TRANSFORM_FLAIR_TO_MNI         -
+[-        ] TRA…FORM_T1W_UNSTRIPPED_TO_MNI -
+Plus 2 more processes waiting for tasks…
+
+[-        ] RESAMPLE_T1                    -
+[-        ] RESAMPLE_FLAIR                 -
+[-        ] SYNTHSTRIP_T1                  -
+[-        ] SYNTHSTRIP_FLAIR               -
+[-        ] CROP_T1_MASK                   -
+[-        ] CROP_T1_RAW                    -
+[-        ] CROP_FLAIR_MASK                -
+[-        ] CROP_FLAIR_RAW                 -
+[-        ] N4_T1                          -
+[-        ] N4_FLAIR                       -
+[-        ] MASK_T1                        -
+[-        ] MASK_FLAIR                     -
+[-        ] MASK_T1_PRE_N4                 -
+[-        ] MASK_FLAIR_PRE_N4              -
+[-        ] REGISTER_FLAIR_TO_T1           -
+[-        ] REGISTER_T1_TO_BASELINE        -
+[-        ] REGISTER_BASELINE_TO_MNI       -
+[-        ] TRANSFORM_T1W_TO_MNI           -
+[-        ] TRANSFORM_FLAIR_TO_MNI         -
+[-        ] TRA…FORM_T1W_UNSTRIPPED_TO_MNI -
+Plus 25 more processes waiting for tasks…
+
+[-        ] RESAMPLE_T1                    -
+[-        ] RESAMPLE_FLAIR                 -
+[-        ] SYNTHSTRIP_T1                  -
+[-        ] SYNTHSTRIP_FLAIR               -
+[-        ] CROP_T1_MASK                   -
+[-        ] CROP_T1_RAW                    -
+[-        ] CROP_FLAIR_MASK                -
+[-        ] CROP_FLAIR_RAW                 -
+[-        ] N4_T1                          -
+[-        ] N4_FLAIR                       -
+[-        ] MASK_T1                        -
+[-        ] MASK_FLAIR                     -
+[-        ] MASK_T1_PRE_N4                 -
+[-        ] MASK_FLAIR_PRE_N4              -
+[-        ] REGISTER_FLAIR_TO_T1           -
+[-        ] REGISTER_T1_TO_BASELINE        -
+[-        ] REGISTER_BASELINE_TO_MNI       -
+[-        ] TRANSFORM_T1W_TO_MNI           -
+[-        ] TRANSFORM_FLAIR_TO_MNI         -
+[-        ] TRA…FORM_T1W_UNSTRIPPED_TO_MNI -
+Plus 37 more processes waiting for tasks…
+
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4
+[07/7d4e52] CROP_T1_MASK (sub-007_ses-2)   | 2 of 2, cached: 2
+[-        ] CROP_T1_RAW                    -
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4
+[-        ] CROP_FLAIR_RAW                 -
+[-        ] N4_T1                          -
+[-        ] N4_FLAIR                       -
+[-        ] MASK_T1                        -
+[-        ] MASK_FLAIR                     -
+[-        ] MASK_T1_PRE_N4                 -
+[-        ] MASK_FLAIR_PRE_N4              -
+[-        ] REGISTER_FLAIR_TO_T1           -
+[-        ] REGISTER_T1_TO_BASELINE        -
+[-        ] REGISTER_BASELINE_TO_MNI       -
+[-        ] TRANSFORM_T1W_TO_MNI           -
+[-        ] TRANSFORM_FLAIR_TO_MNI         -
+[-        ] TRA…FORM_T1W_UNSTRIPPED_TO_MNI -
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+Plus 38 more processes waiting for tasks…
+
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[-        ] TRANSFORM_T1W_TO_MNI           -
+[-        ] TRANSFORM_FLAIR_TO_MNI         -
+[-        ] TRA…FORM_T1W_UNSTRIPPED_TO_MNI -
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[71/491cc3] TRA…ASK_TO_MNI (sub-007_ses-2) | 1 of 1, cached: 1
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+Plus 33 more processes waiting for tasks…
+
+executor >  local (1)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[5f/713341] QC_…N_FLAIR_T1 (sub-007_ses-1) | 0 of 4
+[-        ] QC_…C_REGISTRATION_T1_BASELINE | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (2)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[5f/713341] QC_…N_FLAIR_T1 (sub-007_ses-1) | 1 of 4
+[-        ] QC_…C_REGISTRATION_T1_BASELINE | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (2)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[5f/713341] QC_…N_FLAIR_T1 (sub-007_ses-1) | 1 of 4
+[-        ] QC_…C_REGISTRATION_T1_BASELINE | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (3)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[61/bb68fb] QC_…N_FLAIR_T1 (sub-019_ses-2) | 2 of 4
+[-        ] QC_…C_REGISTRATION_T1_BASELINE | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (3)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[61/bb68fb] QC_…N_FLAIR_T1 (sub-019_ses-2) | 2 of 4
+[-        ] QC_…C_REGISTRATION_T1_BASELINE | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (4)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a0/db950c] QC_…N_FLAIR_T1 (sub-007_ses-2) | 3 of 4
+[4e/d7f544] QC_…1_BASELINE (sub-007_ses-2) | 0 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (5)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 3 of 4
+[4e/d7f544] QC_…1_BASELINE (sub-007_ses-2) | 1 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (5)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 3 of 4
+[4e/d7f544] QC_…1_BASELINE (sub-007_ses-2) | 1 of 2
+[-        ] QC_…_REGISTRATION_BASELINE_MNI | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (6)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[4e/d7f544] QC_…1_BASELINE (sub-007_ses-2) | 1 of 2
+[8c/d0f958] QC_…SELINE_MNI (sub-019_ses-1) | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (6)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[4e/d7f544] QC_…1_BASELINE (sub-007_ses-2) | 1 of 2
+[8c/d0f958] QC_…SELINE_MNI (sub-019_ses-1) | 0 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (7)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 1 of 2
+[8c/d0f958] QC_…SELINE_MNI (sub-019_ses-1) | 1 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (8)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 1 of 2
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+Plus 6 more processes waiting for tasks…
+
+executor >  local (8)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[-        ] QC_PIPELINE:MULTIQC_SUBJECT    | 0 of 3
+Plus 5 more processes waiting for tasks…
+
+executor >  local (9)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f5/342811] QC_…QC_SUBJECT (sub-019_ses-2) | 0 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (10)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f5/342811] QC_…QC_SUBJECT (sub-019_ses-2) | 1 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (10)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f5/342811] QC_…QC_SUBJECT (sub-019_ses-2) | 1 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (11)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[bb/9847de] QC_…QC_SUBJECT (sub-019_ses-1) | 2 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (12)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[3c/af41c4] QC_…QC_SUBJECT (sub-007_ses-2) | 3 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (12)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[3c/af41c4] QC_…QC_SUBJECT (sub-007_ses-2) | 3 of 4
+[-        ] QC_PIPELINE:MULTIQC_GLOBAL     | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (13)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f6/f5ca9c] QC_…QC_SUBJECT (sub-007_ses-1) | 4 of 4 ✔
+[64/ece8ab] QC_…NE:MULTIQC_GLOBAL (global) | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (13)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f6/f5ca9c] QC_…QC_SUBJECT (sub-007_ses-1) | 4 of 4 ✔
+[64/ece8ab] QC_…NE:MULTIQC_GLOBAL (global) | 0 of 1
+Plus 4 more processes waiting for tasks…
+
+executor >  local (13)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f6/f5ca9c] QC_…QC_SUBJECT (sub-007_ses-1) | 4 of 4 ✔
+[64/ece8ab] QC_…NE:MULTIQC_GLOBAL (global) | 1 of 1 ✔
+Plus 4 more processes waiting for tasks…
+
+executor >  local (13)
+[ff/9a3c14] RESAMPLE_T1 (sub-019_ses-1)    | 4 of 4, cached: 4 ✔
+[e8/baf27e] RESAMPLE_FLAIR (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[0d/848a61] SYNTHSTRIP_T1 (sub-019_ses-2)  | 4 of 4, cached: 4 ✔
+[b9/45c7c6] SYN…TRIP_FLAIR (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b6/5ffdcd] CROP_T1_MASK (sub-019_ses-2)   | 4 of 4, cached: 4 ✔
+[52/313540] CROP_T1_RAW (sub-007_ses-1)    | 4 of 4, cached: 4 ✔
+[d6/262c06] CRO…FLAIR_MASK (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[56/c987b9] CROP_FLAIR_RAW (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[e8/64ab12] N4_T1 (sub-007_ses-2)          | 4 of 4, cached: 4 ✔
+[96/7f4aa9] N4_FLAIR (sub-019_ses-2)       | 4 of 4, cached: 4 ✔
+[5d/4ee10a] MASK_T1 (sub-007_ses-2)        | 4 of 4, cached: 4 ✔
+[03/d1b6d5] MASK_FLAIR (sub-019_ses-2)     | 4 of 4, cached: 4 ✔
+[42/6a0f50] MASK_T1_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ec/27b19d] MAS…AIR_PRE_N4 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[5a/340071] REG…LAIR_TO_T1 (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[b7/d55460] REG…O_BASELINE (sub-019_ses-2) | 2 of 2, cached: 2 ✔
+[f2/a95ec2] REG…INE_TO_MNI (sub-007_ses-1) | 2 of 2, cached: 2 ✔
+[8c/327382] TRA…T1W_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a8/10e286] TRA…AIR_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[6f/48f87d] TRA…PED_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[0f/bfc063] TRA…PED_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/404c8a] TRA…ASK_TO_MNI (sub-019_ses-2) | 4 of 4, cached: 4 ✔
+[d4/b39762] SEG…ION_LST_AI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[3f/69e1ae] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[c9/14b2ab] TRA…ROB_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[b6/d8313f] SEG…ION_SAMSEG (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[e5/a904ff] SEG…H_SYNTHSEG (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[fe/e6bfc3] SEG…ION_FLAMES (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[d7/0848ee] SEG…YPERMAPP3R (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[78/f9b968] PRE…C_SYNTHSEG (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[a0/fbc8dd] SEG…ON_SEGCSVD (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[53/a732ac] SEG…ORY_ROBUST (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[33/9cb167] SEG…N_MARS_WMH (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[ef/ce9f5b] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[87/7887ba] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[7b/9a32bb] SEG…TION_BAWIL (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[88/869d1e] TRA…ASK_TO_MNI (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[a4/fbd8d0] TRA…ROB_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[af/be6e90] SEG…ION_MIMOSA (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[b8/cb8779] SEG…ION_SHIVAI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[8b/77875c] SEG…_MINDGLIDE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[a5/f0593d] TRA…ASK_TO_MNI (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[89/d8b244] TRA…ROB_TO_MNI (sub-007_ses-2) | 4 of 4, cached: 4 ✔
+[38/93b1e0] LES…ZE (sub-019_ses-1:segcsvd) | 48 of 48, cached: 48 ✔
+[7d/25ba53] CON…SUS_STAPLE (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[36/60f3f9] HARMONIZATION_STAPLE (sub-019) | 2 of 2, cached: 2 ✔
+[77/ed18a7] PROBE_VERSIONS (emory_robust)  | 13 of 13, cached: 13 ✔
+[08/203aaa] QC_…LE_METRICS (sub-019_ses-1) | 4 of 4, cached: 4 ✔
+[bd/574404] QC_…N_FLAIR_T1 (sub-019_ses-1) | 4 of 4 ✔
+[39/3c74a1] QC_…1_BASELINE (sub-019_ses-2) | 2 of 2 ✔
+[d7/c02c8b] QC_…SELINE_MNI (sub-007_ses-1) | 2 of 2 ✔
+[ae/da45ef] QC_…SCREENSHOT (sub-007_ses-1) | 4 of 4, cached: 4 ✔
+[96/4c8767] QC_…:QC_LONGITUDINAL (sub-019) | 2 of 2, cached: 2 ✔
+[f6/f5ca9c] QC_…QC_SUBJECT (sub-007_ses-1) | 4 of 4 ✔
+[64/ece8ab] QC_…NE:MULTIQC_GLOBAL (global) | 1 of 1 ✔
+Plus 4 more processes waiting for tasks…
+
+NEXTFLOW EXIT 0

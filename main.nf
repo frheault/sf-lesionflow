@@ -29,6 +29,13 @@ def helpMessage() {
       --staple_min_distance [int]   Minimum peak distance for watershed instances (default: 3).
       --staple_gaussian_sigma [float] Gaussian smoothing sigma for distance transform (default: 0.8).
       --pct_change_threshold [float] Percentage volume change threshold for trajectory status (default: 20.0).
+      --lesion_brainmask [str]      Brain-mask lesion predictions: 'unstripped' (algorithms fed images with skull,
+                                    default), 'all' or 'none'.
+      --lesion_brainmask_dilation [int] Brain mask dilation in voxels before masking (default: 1).
+      --template_space [str]        BIDS space- label of the template grid (default: 'MNI').
+      --publish_dir_mode [str]      Nextflow publishDir mode (default: 'symlink'; use 'copy' to archive results).
+      --publish_intermediates [bool] Publish native-space preprocessing under ses-*/preproc/ (default: true).
+      --publish_native [bool]       Also publish native-space lesion outputs under ses-*/native/ (default: false).
       --help                        Display this help message.
     """.stripIndent()
 }
@@ -48,6 +55,12 @@ params.staple_min_cluster_size = 6
 params.staple_min_distance     = 3
 params.staple_gaussian_sigma   = 0.8
 params.pct_change_threshold    = 20.0
+params.lesion_brainmask        = 'unstripped'
+params.lesion_brainmask_dilation = 1
+params.template_space          = 'MNI'
+params.publish_dir_mode        = 'symlink'
+params.publish_intermediates   = true
+params.publish_native          = false
 
 if (params.help) {
     helpMessage()
@@ -74,10 +87,24 @@ include { REGISTRATION_ANTS as REGISTER_FLAIR_TO_T1 }      from './modules/nf-ne
 include { REGISTRATION_ANTS as REGISTER_T1_TO_BASELINE }   from './modules/nf-neuro/registration/ants/main'
 include { REGISTRATION_ANTS as REGISTER_BASELINE_TO_MNI }  from './modules/nf-neuro/registration/ants/main'
 
+include { IMAGE_APPLYMASK as MASK_T1_PRE_N4 }                                     from './modules/nf-neuro/image/applymask/main'
+include { IMAGE_APPLYMASK as MASK_FLAIR_PRE_N4 }                                  from './modules/nf-neuro/image/applymask/main'
+
 include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_T1W_TO_MNI }            from './modules/nf-neuro/registration/antsapplytransforms/main'
 include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_FLAIR_TO_MNI }          from './modules/nf-neuro/registration/antsapplytransforms/main'
 include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_T1W_UNSTRIPPED_TO_MNI } from './modules/nf-neuro/registration/antsapplytransforms/main'
 include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI } from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_MARS_WMH_MASK_TO_MNI }   from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_LST_AI_MASK_TO_MNI }     from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_MINDGLIDE_MASK_TO_MNI }   from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_BAWIL_MASK_TO_MNI }       from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_TRUENET_MASK_TO_MNI }     from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_MARS_WMH_PROB_TO_MNI }   from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_LST_AI_PROB_TO_MNI }     from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_MINDGLIDE_PROB_TO_MNI }   from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_BAWIL_PROB_TO_MNI }       from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_TRUENET_PROB_TO_MNI }     from './modules/nf-neuro/registration/antsapplytransforms/main'
+include { REGISTRATION_ANTSAPPLYTRANSFORMS as TRANSFORM_T1_BRAINMASK_TO_MNI }     from './modules/nf-neuro/registration/antsapplytransforms/main'
 
 // -----------------------------------------------------------------------------
 // Local Module Imports (Phase 2 to 5)
@@ -90,6 +117,7 @@ include {
     SEGMENTATION_FLAMES;
     SEGMENTATION_TRUENET;
     SEGMENTATION_HYPERMAPP3R;
+    PREPROC_SYNTHSEG;
     SEGMENTATION_SEGCSVD;
     SEGMENTATION_EMORY_ROBUST;
     SEGMENTATION_MARS_WMH;
@@ -101,7 +129,9 @@ include {
     HARMONIZATION_STAPLE
 } from './modules/local/lesion_segmentation'
 
-include { QC_PIPELINE } from './subworkflows/local/qc_pipeline'
+include { LESION_FINALIZE } from './modules/local/lesion_finalize'
+include { PROBE_VERSIONS  } from './modules/local/probe_versions'
+include { QC_PIPELINE     } from './subworkflows/local/qc_pipeline'
 
 // -----------------------------------------------------------------------------
 // Channel Ingestion Workflow
@@ -182,6 +212,11 @@ def ALGORITHM_MEMORY_GB = [
     bawil: 8, mimosa: 8, shivai: 8, mindglide: 8
 ]
 assert ALGORITHM_MEMORY_GB.keySet() == AlgorithmSelection.ALL as Set  // fails loudly if the two lists ever diverge
+assert AlgorithmSelection.BIDS_LABEL.keySet() == AlgorithmSelection.ALL as Set
+assert AlgorithmSelection.UNSTRIPPED_INPUT.every { it in AlgorithmSelection.ALL }
+assert AlgorithmSelection.ALL.every { AlgorithmSelection.CONTAINER.containsKey(it) }
+def brainmask_targets = AlgorithmSelection.brainmaskTargets(params)  // validates --lesion_brainmask
+log.info "Lesion brain masking (--lesion_brainmask ${params.lesion_brainmask}): ${(active_algorithms.intersect(brainmask_targets) ?: ['none']).join(', ')}"
 
 if (params.max_memory) {
     def max_gb = (params.max_memory as nextflow.util.MemoryUnit).toGiga()
@@ -238,6 +273,10 @@ workflow {
     // 5. Extract skull-stripped masked images
     MASK_T1(N4_T1.out.image.join(CROP_T1_MASK.out.image))
     MASK_FLAIR(N4_FLAIR.out.image.join(CROP_FLAIR_MASK.out.image))
+
+    // Pre-N4 skull-stripped images for algorithms that deliberately exclude N4 bias correction (LST-AI)
+    MASK_T1_PRE_N4(CROP_T1_RAW.out.image.join(CROP_T1_MASK.out.image))
+    MASK_FLAIR_PRE_N4(CROP_FLAIR_RAW.out.image.join(CROP_FLAIR_MASK.out.image))
 
     // 6. Intra-session FLAIR to T1w Rigid Registration
     ch_flair_to_t1 = MASK_T1.out.image
@@ -332,6 +371,15 @@ workflow {
     ch_t1_unstripped_mni    = TRANSFORM_T1W_UNSTRIPPED_TO_MNI.out.warped_image.map(toMniSpace)
     ch_flair_unstripped_mni = TRANSFORM_FLAIR_UNSTRIPPED_TO_MNI.out.warped_image.map(toMniSpace)
 
+    // T1 SynthStrip brain mask (cropped T1 grid) -> MNI, NearestNeighbor. Used to restrict the
+    // predictions of algorithms fed unstripped images (LESION_FINALIZE) and published in anat/.
+    ch_warp_brainmask = CROP_T1_MASK.out.image
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, t1_tx] })
+        .combine(data.mni_template)
+        .map { meta, img, txs, mni -> [meta, img, mni, txs] }
+    TRANSFORM_T1_BRAINMASK_TO_MNI(ch_warp_brainmask)
+    ch_brainmask_mni = TRANSFORM_T1_BRAINMASK_TO_MNI.out.warped_image.map(toMniSpace)
+
     // Channel bundles for MNI inputs
     ch_mni_paired     = ch_t1_mni.join(ch_flair_mni)
     ch_mni_flair_only = ch_flair_mni
@@ -341,42 +389,141 @@ workflow {
     // PHASE 2: Independent Algorithm Execution (Parallelized)
     // =========================================================================
 
-    SEGMENTATION_LST_AI(ch_mni_paired)
-    SEGMENTATION_SAMSEG(ch_mni_unstripped.combine(data.fs_license))
-    SEGMENTATION_WMH_SYNTHSEG(ch_flair_unstripped_mni)
-    SEGMENTATION_FAST_OUTLIER(ch_mni_paired)
-    SEGMENTATION_FLAMES(ch_mni_flair_only)
-    SEGMENTATION_TRUENET(ch_mni_paired)
-    SEGMENTATION_HYPERMAPP3R(ch_mni_paired)
-    SEGMENTATION_SEGCSVD(ch_mni_flair_only)
-    SEGMENTATION_EMORY_ROBUST(ch_mni_paired)
-    SEGMENTATION_MARS_WMH(ch_mni_paired)
-    SEGMENTATION_BAWIL(ch_mni_flair_only)
-    SEGMENTATION_MIMOSA(ch_mni_paired)
-    SEGMENTATION_SHIVAI(ch_mni_paired)
-    SEGMENTATION_MINDGLIDE(ch_mni_flair_only)
+    // Helper closure to extract single 3D mask from ANTs transformation output
+    def toSingleMask = { meta, imgs -> [meta, imgs instanceof List ? imgs[0] : imgs] }
+
+    // [meta, native_image] -> [meta, native_image, mni_template, transforms] using the FLAIR
+    // (fl_tx) or T1 (t1_tx) transform chain of the session.
+    def withTransforms = { ch, which ->
+        ch.join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, which == 't1' ? t1_tx : fl_tx] })
+          .combine(data.mni_template)
+          .map { meta, img, txs, mni -> [meta, img, mni, txs] }
+    }
+
+    // LST-AI: runs on native pre-N4 skull-stripped T1+FLAIR, output mask is warped to MNI space
+    ch_lst_ai_in = MASK_T1_PRE_N4.out.image.join(MASK_FLAIR_PRE_N4.out.image)
+    SEGMENTATION_LST_AI(ch_lst_ai_in)
+
+    ch_warp_lst_ai_mask = SEGMENTATION_LST_AI.out.binary_mask
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, fl_tx] })
+        .combine(data.mni_template)
+        .map { meta, mask, txs, mni -> [meta, mask, mni, txs] }
+    TRANSFORM_LST_AI_MASK_TO_MNI(ch_warp_lst_ai_mask)
+    ch_lst_ai_mni_mask = TRANSFORM_LST_AI_MASK_TO_MNI.out.warped_image.map(toSingleMask)
+    TRANSFORM_LST_AI_PROB_TO_MNI(withTransforms(SEGMENTATION_LST_AI.out.probability_map, 'flair'))
+    ch_lst_ai_mni_prob = TRANSFORM_LST_AI_PROB_TO_MNI.out.warped_image.map(toSingleMask)
+
+    SEGMENTATION_SAMSEG(ch_mni_unstripped.combine(data.fs_license))   // input: MNI unstripped
+    SEGMENTATION_WMH_SYNTHSEG(ch_flair_unstripped_mni)                 // input: MNI unstripped
+    SEGMENTATION_FAST_OUTLIER(ch_mni_paired)                           // input: MNI stripped
+    SEGMENTATION_FLAMES(ch_mni_flair_only)                             // input: MNI stripped
+
+    // TrueNet: runs on native skull-stripped co-registered T1+FLAIR, output mask is warped to MNI space
+    ch_native_truenet_in = MASK_T1.out.image.join(REGISTER_FLAIR_TO_T1.out.image_warped)
+    SEGMENTATION_TRUENET(ch_native_truenet_in)
+
+    ch_warp_truenet_mask = SEGMENTATION_TRUENET.out.binary_mask
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, t1_tx] })
+        .combine(data.mni_template)
+        .map { meta, mask, txs, mni -> [meta, mask, mni, txs] }
+    TRANSFORM_TRUENET_MASK_TO_MNI(ch_warp_truenet_mask)
+    ch_truenet_mni_mask = TRANSFORM_TRUENET_MASK_TO_MNI.out.warped_image.map(toSingleMask)
+    TRANSFORM_TRUENET_PROB_TO_MNI(withTransforms(SEGMENTATION_TRUENET.out.probability_map, 't1'))
+    ch_truenet_mni_prob = TRANSFORM_TRUENET_PROB_TO_MNI.out.warped_image.map(toSingleMask)
+
+    SEGMENTATION_HYPERMAPP3R(ch_mni_paired)                            // input: MNI stripped
+
+    // SegCSVD: requires real FreeSurfer SynthSeg parcellation as documented
+    PREPROC_SYNTHSEG(ch_mni_flair_only)
+    ch_segcsvd_in = ch_mni_flair_only.join(PREPROC_SYNTHSEG.out.synthseg)
+    SEGMENTATION_SEGCSVD(ch_segcsvd_in)
+
+    SEGMENTATION_EMORY_ROBUST(ch_mni_paired)                           // input: MNI stripped
+
+    // MARS-WMH: runs on native-space unstripped inputs, then output mask is warped to MNI space
+    ch_native_unstripped_paired = N4_T1.out.image.join(N4_FLAIR.out.image)
+    SEGMENTATION_MARS_WMH(ch_native_unstripped_paired)                 // input: native unstripped
+
+    ch_warp_mars_wmh_mask = SEGMENTATION_MARS_WMH.out.binary_mask
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, fl_tx] })
+        .combine(data.mni_template)
+        .map { meta, mask, txs, mni -> [meta, mask, mni, txs] }
+    TRANSFORM_MARS_WMH_MASK_TO_MNI(ch_warp_mars_wmh_mask)
+    ch_mars_wmh_mni_mask = TRANSFORM_MARS_WMH_MASK_TO_MNI.out.warped_image.map(toSingleMask)
+    TRANSFORM_MARS_WMH_PROB_TO_MNI(withTransforms(SEGMENTATION_MARS_WMH.out.probability_map, 'flair'))
+    ch_mars_wmh_mni_prob = TRANSFORM_MARS_WMH_PROB_TO_MNI.out.warped_image.map(toSingleMask)
+
+    // BAWIL: 2D model trained on whole-head clinical axial FLAIR slices (unstripped, non-N4,
+    // native space) -- fed the full-FOV 1 mm resampled FLAIR, NOT the brain-bbox crop, so
+    // bin/bawil_filter.py can present each slice with the head framed as in training. The
+    // SynthStrip mask (same grid) only helps locate the head. Output warped to MNI below.
+    ch_bawil_in = RESAMPLE_FLAIR.out.image.join(SYNTHSTRIP_FLAIR.out.brain_mask)
+    SEGMENTATION_BAWIL(ch_bawil_in)                                    // input: native unstripped
+
+    ch_warp_bawil_mask = SEGMENTATION_BAWIL.out.binary_mask
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, fl_tx] })
+        .combine(data.mni_template)
+        .map { meta, mask, txs, mni -> [meta, mask, mni, txs] }
+    TRANSFORM_BAWIL_MASK_TO_MNI(ch_warp_bawil_mask)
+    ch_bawil_mni_mask = TRANSFORM_BAWIL_MASK_TO_MNI.out.warped_image.map(toSingleMask)
+    TRANSFORM_BAWIL_PROB_TO_MNI(withTransforms(SEGMENTATION_BAWIL.out.probability_map, 'flair'))
+    ch_bawil_mni_prob = TRANSFORM_BAWIL_PROB_TO_MNI.out.warped_image.map(toSingleMask)
+
+    SEGMENTATION_MIMOSA(ch_mni_paired)                                 // input: MNI stripped
+    SEGMENTATION_SHIVAI(ch_mni_paired)                                 // input: MNI stripped
+
+    // mindGlide: runs on unstripped, non-N4 native FLAIR, then output mask is warped to MNI space
+    SEGMENTATION_MINDGLIDE(CROP_FLAIR_RAW.out.image)                   // input: native unstripped
+
+    ch_warp_mindglide_mask = SEGMENTATION_MINDGLIDE.out.binary_mask
+        .join(ch_session_transforms.map { meta, t1_tx, fl_tx -> [meta, fl_tx] })
+        .combine(data.mni_template)
+        .map { meta, mask, txs, mni -> [meta, mask, mni, txs] }
+    TRANSFORM_MINDGLIDE_MASK_TO_MNI(ch_warp_mindglide_mask)
+    ch_mindglide_mni_mask = TRANSFORM_MINDGLIDE_MASK_TO_MNI.out.warped_image.map(toSingleMask)
+    TRANSFORM_MINDGLIDE_PROB_TO_MNI(withTransforms(SEGMENTATION_MINDGLIDE.out.probability_map, 'flair'))
+    ch_mindglide_mni_prob = TRANSFORM_MINDGLIDE_PROB_TO_MNI.out.warped_image.map(toSingleMask)
 
     // =========================================================================
     // PHASE 3: STAPLE Consensus Fusion (thr90 >= 6mm3 + Watershed)
     // =========================================================================
 
-    ch_all_binary_masks = SEGMENTATION_LST_AI.out.binary_mask
-        .mix(
-            SEGMENTATION_SAMSEG.out.binary_mask,
-            SEGMENTATION_WMH_SYNTHSEG.out.binary_mask,
-            SEGMENTATION_FAST_OUTLIER.out.binary_mask,
-            SEGMENTATION_FLAMES.out.binary_mask,
-            SEGMENTATION_TRUENET.out.binary_mask,
-            SEGMENTATION_HYPERMAPP3R.out.binary_mask,
-            SEGMENTATION_SEGCSVD.out.binary_mask,
-            SEGMENTATION_EMORY_ROBUST.out.binary_mask,
-            SEGMENTATION_MARS_WMH.out.binary_mask,
-            SEGMENTATION_BAWIL.out.binary_mask,
-            SEGMENTATION_MIMOSA.out.binary_mask,
-            SEGMENTATION_SHIVAI.out.binary_mask,
-            SEGMENTATION_MINDGLIDE.out.binary_mask
-        )
-        .groupTuple(by: 0, size: active_algorithms.size())
+    // Every algorithm's MNI binary + MNI probability map, tagged with its key:
+    // [meta, algo, binary_mni, prob_mni (or [] if the algorithm has none)]
+    def tagged = { String algo, ch_bin, ch_prob ->
+        ch_bin.join(ch_prob, remainder: true)
+              .filter { it[1] != null }
+              .map { meta, bin, prob -> [meta, algo, bin, prob ?: []] }
+    }
+    ch_lesions_mni = tagged('lst_ai',       ch_lst_ai_mni_mask,                    ch_lst_ai_mni_prob)
+        .mix(tagged('samseg',       SEGMENTATION_SAMSEG.out.binary_mask,       SEGMENTATION_SAMSEG.out.probability_map))
+        .mix(tagged('wmh_synthseg', SEGMENTATION_WMH_SYNTHSEG.out.binary_mask, SEGMENTATION_WMH_SYNTHSEG.out.probability_map))
+        .mix(tagged('fast_outlier', SEGMENTATION_FAST_OUTLIER.out.binary_mask, SEGMENTATION_FAST_OUTLIER.out.probability_map))
+        .mix(tagged('flames',       SEGMENTATION_FLAMES.out.binary_mask,       SEGMENTATION_FLAMES.out.probability_map))
+        .mix(tagged('truenet',      ch_truenet_mni_mask,                       ch_truenet_mni_prob))
+        .mix(tagged('hypermapp3r',  SEGMENTATION_HYPERMAPP3R.out.binary_mask,  SEGMENTATION_HYPERMAPP3R.out.probability_map))
+        .mix(tagged('segcsvd',      SEGMENTATION_SEGCSVD.out.binary_mask,      SEGMENTATION_SEGCSVD.out.probability_map))
+        .mix(tagged('emory_robust', SEGMENTATION_EMORY_ROBUST.out.binary_mask, SEGMENTATION_EMORY_ROBUST.out.probability_map))
+        .mix(tagged('mars_wmh',     ch_mars_wmh_mni_mask,                      ch_mars_wmh_mni_prob))
+        .mix(tagged('bawil',        ch_bawil_mni_mask,                         ch_bawil_mni_prob))
+        .mix(tagged('mimosa',       SEGMENTATION_MIMOSA.out.binary_mask,       SEGMENTATION_MIMOSA.out.probability_map))
+        .mix(tagged('shivai',       SEGMENTATION_SHIVAI.out.binary_mask,       SEGMENTATION_SHIVAI.out.probability_map))
+        .mix(tagged('mindglide',    ch_mindglide_mni_mask,                     ch_mindglide_mni_prob))
+
+    // Grid check, brain masking (--lesion_brainmask), BIDS naming: the only published lesion files.
+    ch_finalize_in = ch_lesions_mni
+        .combine(ch_brainmask_mni, by: 0)
+        .combine(data.mni_template)
+    LESION_FINALIZE(ch_finalize_in)
+
+    // Per session, sorted by file name so STAPLE's input order (and its task hash) is deterministic.
+    def groupSorted = { ch ->
+        ch.map { meta, algo, f -> [meta, f] }
+          .groupTuple(by: 0, size: active_algorithms.size())
+          .map { meta, files -> [meta, files.sort { it.name }] }
+    }
+    ch_all_binary_masks = groupSorted(LESION_FINALIZE.out.mask)
+    ch_all_sidecars     = groupSorted(LESION_FINALIZE.out.sidecar)
 
     ch_staple_input = ch_flair_mni
         .join(ch_all_binary_masks)
@@ -403,6 +550,8 @@ workflow {
         "<dt>STAPLE Threshold</dt><dd>${params.staple_threshold}</dd>" +
         "<dt>Min Cluster Size</dt><dd>${params.staple_min_cluster_size}</dd>" +
         "<dt>Pct Change Threshold</dt><dd>${params.pct_change_threshold}</dd>" +
+        "<dt>Lesion Brain Mask</dt><dd>${params.lesion_brainmask} (dilation ${params.lesion_brainmask_dilation} vox): ${active_algorithms.intersect(brainmask_targets).join(', ') ?: 'none'}</dd>" +
+        "<dt>Volumes</dt><dd>MNI-normalized (template grid, affine normalization of the baseline T1w)</dd>" +
         "</dl>"
 
     def summary_yaml = """\
@@ -417,33 +566,48 @@ data: '${summary_html}'
     ch_methods_desc = Channel.fromPath("${projectDir}/assets/methods_description_template.yml")
         .collectFile(name: 'methods_description_mqc.yaml')
 
-    ch_collated_versions = CONSENSUS_STAPLE.out.versions
-        .mix(HARMONIZATION_STAPLE.out.versions)
-        .mix(SYNTHSTRIP_T1.out.versions)
-        .mix(N4_T1.out.versions)
-        .mix(REGISTER_FLAIR_TO_T1.out.versions)
-        .mix(REGISTER_BASELINE_TO_MNI.out.versions)
-        .mix(REGISTER_T1_TO_BASELINE.out.versions)
-        .collectFile(name: 'collated_versions_mqc_versions.yml', newLine: true) { file ->
-            file.text.replaceAll(/(:[ \t]+)(["']?)([^"'\s\n]+)(["']?)/, '$1"$3"')
-        }
+    // Real versions of every algorithm, probed once per run inside its own container. The
+    // SEGMENTATION_* processes' own versions.yml are placeholders and are NOT collated.
+    def probe_keys = active_algorithms.toList().sort() + (('segcsvd' in active_algorithms) ? ['synthseg'] : [])
+    PROBE_VERSIONS(Channel.fromList(probe_keys))
+
+    ch_software_versions = PROBE_VERSIONS.out.versions
+        .mix(
+            RESAMPLE_T1.out.versions, SYNTHSTRIP_T1.out.versions, CROP_T1_MASK.out.versions,
+            N4_T1.out.versions, MASK_T1.out.versions,
+            REGISTER_FLAIR_TO_T1.out.versions, REGISTER_BASELINE_TO_MNI.out.versions,
+            REGISTER_T1_TO_BASELINE.out.versions, TRANSFORM_T1W_TO_MNI.out.versions,
+            CONSENSUS_STAPLE.out.versions, HARMONIZATION_STAPLE.out.versions
+        )
+        .map { f -> f.text.trim() }
+        .unique()
+
+    ch_collated_versions = ch_software_versions
+        .collectFile(name: 'collated_versions_mqc_versions.yml', newLine: true, sort: true)
+    ch_software_versions
+        .collectFile(name: 'software_versions.yml', newLine: true, sort: true,
+                     storeDir: "${params.output}/pipeline_info")
 
     // Registration QC channels (one [meta, fixed, warped] triple per stage)
     ch_reg_flair_to_t1 = MASK_T1.out.image
         .join(REGISTER_FLAIR_TO_T1.out.image_warped)
+        .join(REGISTER_FLAIR_TO_T1.out.forward_affine)
 
     ch_followup_base_t1 = ch_grouped_t1.filter { meta, base_img, cur_img, is_base -> !is_base }
         .map { meta, base_img, cur_img, is_base -> [meta, base_img] }
     ch_reg_t1_to_baseline = ch_followup_base_t1
         .join(REGISTER_T1_TO_BASELINE.out.image_warped)
+        .join(REGISTER_T1_TO_BASELINE.out.forward_affine)
 
     ch_reg_t1_to_mni = REGISTER_BASELINE_TO_MNI.out.image_warped
         .combine(data.mni_template)
         .map { meta, warped_t1, mni -> [meta, mni, warped_t1] }
+        .join(REGISTER_BASELINE_TO_MNI.out.forward_affine)
 
     QC_PIPELINE(
         ch_mni_paired,
         ch_all_binary_masks,
+        ch_all_sidecars,
         CONSENSUS_STAPLE.out.staple_thr90_binary,
         ch_reg_flair_to_t1,
         ch_reg_t1_to_baseline,
